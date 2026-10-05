@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZeroMail — Multi-Mailbox Switcher Plan</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 860px; margin: 40px auto; padding: 0 24px; color: #1a1a1a; line-height: 1.6; }
+    h1 { font-size: 1.8rem; border-bottom: 2px solid #e5e7eb; padding-bottom: 12px; }
+    h2 { font-size: 1.2rem; margin-top: 2rem; color: #111; }
+    h3 { font-size: 1rem; color: #374151; margin-top: 1.2rem; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
+    th { background: #f3f4f6; text-align: left; padding: 10px 12px; border: 1px solid #e5e7eb; }
+    td { padding: 10px 12px; border: 1px solid #e5e7eb; vertical-align: top; }
+    .tag { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 600; }
+    .tag-green { background: #dcfce7; color: #166534; }
+    .tag-yellow { background: #fef9c3; color: #854d0e; }
+    .tag-red { background: #fee2e2; color: #991b1b; }
+    .tag-blue { background: #dbeafe; color: #1e40af; }
+    .decision { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 12px 16px; border-radius: 4px; margin-top: 1rem; }
+    .phase { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px 20px; margin-top: 1rem; }
+    .phase h3 { margin-top: 0; }
+    ul { padding-left: 1.4rem; }
+    li { margin: 4px 0; }
+    code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; }
+    .mockup { background: #1e1e2e; color: #cdd6f4; padding: 16px; border-radius: 8px; font-family: monospace; font-size: 0.82rem; line-height: 1.8; margin-top: 0.8rem; }
+    .accent { color: #6366f1; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <h1>ZeroMail — Multi-Mailbox Switcher Plan</h1>
+  <p><strong>Date:</strong> 2026-06-12 &nbsp;|&nbsp; <strong>Author:</strong> Claude Code &nbsp;|&nbsp; <strong>Branch:</strong> feature/microsoft-outlook</p>
+
+  <!-- ── PROBLEM ──────────────────────────────────────────────────── -->
+  <h2>1. Problem</h2>
+  <p>
+    A user can connect multiple mailboxes (e.g. 3 Gmail + 2 Outlook). Currently the inbox has
+    <strong>no mailbox switcher</strong> — it auto-selects the first mailbox and the user cannot
+    switch without going to <code>/app/mailboxes</code>. The selected mailbox also resets on every
+    page reload because it was stored only in React state (not persisted).
+  </p>
+
+  <!-- ── SCENARIOS ────────────────────────────────────────────────── -->
+  <h2>2. User Scenarios</h2>
+  <table>
+    <thead>
+      <tr><th>Scenario</th><th>Mailboxes</th><th>Expected behaviour</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Single mailbox</td><td>1 Gmail</td><td>No switcher shown. Works as today.</td></tr>
+      <tr><td>Two mailboxes</td><td>1 Gmail + 1 Outlook</td><td>Compact dropdown or 2-tab strip in header.</td></tr>
+      <tr><td>Power user</td><td>3 Gmail + 2 Outlook</td><td>Dropdown with search, provider icon, email address.</td></tr>
+      <tr><td>Stale selection</td><td>User deletes the selected mailbox</td><td>Auto-fall back to first remaining mailbox.</td></tr>
+      <tr><td>First load</td><td>Any</td><td>Restore last-used mailbox from localStorage.</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ── OPTIONS ──────────────────────────────────────────────────── -->
+  <h2>3. Options Considered</h2>
+  <table>
+    <thead>
+      <tr><th>Option</th><th>Description</th><th>Pros</th><th>Cons</th><th>Verdict</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>A — Dropdown in inbox header</strong></td>
+        <td>A small trigger button showing the active mailbox email + provider icon. Opens a dropdown with all mailboxes.</td>
+        <td>Scalable to N mailboxes, minimal layout change, familiar pattern</td>
+        <td>One extra click vs tabs</td>
+        <td><span class="tag tag-green">✅ Chosen</span></td>
+      </tr>
+      <tr>
+        <td>B — Sidebar list</td>
+        <td>Each mailbox as a row in the left sidebar with unread badge.</td>
+        <td>Always visible</td>
+        <td>Competes with folder list, takes space</td>
+        <td><span class="tag tag-yellow">Later</span></td>
+      </tr>
+      <tr>
+        <td>C — Tabs at top</td>
+        <td>Horizontal tab strip per mailbox.</td>
+        <td>Good for 2–3 mailboxes</td>
+        <td>Breaks at 4+ mailboxes, wraps on mobile</td>
+        <td><span class="tag tag-red">No</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="decision">
+    <strong>Decision:</strong> Option A — dropdown in the inbox header. Renders only when the user
+    has ≥ 2 mailboxes. Hidden when there is only one mailbox so the UI stays clean.
+  </div>
+
+  <!-- ── MOCKUP ────────────────────────────────────────────────────── -->
+  <h2>4. UI Mockup</h2>
+  <div class="mockup">
+┌─────────────────────────────────────────────────────┐
+│  <span class="accent">▼ nayan@outlook.com</span>  [G] [M]          🖊  🔄  │  ← inbox header
+├─────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────┐   │
+│  │ ● nayan@gmail.com        Gmail        ✓     │   │  ← active
+│  │   work@gmail.com         Gmail              │   │
+│  │   team@gmail.com         Gmail              │   │
+│  │   ─────────────────────────────────────     │   │
+│  │   nayan@outlook.com      Outlook            │   │
+│  │   admin@outlook.com      Outlook            │   │
+│  └─────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────┘
+  </div>
+
+  <!-- ── ARCHITECTURE ──────────────────────────────────────────────── -->
+  <h2>5. Architecture Changes</h2>
+
+  <h3>5.1 Persistence fix (already done)</h3>
+  <ul>
+    <li><code>selected-mailbox-context.tsx</code> — reads initial value from <code>localStorage</code>, writes on every change.</li>
+    <li>Key: <code>zeromail.selectedMailboxId</code></li>
+    <li>Falls back gracefully to first mailbox if stored ID is stale (mailbox deleted).</li>
+  </ul>
+
+  <h3>5.2 New component — <code>MailboxSwitcher</code></h3>
+  <ul>
+    <li>Location: <code>apps/web/modules/saas/mailboxes/components/MailboxSwitcher.tsx</code></li>
+    <li>Uses <code>useMailboxesQuery</code> + <code>useSelectedMailbox</code></li>
+    <li>Renders <code>null</code> when mailbox count is 1 (no clutter for basic users)</li>
+    <li>Shows provider icon (Google / Microsoft) + truncated email address</li>
+    <li>Built with <code>shadcn/ui</code> <code>DropdownMenu</code> primitive</li>
+  </ul>
+
+  <h3>5.3 Inbox header update</h3>
+  <ul>
+    <li><code>InboxPage.tsx</code> header bar — replace plain folder label with <code>&lt;MailboxSwitcher /&gt;</code> + folder label side-by-side</li>
+  </ul>
+
+  <!-- ── PHASES ────────────────────────────────────────────────────── -->
+  <h2>6. Implementation Phases</h2>
+
+  <div class="phase">
+    <h3>Phase 1 — Persistence <span class="tag tag-green">Done ✅</span></h3>
+    <ul>
+      <li>Updated <code>selected-mailbox-context.tsx</code> to read/write localStorage</li>
+      <li>Selected mailbox now survives page reload and navigation</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <h3>Phase 2 — MailboxSwitcher component <span class="tag tag-blue">Up next</span></h3>
+    <ul>
+      <li>Create <code>MailboxSwitcher.tsx</code></li>
+      <li>Show provider icon (G for Gmail, M for Microsoft) + email</li>
+      <li>Dropdown lists all mailboxes grouped by provider</li>
+      <li>Selecting a mailbox calls <code>setSelectedMailboxId</code></li>
+      <li>Hidden when only 1 mailbox exists</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <h3>Phase 3 — Wire into InboxPage header <span class="tag tag-yellow">Pending</span></h3>
+    <ul>
+      <li>Replace the plain <code>&lt;h1&gt;{folderLabel}&lt;/h1&gt;</code> with <code>&lt;MailboxSwitcher /&gt;</code> + folder label</li>
+      <li>Mobile: show only the provider icon + chevron (no email, saves space)</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <h3>Phase 4 — Deploy &amp; test <span class="tag tag-yellow">Pending</span></h3>
+    <ul>
+      <li>Verify switching works with 1, 2, and 5 mailboxes</li>
+      <li>Verify localStorage fallback when a mailbox is disconnected</li>
+      <li>Push to <code>feature/microsoft-outlook</code> and deploy to staging</li>
+    </ul>
+  </div>
+
+  <!-- ── FILES ─────────────────────────────────────────────────────── -->
+  <h2>7. Files to Change</h2>
+  <table>
+    <thead><tr><th>File</th><th>Change</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><code>…/lib/selected-mailbox-context.tsx</code></td>
+        <td>Add localStorage persistence</td>
+        <td><span class="tag tag-green">Done</span></td>
+      </tr>
+      <tr>
+        <td><code>…/components/MailboxSwitcher.tsx</code></td>
+        <td>New component</td>
+        <td><span class="tag tag-yellow">TODO</span></td>
+      </tr>
+      <tr>
+        <td><code>…/components/InboxPage.tsx</code></td>
+        <td>Add MailboxSwitcher to header</td>
+        <td><span class="tag tag-yellow">TODO</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ── OPEN QUESTIONS ────────────────────────────────────────────── -->
+  <h2>8. Open Questions</h2>
+  <ul>
+    <li>Should the switcher show unread counts per mailbox? (nice-to-have, needs extra API call)</li>
+    <li>Should switching mailboxes also reset the selected folder back to inbox, or stay on current folder?</li>
+    <li>Do we need a "All inboxes" unified view in the future?</li>
+  </ul>
+
+</body>
+</html>

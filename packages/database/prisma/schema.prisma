@@ -1,0 +1,549 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider   = "prisma-client"
+  output     = "./generated"
+  engineType = "client"
+}
+
+generator zod {
+  provider = "prisma-zod-generator"
+  output   = "./zod"
+  config   = "./zod-generator.config.json"
+}
+
+model User {
+  id                 String       @id @default(cuid())
+  name               String
+  email              String
+  emailVerified      Boolean
+  image              String?
+  createdAt          DateTime
+  updatedAt          DateTime
+  username           String?
+  role               String?
+  banned             Boolean?
+  banReason          String?
+  banExpires         DateTime?
+  onboardingComplete Boolean      @default(false)
+  paymentsCustomerId String?
+  locale             String?
+  displayUsername    String?
+  twoFactorEnabled   Boolean?
+  sessions           Session[]
+  accounts           Account[]
+  passkeys           Passkey[]
+  invitations        Invitation[]
+  purchases          Purchase[]
+  members            Member[]
+  twofactors         TwoFactor[]
+  mailbox            Mailbox[]
+  telegramConnections TelegramConnection[]
+  telegramLinkTokens  TelegramLinkToken[]
+  telegramActions     TelegramAction[]
+  telegramBriefings   TelegramBriefing[]
+
+  @@unique([email])
+  @@unique([username])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
+
+  activeOrganizationId String?
+
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id           String    @id @default(cuid())
+  accountId    String
+  providerId   String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String?   @db.Text
+  refreshToken String?   @db.Text
+  idToken      String?   @db.Text
+  expiresAt    DateTime?
+  password     String?
+
+  mailbox Mailbox?
+
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Mailbox {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  accountId String  @unique
+  account   Account @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  name     String?
+  email    String
+  picture  String?
+  provider MailboxProvider @default(GOOGLE)
+
+  // Watch & sync state
+  watchEnabled              Boolean   @default(false)
+  watchExpiry               DateTime?
+  lastHistoryId             String?
+  subscriptionId            String?
+  subscriptionClientState   String?
+
+  rules             Rule[]
+  executionLogs     RuleExecutionLog[]
+  usageTracking     MailboxUsageTracking[]
+  backfillRuns      RuleBackfillRun[]
+  emails            Email[]
+  scheduledEmails   ScheduledEmail[]
+  snoozedEmails     SnoozedEmail[]
+  telegramActions   TelegramAction[]
+  telegramBriefings TelegramBriefing[]
+
+  // Full sync state
+  emailSyncComplete Boolean  @default(false)
+  emailSyncCursor   String?  // oldest internalDate reached during sync (ISO string)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([email])
+  @@map("mailbox")
+}
+
+model MailboxUsageTracking {
+  id              String   @id @default(cuid())
+
+  mailboxId       String
+  mailbox         Mailbox  @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+
+  periodStart     DateTime
+  periodEnd       DateTime
+  emailsProcessed Int      @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([mailboxId, periodStart])
+  @@index([mailboxId])
+  @@index([periodStart])
+  @@index([periodEnd])
+  @@map("mailbox_usage_tracking")
+}
+
+enum ScheduledEmailStatus {
+  PENDING
+  SENT
+  FAILED
+  CANCELED
+}
+
+model ScheduledEmail {
+  id        String   @id @default(cuid())
+
+  mailboxId String
+  mailbox   Mailbox  @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+
+  to       String
+  cc       String?
+  bcc      String?
+  subject  String
+  body     String
+
+  scheduledAt DateTime
+  status      ScheduledEmailStatus @default(PENDING)
+  sentAt      DateTime?
+  messageId   String?
+  error       String?
+  attempts    Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([mailboxId])
+  // Cron polls due PENDING rows ordered by scheduledAt.
+  @@index([status, scheduledAt])
+  @@map("scheduled_email")
+}
+
+enum SnoozeStatus {
+  SNOOZED
+  RETURNED
+  CANCELED
+}
+
+model SnoozedEmail {
+  id        String   @id @default(cuid())
+
+  mailboxId String
+  mailbox   Mailbox  @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+
+  messageId String   // Gmail message id (== local Email.id)
+  threadId  String?
+
+  // Denormalized display fields so the Snoozed list renders without a live
+  // Gmail fetch and works even when there is no local Email row.
+  from         String
+  subject      String
+  snippet      String
+  internalDate DateTime
+  isUnread     Boolean  @default(true)
+
+  // Labels removed at snooze time, restored on wake.
+  originalLabelIds String[]
+
+  snoozeUntil DateTime
+  status      SnoozeStatus @default(SNOOZED)
+  returnedAt  DateTime?
+  error       String?
+  attempts    Int      @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([mailboxId])
+  // Poller scans due SNOOZED rows ordered by snoozeUntil.
+  @@index([status, snoozeUntil])
+  @@map("snoozed_email")
+}
+
+model Rule {
+  id        String    @id @default(cuid())
+
+  mailboxId String
+  mailbox   Mailbox   @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+
+  name      String
+  enabled   Boolean   @default(true)
+  condition Json      // { conditionalOperator, aiInstructions, static: { from, to, subject } }
+  actions   Json      @default("[]") // [{ type, fields: { label, to, cc, bcc, subject, content, webhookUrl, folderName } }]
+
+  executionLogs RuleExecutionLog[]
+  backfillRuns   RuleBackfillRun[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([mailboxId])
+  @@map("rule")
+}
+
+model RuleBackfillRun {
+  id String @id @default(cuid())
+
+  mailboxId String
+  mailbox   Mailbox @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+
+  ruleId String
+  rule   Rule   @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  status String
+  windowMonths Int
+  windowStart DateTime
+  windowEnd DateTime
+  query String?
+  nextPageToken String?
+  estimatedTotal Int?
+  processedCount Int @default(0)
+  matchedCount Int @default(0)
+  appliedCount Int @default(0)
+  skippedCount Int @default(0)
+  errorCount Int @default(0)
+  lastError String?
+  completedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([mailboxId])
+  @@index([ruleId])
+  @@index([status])
+  @@map("rule_backfill_run")
+}
+
+model RuleExecutionLog {
+  id        String   @id @default(cuid())
+  ruleId    String
+  rule      Rule     @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  mailboxId String
+  mailbox   Mailbox  @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+
+  messageId   String
+  threadId    String?
+  subject     String?
+  from        String?
+
+  status      String    // "matched" | "not_matched" | "error"
+  actionsRun  Json      @default("[]")
+  error       String?
+
+  createdAt   DateTime  @default(now())
+
+  @@index([ruleId])
+  @@index([mailboxId])
+  @@index([messageId])
+  @@map("rule_execution_log")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String   @db.Text
+  expiresAt  DateTime
+
+  createdAt DateTime?
+  updatedAt DateTime?
+
+  @@index([identifier])
+  @@map("verification")
+}
+
+model Passkey {
+  id           String    @id @default(cuid())
+  name         String?
+  publicKey    String
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialID String
+  counter      Int
+  deviceType   String
+  backedUp     Boolean
+  transports   String?
+  aaguid       String?
+  createdAt    DateTime?
+
+  @@index([userId])
+  @@index([credentialID])
+  @@map("passkey")
+}
+
+model TwoFactor {
+  id          String @id @default(cuid())
+  secret      String
+  backupCodes String
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([secret])
+  @@index([userId])
+  @@map("twoFactor")
+}
+
+model Organization {
+  id                 String       @id @default(cuid())
+  name               String
+  slug               String?
+  logo               String?
+  createdAt          DateTime
+  metadata           String?
+  paymentsCustomerId String?
+  members            Member[]
+  invitations        Invitation[]
+  purchases          Purchase[]
+
+  @@unique([slug])
+  @@map("organization")
+}
+
+model Member {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role           String
+  createdAt      DateTime
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  status         String
+  expiresAt      DateTime
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@index([organizationId])
+  @@index([email])
+  @@map("invitation")
+}
+
+enum PurchaseType {
+  SUBSCRIPTION
+  ONE_TIME
+}
+
+model Purchase {
+  id             String        @id @default(cuid())
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String?
+  user           User?         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String?
+  type           PurchaseType
+  customerId     String
+  subscriptionId String?       @unique
+  productId      String
+  status         String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([subscriptionId])
+  @@map("purchase")
+}
+
+model Email {
+  id           String   @id  // Gmail message ID (globally unique)
+
+  mailboxId    String
+  mailbox      Mailbox  @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+
+  threadId     String
+  from         String
+  fromEmail    String
+  to           String
+  subject      String
+  snippet      String   @db.Text
+  bodyText     String   @db.Text
+  bodyHtml     String   @db.Text
+  labelIds     String[]
+  isUnread     Boolean  @default(true)
+  internalDate DateTime
+
+  syncedAt     DateTime @default(now())
+
+  @@index([mailboxId])
+  @@index([mailboxId, internalDate(sort: Desc)])
+  @@map("email")
+}
+
+enum MailboxProvider {
+  GOOGLE
+  OUTLOOK
+}
+
+model TelegramConnection {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  telegramUserId String @unique
+  chatId         String @unique
+  username       String?
+  firstName      String?
+  lastName       String?
+  languageCode   String?
+
+  enabled         Boolean   @default(true)
+  timezone        String    @default("Asia/Calcutta")
+  dailyDigestTime String    @default("09:00")
+  lastBriefingSentAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("telegram_connection")
+}
+
+model TelegramLinkToken {
+  id String @id @default(cuid())
+
+  token String @unique
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("telegram_link_token")
+}
+
+model TelegramAction {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  mailboxId String
+  mailbox   Mailbox @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+
+  messageId String
+  action    TelegramActionType
+
+  usedAt    DateTime?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([mailboxId, messageId])
+  @@index([expiresAt])
+  @@map("telegram_action")
+}
+
+model TelegramBriefing {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  mailboxId String
+  mailbox   Mailbox @relation(fields: [mailboxId], references: [id], onDelete: Cascade)
+
+  briefingDate DateTime
+  categoryCounts Json
+  messageIds     String[]
+  sentAt         DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  @@index([userId, sentAt])
+  @@index([mailboxId, briefingDate])
+  @@map("telegram_briefing")
+}
+
+enum TelegramActionType {
+  ARCHIVE
+  MARK_READ
+  TRASH
+}

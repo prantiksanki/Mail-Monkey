@@ -1,0 +1,43 @@
+---
+title: Gmail vs Outlook for Automation: What Actually Changes
+date: 2026-06-15
+image: https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=1200&h=800&fit=crop
+authorName: Zer0Email Team
+excerpt: Gmail and Outlook both support automation, but they work differently under the hood. If you manage both, here is what you need to know.
+tags: [gmail, outlook, automation, email]
+published: true
+---
+
+Most professionals end up with both. A Gmail account for personal use or an early-stage startup. An Outlook account for a corporate job, a client, or a Microsoft 365 organization. Managing two inboxes doubles the overhead — unless you have a system that works across both.
+
+Here is what actually changes between the two platforms when you try to automate them.
+
+## How Gmail handles automation
+
+Gmail's API is mature and permissive. It supports push notifications via Pub/Sub, which means a connected tool can receive an event the moment a new email arrives — no polling required. Rules execute in real time.
+
+Gmail's label system is also flexible. You can create nested labels, apply multiple labels to a single message, and query across labels efficiently. This makes it straightforward to build rich categorization: a message can be `[vendor/invoices]`, `[priority/high]`, and `[action-required]` simultaneously.
+
+The catch: Gmail's OAuth scopes are tiered. Reading and labeling email requires `gmail.modify`. Actions like sending on behalf of the user require broader scopes that go through Google's verification process. Tools that need those scopes — including Zer0Email — must pass CASA Tier 2 certification to use them in production.
+
+## How Outlook handles automation
+
+Outlook's automation surface is the Microsoft Graph API. It supports webhooks (called "subscriptions") that push notifications when new mail arrives, similar to Gmail's approach. Latency is slightly higher in practice, but for inbox automation the difference is not meaningful.
+
+Where Outlook differs from Gmail is the folder model. Outlook uses folders rather than labels, and a message can only live in one folder at a time. This is a fundamental constraint: you cannot apply multiple independent categories to the same message. Workarounds exist — categories (colored tags) can be applied in addition to folder placement — but the data model is less flexible.
+
+Outlook's permission model is also different. Microsoft's OAuth scopes are coarser. `Mail.ReadWrite` gives a connected application read and write access to the full mailbox. There is no partial equivalent to Gmail's label-only scope. This is worth knowing when you evaluate what access you're granting.
+
+## What this means if you manage both
+
+If you use both Gmail and Outlook, the most practical approach is to treat them as independent systems with a shared rule vocabulary.
+
+The rules you care about — flag anything from this vendor, archive anything from this newsletter list, escalate anything containing this keyword — are platform-agnostic in intent. The execution differs: Gmail applies a label; Outlook moves to a folder or applies a category. But the outcome is the same.
+
+Zer0Email abstracts this. You write rules once. The engine applies them correctly to each connected account based on the platform's capabilities. Gmail accounts get labels. Outlook accounts get folders and categories. You manage both from one dashboard.
+
+## Which platform is better for automation?
+
+Gmail is more flexible at the data model level. Outlook is more common in enterprise environments where you may not have a choice. For most users who have both, the question is not which is better — it is whether your automation layer can handle both without forcing you to manage them separately.
+
+That is the problem Zer0Email was built to solve.

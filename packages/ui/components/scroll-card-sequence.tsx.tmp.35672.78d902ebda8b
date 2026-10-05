@@ -1,0 +1,275 @@
+"use client";
+
+import { motion } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { cn } from "../lib";
+import type { ExpandCard } from "./expand-cards";
+
+interface ScrollCardSequenceProps {
+	cards: ExpandCard[];
+}
+
+const CARD_GRADIENTS = [
+	{
+		bg: "bg-gradient-to-b from-[#050f08] to-[#0a1a0f]",
+		glowClass: "[background:rgba(48,209,88,0.28)]",
+	},
+	{
+		bg: "bg-gradient-to-b from-[#05080f] to-[#0a0d1a]",
+		glowClass: "[background:rgba(48,160,209,0.22)]",
+	},
+	{
+		bg: "bg-gradient-to-b from-[#0f0800] to-[#1a1000]",
+		glowClass: "[background:rgba(209,150,48,0.22)]",
+	},
+	{
+		bg: "bg-gradient-to-b from-[#08050f] to-[#100a1a]",
+		glowClass: "[background:rgba(130,48,209,0.22)]",
+	},
+	{
+		bg: "bg-gradient-to-b from-[#001008] to-[#001a10]",
+		glowClass: "[background:rgba(48,209,160,0.22)]",
+	},
+	{
+		bg: "bg-gradient-to-b from-[#100c00] to-[#1a1600]",
+		glowClass: "[background:rgba(209,185,48,0.22)]",
+	},
+];
+
+const TRANSITION_DURATION_MS = 700;
+
+export function ScrollCardSequence({ cards }: ScrollCardSequenceProps) {
+	const [activeIndex, setActiveIndex] = useState(0);
+	const sectionRef = useRef<HTMLDivElement>(null);
+	const isLockedRef = useRef(false);
+	const transitioningRef = useRef(false);
+	const touchStartYRef = useRef(0);
+	// Track scroll direction for re-entry: "down" means we exited at the bottom
+	const exitDirectionRef = useRef<"up" | "down">("down");
+
+	const advance = useCallback(
+		(direction: "up" | "down") => {
+			if (transitioningRef.current) return;
+
+			setActiveIndex((prev) => {
+				const next = direction === "down" ? prev + 1 : prev - 1;
+
+				// At boundaries — release the lock
+				if (next >= cards.length || next < 0) {
+					isLockedRef.current = false;
+					exitDirectionRef.current = direction;
+					unlock();
+					return prev;
+				}
+
+				// Valid transition — debounce further input
+				transitioningRef.current = true;
+				setTimeout(() => {
+					transitioningRef.current = false;
+				}, TRANSITION_DURATION_MS);
+
+				return next;
+			});
+		},
+		[cards.length],
+	);
+
+	const handleWheel = useCallback(
+		(e: WheelEvent) => {
+			if (!isLockedRef.current) return;
+			e.preventDefault();
+			advance(e.deltaY > 0 ? "down" : "up");
+		},
+		[advance],
+	);
+
+	const handleTouchStart = useCallback((e: TouchEvent) => {
+		touchStartYRef.current = e.touches[0].clientY;
+	}, []);
+
+	const handleTouchMove = useCallback(
+		(e: TouchEvent) => {
+			if (!isLockedRef.current) return;
+			e.preventDefault();
+		},
+		[],
+	);
+
+	const handleTouchEnd = useCallback(
+		(e: TouchEvent) => {
+			if (!isLockedRef.current) return;
+			const delta = touchStartYRef.current - e.changedTouches[0].clientY;
+			if (Math.abs(delta) < 10) return;
+			advance(delta > 0 ? "down" : "up");
+		},
+		[advance],
+	);
+
+	function lock() {
+		window.addEventListener("wheel", handleWheel, { passive: false });
+		window.addEventListener("touchstart", handleTouchStart, { passive: true });
+		window.addEventListener("touchmove", handleTouchMove, { passive: false });
+		window.addEventListener("touchend", handleTouchEnd, { passive: true });
+		isLockedRef.current = true;
+	}
+
+	function unlock() {
+		window.removeEventListener("wheel", handleWheel);
+		window.removeEventListener("touchstart", handleTouchStart);
+		window.removeEventListener("touchmove", handleTouchMove);
+		window.removeEventListener("touchend", handleTouchEnd);
+		isLockedRef.current = false;
+	}
+
+	useEffect(() => {
+		const section = sectionRef.current;
+		if (!section) return;
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting) {
+					// Re-entering from below: start at last card
+					if (exitDirectionRef.current === "down") {
+						setActiveIndex(cards.length - 1);
+					} else {
+						// Re-entering from above: start at first card
+						setActiveIndex(0);
+					}
+					lock();
+				} else {
+					unlock();
+				}
+			},
+			{ threshold: 0.5 },
+		);
+
+		observer.observe(section);
+		return () => {
+			observer.disconnect();
+			unlock();
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [cards.length, handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd]);
+
+	return (
+		<div ref={sectionRef} className="relative w-full h-screen overflow-hidden">
+			{/* Card stack — all absolutely positioned, centered */}
+			<div className="absolute inset-0 flex items-center justify-center">
+				{cards.map((card, idx) => {
+					const { bg, glowClass } = CARD_GRADIENTS[idx % CARD_GRADIENTS.length];
+					const offset = idx - activeIndex;
+					const isActive = offset === 0;
+
+					return (
+						<motion.div
+							key={card.title}
+							className={cn(
+								"absolute flex flex-col overflow-hidden rounded-2xl border border-white/[0.07]",
+								"w-[85vw] sm:w-[75vw] lg:w-[31vw]",
+								"h-125 lg:h-140",
+								"p-9",
+								bg,
+							)}
+							animate={{
+								y: offset * 64,
+								scale: isActive ? 1 : 0.92,
+								opacity: isActive ? 1 : Math.max(0, 1 - Math.abs(offset) * 0.6),
+								zIndex: isActive ? 10 : 10 - Math.abs(offset),
+							}}
+							transition={{
+								type: "spring",
+								stiffness: 260,
+								damping: 30,
+							}}
+						>
+							{/* Top: decorative number */}
+							<div className="flex items-start justify-end">
+								<span className="font-[family-name:var(--font-bricolage)] text-[8rem] font-black leading-none tracking-[-0.05em] text-white/[0.05] select-none">
+									{String(idx + 1).padStart(2, "0")}
+								</span>
+							</div>
+
+							<div className="flex-1" />
+
+							{/* Bottom: title + description + CTA */}
+							<div>
+								<h3 className="mb-3 font-[family-name:var(--font-bricolage)] text-[2.5rem] font-extrabold leading-[1.05] tracking-[-0.03em] text-white">
+									{splitTitle(card.title)}
+								</h3>
+								<p className="mb-8 text-[15px] leading-[1.65] text-white/50">
+									{card.description}
+								</p>
+
+								<button
+									type="button"
+									className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-[12px] font-bold uppercase tracking-widest text-white/60 transition-colors duration-200 hover:border-white/40 hover:text-white"
+								>
+									<span>Learn more</span>
+									<svg
+										width="10"
+										height="10"
+										viewBox="0 0 10 10"
+										fill="none"
+										aria-hidden="true"
+									>
+										<path
+											d="M2 5h6M5.5 2.5 8 5l-2.5 2.5"
+											stroke="currentColor"
+											strokeWidth="1.2"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										/>
+									</svg>
+								</button>
+							</div>
+
+							{/* Glow bloom */}
+							<div
+								className={cn(
+									"pointer-events-none absolute -bottom-10 -right-10 size-72 rounded-full blur-3xl",
+									glowClass,
+								)}
+							/>
+							{/* Top-right glow echo */}
+							<div
+								className={cn(
+									"pointer-events-none absolute -top-16 -right-16 size-64 rounded-full blur-3xl opacity-40",
+									glowClass,
+								)}
+							/>
+						</motion.div>
+					);
+				})}
+			</div>
+
+			{/* Progress dots — bottom center */}
+			<div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+				{cards.map((_, idx) => (
+					<div
+						key={idx}
+						className={cn(
+							"rounded-full transition-all duration-300",
+							idx === activeIndex
+								? "w-5 h-2 bg-white"
+								: "w-2 h-2 bg-white/20",
+						)}
+					/>
+				))}
+			</div>
+		</div>
+	);
+}
+
+function splitTitle(title: string): React.ReactNode {
+	const words = title.split(" ");
+	if (words.length <= 2) return title;
+	const mid = Math.ceil(words.length / 2);
+	return (
+		<>
+			{words.slice(0, mid).join(" ")}
+			<br />
+			{words.slice(mid).join(" ")}
+		</>
+	);
+}

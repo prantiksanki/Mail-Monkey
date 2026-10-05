@@ -1,0 +1,2 @@
+echo "→ Running biome ci before push..."
+pnpm exec biome ci .

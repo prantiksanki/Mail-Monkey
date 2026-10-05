@@ -1,0 +1,128 @@
+@import "tailwindcss";
+@import "@repo/tailwind-config/theme.css";
+@import "@repo/tailwind-config/tailwind-animate.css";
+
+@source "../../../packages/ui/components";
+
+@variant dark (&:where(.dark, .dark *));
+
+
+@utility container {
+	margin-inline: auto;
+	padding-inline: 1.5rem;
+	width: 100%;
+	max-width: var(--container-6xl);
+}
+
+@utility no-scrollbar {
+	&::-webkit-scrollbar {
+		display: none;
+	}
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+@keyframes heroFadeUp {
+	from { opacity: 0; transform: translateY(22px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes heroWordIn {
+	from { opacity: 0; transform: translateY(110%); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes heroPhIn {
+	from { opacity: 0; transform: translateY(-6px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+
+.hero-fade-d1  { opacity: 0; animation: heroFadeUp 0.5s ease 0.10s forwards; }
+.hero-fade-d2  { opacity: 0; animation: heroFadeUp 0.5s ease 0.25s forwards; }
+.hero-fade-d3  { opacity: 0; animation: heroFadeUp 0.5s ease 0.40s forwards; }
+.hero-fade-d4  { opacity: 0; animation: heroFadeUp 0.5s ease 0.55s forwards; }
+.hero-fade-d5  { opacity: 0; animation: heroFadeUp 0.5s ease 0.70s forwards; }
+.hero-word-in  { animation: heroWordIn 0.4s cubic-bezier(0.76,0,0.24,1); }
+.hero-ph-in    { animation: heroPhIn 0.35s ease; }
+
+@keyframes trusted-logo-marquee {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+@layer base {
+	*,
+	::after,
+	::before,
+	::backdrop,
+	::file-selector-button {
+		border-color: var(--border);
+	}
+
+	body {
+		letter-spacing: -0.015em;
+		font-feature-settings: "liga" 1, "kern" 1;
+	}
+}
+
+/* ── Gmail-style compose / forwarded-email rendering ─────────────────────── */
+.email-html-editor:empty::before,
+.email-html-editor[data-empty="true"]::before {
+	content: attr(data-placeholder);
+	color: var(--muted-foreground);
+	opacity: 0.6;
+	pointer-events: none;
+}
+
+/* Rendered email content — preserve original formatting while keeping it
+   readable in both themes and contained on small screens. */
+.email-html-editor :where(p) {
+	margin: 0 0 0.75em;
+}
+.email-html-editor :where(a) {
+	color: var(--primary);
+	text-decoration: underline;
+	word-break: break-word;
+}
+.email-html-editor :where(img) {
+	max-width: 100%;
+	height: auto;
+}
+.email-html-editor :where(table) {
+	max-width: 100%;
+	border-collapse: collapse;
+}
+.email-html-editor :where(td, th) {
+	word-break: break-word;
+}
+.email-html-editor :where(ul, ol) {
+	margin: 0 0 0.75em;
+	padding-left: 1.5em;
+}
+.email-html-editor :where(blockquote) {
+	margin: 0 0 0.75em;
+	padding-left: 1em;
+	border-left: 2px solid var(--border);
+	color: var(--muted-foreground);
+}
+.email-html-editor :where(pre) {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+/* Gmail quoted/forwarded block: left rule + muted attribution, like Gmail. */
+.email-html-editor .gmail_quote {
+	margin-top: 0.5em;
+	padding-left: 1em;
+	border-left: 2px solid var(--border);
+}
+.email-html-editor .gmail_attr {
+	color: var(--muted-foreground);
+	margin-bottom: 0.5em;
+}
+/* Keep large forwarded chains from blowing out the layout. */
+.email-html-editor .forwarded-body {
+	overflow-x: auto;
+}

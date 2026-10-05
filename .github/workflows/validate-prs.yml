@@ -1,0 +1,75 @@
+name: Validate PRs
+
+on:
+  pull_request:
+    branches: [main]
+
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  DIRECT_URL: ${{ secrets.DIRECT_URL }}
+  BETTER_AUTH_SECRET: ${{ secrets.BETTER_AUTH_SECRET }}
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  MICROSOFT_CLIENT_ID: ${{ secrets.MICROSOFT_CLIENT_ID }}
+  MICROSOFT_CLIENT_SECRET: ${{ secrets.MICROSOFT_CLIENT_SECRET }}
+
+jobs:
+  lint:
+    name: Lint code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Biome
+        uses: biomejs/setup-biome@v2
+        with:
+          version: 2.3.13
+      - name: Run Biome
+        run: biome ci .
+  check-secrets:
+    name: Check required secrets
+    runs-on: ubuntu-latest
+    outputs:
+      has-secrets: ${{ steps.check.outputs.has-secrets }}
+    steps:
+      - name: Check if secrets are available
+        id: check
+        run: |
+          if [ -n "${{ secrets.DATABASE_URL }}" ] \
+            && [ -n "${{ secrets.DIRECT_URL }}" ] \
+            && [ -n "${{ secrets.BETTER_AUTH_SECRET }}" ]; then
+            echo "has-secrets=true" >> "$GITHUB_OUTPUT"
+          fi
+  e2e:
+    name: Run e2e tests
+    needs: check-secrets
+    if: needs.check-secrets.outputs.has-secrets == 'true'
+    timeout-minutes: 90
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.57.0-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install && pnpm --filter database generate
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: apps/web/.next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-${{ hashFiles('apps/web/**.[jt]s', 'apps/web/**.[jt]sx') }}
+          restore-keys: nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}-
+      - name: Run Playwright tests
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: pnpm --filter web e2e:ci
+      - uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 30

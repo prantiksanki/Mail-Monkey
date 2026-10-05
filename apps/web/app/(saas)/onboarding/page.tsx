@@ -1,0 +1,34 @@
+import { config } from "@repo/auth/config";
+import { getMailboxesByUserId } from "@repo/database";
+import { getSession } from "@saas/auth/lib/server";
+import { OnboardingForm } from "@saas/onboarding/components/OnboardingForm";
+import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export async function generateMetadata() {
+	const t = await getTranslations();
+
+	return {
+		title: t("onboarding.title"),
+	};
+}
+
+export default async function OnboardingPage() {
+	const session = await getSession();
+
+	if (!session) {
+		redirect("/auth/login");
+	}
+
+	if (!config.users.enableOnboarding || session.user.onboardingComplete) {
+		redirect("/app");
+	}
+
+	const mailboxes = await getMailboxesByUserId(session.user.id);
+	const primaryMailboxId = mailboxes[0]?.id ?? null;
+
+	return <OnboardingForm mailboxId={primaryMailboxId} />;
+}

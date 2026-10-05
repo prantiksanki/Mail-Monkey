@@ -1,0 +1,40 @@
+import type { JSXElementConstructor } from "react";
+
+type IconProps = {
+	className?: string;
+};
+
+export const oAuthProviders = {
+	google: {
+		name: "Google",
+		icon: ({ ...props }: IconProps) => (
+			<svg viewBox="0 0 488 512" {...props}>
+				<title>Google</title>
+				<path
+					d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z"
+					fill="currentColor"
+				/>
+			</svg>
+		),
+	},
+	microsoft: {
+		name: "Microsoft",
+		icon: ({ ...props }: IconProps) => (
+			<svg viewBox="0 0 21 21" {...props}>
+				<title>Microsoft</title>
+				<rect x="1" y="1" width="9" height="9" fill="#f25022" />
+				<rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+				<rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+				<rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+			</svg>
+		),
+	},
+} as const satisfies Record<
+	string,
+	{
+		name: string;
+		icon: JSXElementConstructor<React.SVGProps<SVGSVGElement>>;
+	}
+>;
+
+export type OAuthProvider = keyof typeof oAuthProviders;

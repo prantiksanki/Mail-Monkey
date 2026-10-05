@@ -1,0 +1,21 @@
+{
+	"dependencies": {
+		"@ai-sdk/google": "^2.0.75",
+		"@ai-sdk/react": "^3.0.0",
+		"ai": "^6.0.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.3.13",
+		"@repo/tsconfig": "workspace:*",
+		"@types/react": "19.2.3",
+		"typescript": "5.9.3"
+	},
+	"main": "./index.ts",
+	"name": "@repo/ai",
+	"scripts": {
+		"clean": "git clean -xdf .cache .turbo dist node_modules",
+		"type-check": "tsc --noEmit"
+	},
+	"types": "./**/.tsx",
+	"version": "0.0.0"
+}

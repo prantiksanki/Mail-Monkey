@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zer0Email Compliance Roadmap</title>
+  <style>
+    :root {
+      --bg: #f5f1e8;
+      --panel: #fffdf8;
+      --ink: #1e1b18;
+      --muted: #6e655d;
+      --line: #d9cfbf;
+      --accent: #0f766e;
+      --accent-soft: #d9f3ef;
+      --warn: #b45309;
+      --warn-soft: #fff1db;
+      --danger: #b42318;
+      --danger-soft: #fee4e2;
+      --ok: #027a48;
+      --ok-soft: #dcfae6;
+      --shadow: 0 18px 45px rgba(44, 33, 20, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(180, 83, 9, 0.08), transparent 24%),
+        linear-gradient(180deg, #f8f4ec 0%, var(--bg) 100%);
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 48px 20px 72px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.12), rgba(255, 255, 255, 0.92));
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 36px;
+      box-shadow: var(--shadow);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.15;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(2.2rem, 4vw, 4rem);
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-size: 1.75rem;
+      margin-bottom: 12px;
+    }
+
+    h3 {
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .hero p {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .summary-grid,
+    .section-grid,
+    .status-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .summary-grid {
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      margin-top: 24px;
+    }
+
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .metric {
+      font: 700 2rem/1 Arial, sans-serif;
+      margin-bottom: 8px;
+    }
+
+    .label {
+      color: var(--muted);
+      font-family: Arial, sans-serif;
+      font-size: 0.95rem;
+    }
+
+    section {
+      margin-top: 28px;
+    }
+
+    .section-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .checklist {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .checklist li {
+      margin: 8px 0;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font: 600 0.92rem/1.2 Arial, sans-serif;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .pill.ok {
+      background: var(--ok-soft);
+      color: var(--ok);
+      border-color: #9bd8b3;
+    }
+
+    .pill.warn {
+      background: var(--warn-soft);
+      color: var(--warn);
+      border-color: #f2c785;
+    }
+
+    .pill.danger {
+      background: var(--danger-soft);
+      color: var(--danger);
+      border-color: #f1a7a1;
+    }
+
+    .status-grid {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .note {
+      margin-top: 18px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--accent);
+      background: rgba(15, 118, 110, 0.06);
+      border-radius: 12px;
+      color: #23413d;
+    }
+
+    .budget-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      font-family: Arial, sans-serif;
+      font-size: 0.95rem;
+      background: var(--panel);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .budget-table th,
+    .budget-table td {
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .budget-table th {
+      background: #f1eadf;
+    }
+
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 720px) {
+      .hero,
+      .card {
+        padding: 22px;
+      }
+
+      h1 {
+        font-size: 2.2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="eyebrow">Zer0Email Compliance</div>
+      <h1>US + Europe Sell-Readiness Roadmap</h1>
+      <p>
+        This document captures the practical compliance and trust work Zer0Email should complete
+        before scaling sales in the United States and Europe. The focus is early-stage SaaS
+        readiness, not expensive certification-first compliance.
+      </p>
+
+      <div class="summary-grid">
+        <article class="card">
+          <div class="metric">Now</div>
+          <div class="label">Privacy policy, terms, DPA, subprocessors, security page, MFA, backups, logs, access cleanup</div>
+        </article>
+        <article class="card">
+          <div class="metric">Soon</div>
+          <div class="label">Independent VAPT, buyer trust pack, data mapping, deletion/export workflows</div>
+        </article>
+        <article class="card">
+          <div class="metric">Later</div>
+          <div class="label">SOC 2 Type 1, SOC 2 Type 2, ISO 27001 if revenue and customer pressure justify it</div>
+        </article>
+      </div>
+    </header>
+
+    <section class="section-grid">
+      <article class="card">
+        <h2>1. Must Do Now</h2>
+        <ul class="checklist">
+          <li>Register business details clearly and use business-domain email addresses.</li>
+          <li>Publish Privacy Policy, Terms of Service, DPA, Subprocessor List, Security Page, and Contact Page.</li>
+          <li>Enforce MFA for GitHub, cloud, email, Google Cloud, payments, DNS, and all admin accounts.</li>
+          <li>Remove unused accounts and stale keys, then restrict production access using least privilege.</li>
+          <li>Encrypt data in transit and at rest, enable backups, and test one restore workflow.</li>
+          <li>Turn on audit logging where available and maintain a simple asset inventory.</li>
+          <li>Create basic policies for incident response, access control, data retention, backup/recovery, and onboarding/offboarding.</li>
+          <li>Add user deletion, data export, mailbox disconnect, and consent-aware flows in the product.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>2. Must Do Soon</h2>
+        <ul class="checklist">
+          <li>Get one independent web app/API VAPT or pentest.</li>
+          <li>Fix all critical and high findings and keep the report plus remediation evidence.</li>
+          <li>Create a buyer trust pack: one-page security overview, architecture summary, security FAQ, and breach-notification commitment.</li>
+          <li>Build a small evidence folder with screenshots and records for MFA, logs, backups, access reviews, restore tests, and policies.</li>
+          <li>Document your vendor list, data inventory, and data flow map.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>3. Europe-Specific Items</h2>
+        <ul class="checklist">
+          <li>Map lawful basis for processing under GDPR.</li>
+          <li>Support access, deletion, correction, portability, and objection requests.</li>
+          <li>Review whether you need an EU representative if you target EU users from outside the EEA.</li>
+          <li>Review cross-border transfer setup for EU personal data to the US.</li>
+          <li>Review cookie and analytics consent if you use tracking technologies.</li>
+          <li>Check if a DPO is actually required based on your scale and processing profile.</li>
+        </ul>
+        <div class="note">
+          GDPR can apply even if Zer0Email is operated outside the EU when it offers services to people in the EU.
+        </div>
+      </article>
+
+      <article class="card">
+        <h2>4. US-Specific Items</h2>
+        <ul class="checklist">
+          <li>Do not make security or privacy claims that exceed your actual controls.</li>
+          <li>Ensure your privacy policy matches actual product and vendor behavior.</li>
+          <li>Be ready for state privacy questions from customers and procurement teams.</li>
+          <li>Check sector-specific rules if you sell to regulated verticals like finance or healthcare.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>5. Google and Gmail-Specific Items</h2>
+        <ul class="checklist">
+          <li>Review every Gmail scope and reduce to the minimum necessary.</li>
+          <li>Prepare Google OAuth verification materials: domain ownership, privacy policy, app justification, and demo flows.</li>
+          <li>Because Zer0Email uses restricted Gmail scopes such as <code>gmail.modify</code>, prepare for possible annual Google security assessment requirements.</li>
+          <li>Document exactly why each restricted scope is required by the product.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h2>6. India-Specific Items</h2>
+        <ul class="checklist">
+          <li>Review DPDP obligations for consent, notices, deletion, grievance handling, and vendor control.</li>
+          <li>Align logging and incident handling with CERT-In expectations.</li>
+          <li>Maintain practical breach response workflows and log retention discipline.</li>
+        </ul>
+      </article>
+    </section>
+
+    <section>
+      <div class="status-grid">
+        <article class="card">
+          <h3>Green</h3>
+          <div class="pill-row">
+            <span class="pill ok">US pilot sales</span>
+            <span class="pill ok">Small customer onboarding</span>
+            <span class="pill ok">DPA + subprocessors ready</span>
+          </div>
+          <p class="footer">You can start selling to smaller US customers once core docs and basic security controls are in place.</p>
+        </article>
+
+        <article class="card">
+          <h3>Yellow</h3>
+          <div class="pill-row">
+            <span class="pill warn">EU sales without GDPR cleanup</span>
+            <span class="pill warn">No deletion/export flow</span>
+            <span class="pill warn">No independent VAPT</span>
+          </div>
+          <p class="footer">Possible to proceed in limited cases, but these items should be addressed quickly.</p>
+        </article>
+
+        <article class="card">
+          <h3>Red</h3>
+          <div class="pill-row">
+            <span class="pill danger">False enterprise claims</span>
+            <span class="pill danger">No privacy docs</span>
+            <span class="pill danger">No Google restricted-scope plan</span>
+          </div>
+          <p class="footer">These are real blockers for scaling trust and can create legal, customer, or platform risk.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <article class="card">
+        <h2>Bootstrap Budget Under Rs. 50,000</h2>
+        <table class="budget-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Target Budget</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Legal templates + light review</td>
+              <td>Rs. 10k-Rs. 20k</td>
+              <td>Privacy policy, terms, DPA, and basic legal cleanup</td>
+            </tr>
+            <tr>
+              <td>Small VAPT / security review</td>
+              <td>Rs. 20k-Rs. 30k</td>
+              <td>Independent technical validation for early buyer trust</td>
+            </tr>
+            <tr>
+              <td>Fixes / ops help / tooling</td>
+              <td>Rs. 5k-Rs. 10k</td>
+              <td>Access cleanup, backup improvements, logging, and small hardening tasks</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          This plan does not buy formal certification. It buys early-stage trust materials and a credible baseline for small customer sales.
+        </div>
+      </article>
+    </section>
+
+    <section>
+      <article class="card">
+        <h2>When to Spend More</h2>
+        <ul class="checklist">
+          <li>Do SOC 2 Type 1 only when live deals are actually blocked on formal compliance.</li>
+          <li>Do SOC 2 Type 2 once controls are operating consistently and enterprise buyers ask for stronger proof.</li>
+          <li>Do ISO 27001 when EU enterprise opportunities repeatedly demand it.</li>
+          <li>Do SOC 1 only if Zer0Email directly affects customer financial reporting.</li>
+        </ul>
+      </article>
+    </section>
+
+    <p class="footer">
+      Prepared for Zer0Email as a practical founder-friendly compliance roadmap focused on US and Europe sell-readiness.
+    </p>
+  </main>
+</body>
+</html>

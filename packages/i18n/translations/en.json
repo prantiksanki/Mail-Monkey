@@ -1,0 +1,1649 @@
+{
+	"admin": {
+		"menu": {
+			"organizations": "Organizations",
+			"users": "Users"
+		},
+		"organizations": {
+			"backToList": "Back to organizations",
+			"confirmDelete": {
+				"confirm": "Delete",
+				"message": "Are you sure you want to delete this organization? This action cannot be undone.",
+				"title": "Delete organization"
+			},
+			"create": "Create",
+			"delete": "Delete",
+			"deleteOrganization": {
+				"deleted": "Organization has been deleted successfully!",
+				"deleting": "Deleting organization...",
+				"notDeleted": "Organization could not be deleted. Please try again."
+			},
+			"edit": "Edit",
+			"form": {
+				"createTitle": "Create an organization",
+				"name": "Organization name",
+				"notifications": {
+					"error": "Could not save organization. Please try again later.",
+					"success": "Organization has been saved."
+				},
+				"save": "Save",
+				"updateTitle": "Edit organization"
+			},
+			"loading": "Loading organizations...",
+			"membersCount": "{count} {count, plural, one {member} other {members}}",
+			"search": "Search for an organization...",
+			"title": "Manage organizations"
+		},
+		"title": "Administration",
+		"users": {
+			"confirmDelete": {
+				"confirm": "Delete",
+				"message": "Are you sure you want to delete this user? This action cannot be undone.",
+				"title": "Delete user"
+			},
+			"delete": "Delete",
+			"deleteUser": {
+				"deleted": "User has been deleted successfully!",
+				"deleting": "Deleting user...",
+				"notDeleted": "User could not be deleted. Please try again."
+			},
+			"emailVerified": {
+				"verified": "Email verified",
+				"waiting": "Email waiting for verification"
+			},
+			"impersonate": "Impersonate",
+			"impersonation": {
+				"impersonating": "Impersonating as {name}..."
+			},
+			"loading": "Loading users...",
+			"resendVerificationMail": {
+				"error": "Could not resend verification mail. Please try again.",
+				"submitting": "Resending verification mail...",
+				"success": "Verification mail has been sent.",
+				"title": "Resend verification mail"
+			},
+			"search": "Search for name or email...",
+			"title": "Manage users",
+			"assignAdminRole": "Assign admin role",
+			"removeAdminRole": "Remove admin role"
+		},
+		"description": "Manage your application."
+	},
+	"app": {
+		"menu": {
+			"accountSettings": "Account settings",
+			"activity": "Activity",
+			"admin": "Admin",
+			"aiAssistant": "AI Assistant",
+			"analytics": "Analytics",
+			"calendar": "Calendar",
+			"dashboard": "Dashboard",
+			"intelligence": "Inbox Intelligence",
+			"mailboxes": "Mailboxes",
+			"organizationSettings": "Organization settings",
+			"rules": "Rules"
+		},
+		"userMenu": {
+			"accountSettings": "Account settings",
+			"colorMode": "Color mode",
+			"documentation": "Documentation",
+			"home": "Home",
+			"logout": "Logout"
+		}
+	},
+	"auth": {
+		"errors": {
+			"invalidEmailOrPassword": "The credentials you entered are invalid. Please check them and try again.",
+			"unknown": "Something went wrong. Please try again.",
+			"userNotFound": "This user does not exists",
+			"failedToCreateUser": "Could not create user. Please try again.",
+			"failedToCreateSession": "Could not create a session. Please try again.",
+			"failedToUpdateUser": "Could not update user. Please try again.",
+			"failedToGetSession": "Could not get session.",
+			"invalidPassword": "The entered password is incorrect.",
+			"invalidEmail": "The entered email is invalid.",
+			"invalidToken": "The token you entered is invalid or has expired.",
+			"credentialAccountNotFound": "Account not found.",
+			"emailCanNotBeUpdated": "Email could not be updated. Please try again.",
+			"emailNotVerified": "Please verify your email first before logging in.",
+			"failedToGetUserInfo": "Could not load user information.",
+			"idTokenNotSupported": "ID token is not supported.",
+			"passwordTooLong": "Password is too long.",
+			"passwordTooShort": "Password is too short.",
+			"providerNotFound": "This provider is not suppported.",
+			"socialAccountAlreadyLinked": "This account is already linked to a user.",
+			"userEmailNotFound": "Email not found.",
+			"userAlreadyExists": "This user already exists.",
+			"userAlreadyExistsUseAnotherEmail": "User already exists. Use another email.",
+			"invalidInvitation": "The invitation is invalid or expired.",
+			"sessionExpired": "The session has expired.",
+			"failedToUnlinkLastAccount": "Failed to unlink account",
+			"accountNotFound": "Account not found"
+		},
+		"forgotPassword": {
+			"backToSignin": "Back to signin",
+			"email": "Email",
+			"hints": {
+				"linkNotSent": {
+					"message": "We are sorry, but we were unable to send you a link to reset your password. Please try again later.",
+					"title": "Link not sent"
+				},
+				"linkSent": {
+					"message": "We have sent you a link to continue. Please check your inbox.",
+					"title": "Link sent"
+				}
+			},
+			"message": "Please enter your email address and we will send you a link to reset your password.",
+			"submit": "Send link",
+			"title": "Forgot your password?"
+		},
+		"login": {
+			"continueWith": "Or continue with",
+			"createAnAccount": "Create an account",
+			"dontHaveAnAccount": "Don't have an account yet?",
+			"forgotPassword": "Forgot password?",
+			"hints": {
+				"invalidCredentials": "The email or password you entered are invalid. Please try again.",
+				"linkSent": {
+					"message": "We have sent you a link to continue. Please check your inbox.",
+					"title": "Link sent"
+				}
+			},
+			"loginWithPasskey": "Login with passkey",
+			"modes": {
+				"magicLink": "Magic link",
+				"password": "Password"
+			},
+			"submit": "Sign in",
+			"subtitle": "Your rules have been running quietly while you were gone.",
+			"title": "welcome <accent>back</accent>.",
+			"metaTitle": "Sign in",
+			"sendMagicLink": "Send magic link"
+		},
+		"resetPassword": {
+			"backToSignin": "Back to signin",
+			"hints": {
+				"error": "We are sorry, but we were unable to reset your password. Please try again.",
+				"success": "Your password has been reset successfully."
+			},
+			"message": "Please enter a new password.",
+			"newPassword": "New password",
+			"submit": "Reset password",
+			"title": "Reset your password"
+		},
+		"signup": {
+			"alreadyHaveAccount": "Already have an account?",
+			"email": "Email",
+			"hints": {
+				"signupFailed": "We are sorry, but we were unable to create your account. Please try again later.",
+				"verifyEmail": "We have sent you a link to verify your email. Please check your inbox."
+			},
+			"message": "Connect a mailbox, describe a rule, and let Zer0Email handle the rest.",
+			"name": "Name",
+			"password": "Password",
+			"signIn": "Sign in",
+			"submit": "Create account",
+			"title": "start a <accent>quieter</accent> inbox.",
+			"metaTitle": "Create account"
+		},
+		"verify": {
+			"title": "Verify your account",
+			"code": "One-time password",
+			"submit": "Verify",
+			"backToSignin": "Back to login",
+			"message": "Enter the one-time password from your authenticator app to continue."
+		},
+		"aside": {
+			"label": "What users say",
+			"quote": "trained it once. it's been <accent>quiet</accent> since.",
+			"author": "Maya A.",
+			"role": "Founder, Resonant",
+			"stats": {
+				"emails": "Emails filed",
+				"rules": "Rules running",
+				"uptime": "Uptime"
+			}
+		}
+	},
+	"blog": {
+		"description": "Practical inbox strategies, product updates, and AI automation tips.",
+		"title": "Zer0Email Blog",
+		"back": "Back to blog"
+	},
+	"changelog": {
+		"description": "Stay up to date with the latest changes in our product.",
+		"title": "Changelog"
+	},
+	"common": {
+		"confirmation": {
+			"cancel": "Cancel",
+			"confirm": "Confirm"
+		},
+		"menu": {
+			"blog": "Blog",
+			"changelog": "Changelog",
+			"contact": "Contact",
+			"dashboard": "Dashboard",
+			"docs": "Docs",
+			"faq": "FAQ",
+			"features": "Features",
+			"login": "Login",
+			"pricing": "Pricing",
+			"security": "Security"
+		},
+		"tableOfContents": {
+			"title": "On this page"
+		},
+		"actions": {
+			"continue": "Continue",
+			"verify": "Verify"
+		},
+		"errors": {
+			"rateLimited": "You're doing that too fast. Please wait {seconds}s and try again.",
+			"rateLimitedGeneric": "You're doing that too fast. Please wait a moment and try again."
+		}
+	},
+	"contact": {
+		"description": "We are here to help you. Please use the form below to get in touch with us.",
+		"form": {
+			"email": "Email",
+			"message": "Message",
+			"name": "Name",
+			"notifications": {
+				"error": "We are sorry, but we were unable to send your message. Please try again later.",
+				"success": "Your message has been sent successfully. We will get back to you as soon as possible."
+			},
+			"submit": "Send message"
+		},
+		"title": "Contact us"
+	},
+	"documentation": {
+		"title": "Documentation"
+	},
+	"faq": {
+		"description": "The short answers to the things people ask most.",
+		"title": "questions.",
+		"items": {
+			"privacy": {
+				"question": "Do you read my emails?",
+				"answer": "Rules run on your own mailbox via the Gmail API. We only look at subject lines, senders, and bodies when a condition requires it, and only for the length of the call. Nothing is stored on our servers."
+			},
+			"processed": {
+				"question": "What counts as an \"email processed\"?",
+				"answer": "Any incoming email that matches an active rule and triggers an action. Emails that don't match a rule don't count against your monthly quota."
+			},
+			"providers": {
+				"question": "Which email providers does Zer0Email support?",
+				"answer": "Gmail and Outlook (personal and Microsoft 365). You can connect multiple accounts across both providers and manage them from one dashboard."
+			},
+			"rules": {
+				"question": "How does the rule engine work?",
+				"answer": "You define rules using conditions (sender, subject, body keywords, date) and actions (label, archive, forward, reply, delete). Rules run automatically the moment a matching email arrives. You can also describe a rule in plain English and let the AI assistant set it up."
+			},
+			"cancel": {
+				"question": "Can I cancel or change my plan at any time?",
+				"answer": "Yes. You can upgrade, downgrade, or cancel at any time from billing settings. Your rules keep running until the end of the billing period."
+			}
+		}
+	},
+	"home": {
+		"hero": {
+			"eyebrow": "AI email rules · now in public beta",
+			"title": "inbox, but <accent>quieter</accent>.",
+			"subtitle": "Zer0Email reads your mail the way you do, and files it the way you would. Describe a rule in one sentence and it runs forever.",
+			"connectGmail": "Connect Gmail",
+			"seeHow": "See how it works",
+			"freeTier": "free for 100 emails / mo"
+		},
+		"diagram": {
+			"header": "How it works · one rule, forever",
+			"live": "live · watching inbox",
+			"incoming": "Incoming",
+			"outgoing": "Out of sight",
+			"ruleName": "Archive newsletters",
+			"when": "when",
+			"whenValue": "AI detects newsletter",
+			"then": "then",
+			"thenValue": "label \"Newsletter\", archive",
+			"archived": "archived"
+		},
+		"proof": {
+			"label": "Trusted by builders at"
+		},
+		"features": {
+			"title": "three ways to <accent>do less</accent> with email.",
+			"description": "No scripts. No regex. Describe what you want, pick a template, or start with AI. Your inbox takes it from there.",
+			"items": {
+				"ai": {
+					"number": "01 / ai",
+					"title": "Describe the rule",
+					"description": "\"Archive anything from Substack.\" Done. Zer0Email turns plain English into a running rule, with a confirmation card you approve before anything executes."
+				},
+				"templates": {
+					"number": "02 / templates",
+					"title": "Start from a template",
+					"description": "Nine curated rules for the emails everyone gets: newsletters, receipts, shipping updates, bank statements. One click, one rule."
+				},
+				"custom": {
+					"number": "03 / custom",
+					"title": "Build from scratch",
+					"description": "Static conditions (from, to, subject) plus AI conditions in the same rule. Combined with AND / OR. Seven action types including reply and forward."
+				}
+			}
+		},
+		"testimonial": {
+			"quote": "It's the first inbox tool I didn't abandon after a week. I trained it once. It's been quiet since.",
+			"author": "Maya A.",
+			"role": "Founder, Resonant"
+		},
+		"finalCta": {
+			"title": "zero inbox. <accent>for real</accent> this time.",
+			"connectGmail": "Connect Gmail",
+			"meta": "Free forever · no card required"
+		}
+	},
+	"mail": {
+		"common": {
+			"openLinkInBrowser": "If you want to open the link in a different browser than your default one, copy and paste this link:",
+			"otp": "One-time password",
+			"useLink": "or use the following link:"
+		},
+		"emailVerification": {
+			"body": "Hey,\nplease click the link below to verify this new email address.",
+			"confirmEmail": "Verify email",
+			"subject": "Verify your email"
+		},
+		"forgotPassword": {
+			"body": "Hey,\nyou requested a password reset.\n\nClick the button below to reset your password.",
+			"resetPassword": "Reset password",
+			"subject": "Reset your password"
+		},
+		"magicLink": {
+			"body": "Hey,\nyou requested a login email from Zer0Email.\n\nClick the link below to login.",
+			"login": "Login",
+			"subject": "Login to Zer0Email"
+		},
+		"newUser": {
+			"body": "Hey,\nthanks for signing up for Zer0Email.\n\nTo start using our app, please confirm your email address by clicking the link below.",
+			"confirmEmail": "Confirm email",
+			"subject": "Confirm your email"
+		},
+		"newsletterSignup": {
+			"body": "Thank you for signing up for the Zer0Email newsletter. We will keep you updated with the latest news and updates.",
+			"subject": "Welcome to our newsletter"
+		},
+		"organizationInvitation": {
+			"body": "You have been invited to join organization {organizationName}. Click the button below or copy and paste the link into your browser of choice to accept the invitation and join the organization.",
+			"headline": "Join organization {organizationName}",
+			"join": "Join organization",
+			"subject": "You have been invited to join an organization"
+		},
+		"telegramOtp": {
+			"subject": "Your Zeromail Telegram login code"
+		}
+	},
+	"newsletter": {
+		"email": "Email",
+		"hints": {
+			"error": {
+				"message": "Could not subscribe to newsletter. Please try again later."
+			},
+			"success": {
+				"message": "Thank you for subscribing to our newsletter. We will keep you posted.",
+				"title": "Subscribed"
+			}
+		},
+		"submit": "Subscribe",
+		"subtitle": "Get product updates, tips for inbox automation, and early access to new features.",
+		"title": "Get early access"
+	},
+	"onboarding": {
+		"account": {
+			"avatar": "Avatar",
+			"avatarDescription": "Click the circle or drop an image to upload.",
+			"name": "Name"
+		},
+		"back": "Back",
+		"continue": "Continue",
+		"message": "Just a few quick steps to get you started.",
+		"notifications": {
+			"accountSetupFailed": "We are sorry, but we were unable to set up your account. Please try again later.",
+			"rulesSetupFailed": "We couldn't save your starter rules. Please try again.",
+			"applyFailed": "We couldn't run your rules on recent emails. You can still continue — your rules are saved."
+		},
+		"step": "Step {step} of {total} · {label}",
+		"stepLabels": {
+			"profile": "Your profile",
+			"mailboxes": "Connected inbox",
+			"rules": "Starter rules",
+			"apply": "Watch it work"
+		},
+		"stepNav": {
+			"profile": {
+				"title": "Your profile",
+				"description": "Confirm your name and avatar."
+			},
+			"mailboxes": {
+				"title": "Connected inbox",
+				"description": "Gmail is linked. Add more anytime."
+			},
+			"rules": {
+				"title": "Starter rules",
+				"description": "A few templates to quiet the obvious stuff."
+			},
+			"apply": {
+				"title": "Watch it work",
+				"description": "We'll apply your rules to your last 10 emails."
+			}
+		},
+		"title": "Set up your account",
+		"profile": {
+			"eyebrow": "Your profile",
+			"heading": "let's get you <accent>set up</accent>.",
+			"description": "We pulled these from your Google account. Change anything you'd like before we move on.",
+			"continue": "Continue"
+		},
+		"mailboxes": {
+			"eyebrow": "Connected inbox",
+			"heading": "your inbox is <accent>connected</accent>.",
+			"description": "Zer0Email runs on top of Gmail. Your rules evaluate email server-side — we never store contents.",
+			"connected": "Connected",
+			"provider": {
+				"google": "Gmail"
+			},
+			"addMore": {
+				"title": "Need to connect another account?",
+				"description": "You can add more mailboxes anytime from the dashboard — each one keeps its own rules."
+			},
+			"continue": "Continue"
+		},
+		"rules": {
+			"eyebrow": "Starter rules",
+			"heading": "pick a few to <accent>start</accent>.",
+			"description": "We picked the ones Zer0Email is best at. Deselect anything you don't want — you can always change these later.",
+			"suggestionsHeading": "we found <accent>{count} cleanup opportunities</accent>.",
+			"suggestionsDescription": "We analyzed your inbox and picked the automations most likely to save time right away. Leave the ones you want enabled and we’ll create them for you.",
+			"suggestionImpact": "{count, plural, =1 {Would likely clean up 1 older inbox email} other {Would likely clean up # older inbox emails}}",
+			"selectedCount": "{count, plural, =0 {Select at least one to continue} =1 {1 selected} other {# selected}}",
+			"continue": "Continue",
+			"templates": {
+				"newsletters": {
+					"name": "Archive newsletters",
+					"description": "Auto-archive anything from subscribed lists."
+				},
+				"promotions": {
+					"name": "Archive promotions",
+					"description": "Sales, discounts, and brand campaigns gone instantly."
+				},
+				"receipts": {
+					"name": "Label receipts",
+					"description": "Stripe, Apple, Amazon, and more under \"Finance\"."
+				},
+				"orders": {
+					"name": "Label order confirmations",
+					"description": "Amazon, Shopify, and online store orders."
+				},
+				"social": {
+					"name": "Archive social notifications",
+					"description": "LinkedIn, Twitter, Facebook, and friends."
+				}
+			}
+		},
+		"apply": {
+			"eyebrow": "Watch it work",
+			"heading": "watching your <accent>last 10</accent>.",
+			"description": "Zer0Email is applying your rules now. Open Gmail in another tab and watch it happen.",
+			"processing": "Processing last 10 emails…",
+			"progress": "{done} / {total}",
+			"done": "Dry run complete",
+			"summary": "{actions, plural, =1 {# action} other {# actions}} taken · {skipped} skipped",
+			"finish": "Open dashboard",
+			"noMessages": "No recent inbox messages to process — you're all caught up.",
+			"status": {
+				"applied": "applied",
+				"skipped": "no match",
+				"error": "error"
+			}
+		}
+	},
+	"intelligence": {
+		"eyebrow": "Inbox intelligence",
+		"title": "Smart cleanup suggestions.",
+		"description": "We analyze recurring patterns in {email} and turn them into ready-to-accept rules with historical impact estimates.",
+		"summary": {
+			"suggestions": "Suggestions",
+			"highConfidence": "High confidence",
+			"impact": "Estimated 6m impact",
+			"categories": "{count, plural, =1 {Across 1 category} other {Across # categories}}"
+		},
+		"reconnect": {
+			"eyebrow": "Reconnect required",
+			"title": "Gmail access has expired.",
+			"description": "We can't read {email} right now. Reconnect to refresh access and let Intelligence resume scanning your inbox.",
+			"cta": "Reconnect Gmail",
+			"pending": "Opening Google…"
+		}
+	},
+	"organizations": {
+		"createForm": {
+			"name": "Organization name",
+			"notifications": {
+				"error": "We are sorry, but we were unable to create your organization. Please try again later.",
+				"success": "Your organization has been created. You can now invite members."
+			},
+			"submit": "Create organization",
+			"subtitle": "Enter a name for your organization to get started. You can change the name later in the organization settings.",
+			"title": "Create an organization"
+		},
+		"invitationAlert": {
+			"description": "You need to sign in or create an account to join the organization.",
+			"title": "You have been invited to join an organization."
+		},
+		"invitationModal": {
+			"accept": "Accept",
+			"decline": "Decline",
+			"description": "You have been invited to join organization {organizationName}. Do you want to accept the invitation and join the organization?",
+			"title": "Join organization"
+		},
+		"organizationSelect": {
+			"createNewOrganization": "Create new organization",
+			"organizations": "Organizations",
+			"personalAccount": "Personal account"
+		},
+		"organizationsGrid": {
+			"createNewOrganization": "Create new organization",
+			"title": "Your organizations"
+		},
+		"roles": {
+			"admin": "Admin",
+			"member": "Member",
+			"owner": "Owner"
+		},
+		"settings": {
+			"changeName": {
+				"title": "Organization name"
+			},
+			"deleteOrganization": {
+				"confirmation": "Are you sure you want to delete your organization?",
+				"description": "Permanently delete your organization. Once you delete your organization, there is no going back. To confirm, please enter your password below:",
+				"submit": "Delete organization",
+				"title": "Delete organization"
+			},
+			"logo": {
+				"description": "Upload a logo for your organization.",
+				"title": "Organization logo"
+			},
+			"members": {
+				"activeMembers": "Active members",
+				"description": "See all active members and pending invites of your organization.",
+				"invitations": {
+					"empty": "You have not invited any members yet.",
+					"expiresAt": "Expires at {date}",
+					"invitationStatus": {
+						"accepted": "Accepted",
+						"canceled": "Canceled",
+						"pending": "Pending",
+						"rejected": "Rejected"
+					},
+					"revoke": "Revoke invitation",
+					"resend": "Resend invitation"
+				},
+				"inviteMember": {
+					"description": "To invite a new member, send them an invitation.",
+					"email": "Email",
+					"notifications": {
+						"error": {
+							"description": "We were unable to invite the member. Please try again later.",
+							"title": "Could not invite member"
+						},
+						"success": {
+							"description": "The member has been invited.",
+							"title": "Member invited"
+						}
+					},
+					"role": "Role",
+					"submit": "Invite",
+					"title": "Invite member"
+				},
+				"leaveOrganization": "Leave organization",
+				"notifications": {
+					"removeMember": {
+						"error": {
+							"description": "Could not remove the member from your organization. Please try again."
+						},
+						"loading": {
+							"description": "Removing member from organization..."
+						},
+						"success": {
+							"description": "The member has been successfully removed from your organization."
+						}
+					},
+					"revokeInvitation": {
+						"error": {
+							"description": "The invitation could not be revoked. Please try again later."
+						},
+						"loading": {
+							"description": "Revoking invitation..."
+						},
+						"success": {
+							"description": "The invitation has been revoked."
+						}
+					},
+					"updateMembership": {
+						"error": {
+							"description": "Could not update organization membership. Please try again."
+						},
+						"loading": {
+							"description": "Updating membership..."
+						},
+						"success": {
+							"description": "Membership was updated successfully."
+						}
+					},
+					"resendInvitation": {
+						"loading": {
+							"description": "Resending invitation..."
+						},
+						"success": {
+							"description": "Invitation sent."
+						},
+						"error": {
+							"description": "Could not send invitation. Please try again."
+						}
+					}
+				},
+				"pendingInvitations": "Pending invitations",
+				"removeMember": "Remove member",
+				"title": "Members"
+			},
+			"notifications": {
+				"organizationDeleted": "Your organization has been deleted.",
+				"organizationNameNotUpdated": "We were unable to update your organization name. Please try again later.",
+				"organizationNameUpdated": "Your organization name has been updated.",
+				"organizationNotDeleted": "We were unable to delete your organization. Please try again later."
+			},
+			"subtitle": "Manage settings of the organization.",
+			"title": "Organization",
+			"dangerZone": {
+				"title": "Danger zone"
+			}
+		},
+		"start": {
+			"subtitle": "Welcome to the start page of this organization!"
+		}
+	},
+	"pricing": {
+		"choosePlan": "Choose plan",
+		"contactSales": "Contact sales",
+		"description": "Start free. Upgrade when you need more mailboxes, more rules, or your team comes along for the ride.",
+		"getStarted": "Get started",
+		"month": "{count, plural, one {month} other {{count} months}}",
+		"monthly": "Monthly",
+		"products": {
+			"basic": {
+				"description": "Perfect for small teams.",
+				"features": {
+					"anotherFeature": "Another amazing feature",
+					"limitedSupport": "Limited support"
+				},
+				"title": "Basic"
+			},
+			"free": {
+				"description": "For trying it out",
+				"features": {
+					"mailboxes": "1 mailbox (Gmail or Outlook)",
+					"rulesPerMailbox": "5 rules per mailbox",
+					"emailsPerMonth": "100 emails / mo",
+					"templates": "Rule templates library",
+					"activityLogs": "Activity logs",
+					"community": "Community support"
+				},
+				"title": "Free"
+			},
+			"pro": {
+				"description": "For a quieter inbox",
+				"features": {
+					"mailboxes": "Unlimited mailboxes",
+					"rulesPerMailbox": "Unlimited rules per mailbox",
+					"emailsPerMonth": "10,000 emails processed per month",
+					"inboxIntelligence": "Inbox intelligence",
+					"aiRulesAssistant": "AI rule assistant",
+					"automationAnalytics": "Automation analytics",
+					"ruleEngine": "Full rule engine with all actions",
+					"prioritySupport": "Priority support"
+				},
+				"title": "Pro"
+			}
+		},
+		"compare": {
+			"title": "Compare, <accent>at a glance</accent>.",
+			"feature": "Feature",
+			"planFree": "Free",
+			"planPro": "Pro",
+			"mailboxes": "Mailboxes",
+			"rulesPerMailbox": "Rules per mailbox",
+			"emailsProcessed": "Emails processed / mo",
+			"ruleEngine": "Rule engine",
+			"aiAssistant": "AI rule assistant",
+			"support": "Support",
+			"supportCommunity": "Community",
+			"supportPriority": "Priority",
+			"supportDedicated": "Dedicated",
+			"unlimited": "Unlimited"
+		},
+		"purchase": "Purchase",
+		"recommended": "Most popular",
+		"subscribe": "Subscribe",
+		"title": "simple <accent>pricing</accent>.",
+		"trialPeriod": "{days} {days, plural, one {day} other {days}} free trial",
+		"year": "{count, plural, one {year} other {{count} years}}",
+		"yearly": "Yearly",
+		"perSeat": "per mailbox",
+		"highestPlan": "You are on the highest plan. No upgrades available."
+	},
+	"settings": {
+		"account": {
+			"avatar": {
+				"description": "To change your avatar, click the picture in this block and select a file from your computer to upload.",
+				"notifications": {
+					"error": "Could not update avatar",
+					"success": "Avatar was updated successfully."
+				},
+				"title": "Your avatar"
+			},
+			"changeEmail": {
+				"description": "To change your email, enter the new email and hit save. You will have to confirm the new email before it will become active.",
+				"notifications": {
+					"error": "Could not update email",
+					"success": "Email was updated successfully."
+				},
+				"title": "Your email"
+			},
+			"changeName": {
+				"notifications": {
+					"error": "Could not update name",
+					"success": "Name was updated successfully."
+				},
+				"title": "Your name"
+			},
+			"deleteAccount": {
+				"confirmation": "Are you sure you want to delete your account?",
+				"description": "Permanently delete your account. Once you delete your account, there is no going back. To confirm, please enter your password below:",
+				"notifications": {
+					"error": "Could not delete account",
+					"success": "Account was deleted successfully."
+				},
+				"submit": "Delete account",
+				"title": "Delete account"
+			},
+			"language": {
+				"description": "To change the language of the app for your account, select a language from the list and click save.",
+				"notifications": {
+					"error": "Could not update language",
+					"success": "Language was updated successfully."
+				},
+				"title": "Your language"
+			},
+			"security": {
+				"activeSessions": {
+					"description": "These are all the active sessions of your account. Click X to end a specific session.",
+					"title": "Active sessions",
+					"notifications": {
+						"revokeSession": {
+							"success": "Session revoked."
+						}
+					},
+					"currentSession": "Current session"
+				},
+				"changePassword": {
+					"currentPassword": "Current password",
+					"newPassword": "New password",
+					"notifications": {
+						"error": "Could not update password",
+						"success": "Password was updated successfully."
+					},
+					"title": "Your password"
+				},
+				"connectedAccounts": {
+					"connect": "Connect",
+					"disconnect": "Disconnect",
+					"title": "Connected accounts"
+				},
+				"passkeys": {
+					"description": "Use passkeys as a secure alternative to passwords.",
+					"notifications": {
+						"addPasskey": {
+							"error": {
+								"title": "Could not add passkey."
+							},
+							"success": {
+								"title": "Passkey added."
+							}
+						},
+						"deletePasskey": {
+							"error": {
+								"title": "Could not delete passkey."
+							},
+							"loading": {
+								"title": "Deleting passkey..."
+							},
+							"success": {
+								"title": "Passkey deleted."
+							}
+						}
+					},
+					"title": "Passkeys"
+				},
+				"setPassword": {
+					"description": "You have not set a password yet. To set one, you need to go through the password reset flow. Click the button below to send an email to reset your password and follow the instructions in the email.",
+					"notifications": {
+						"error": "Could not send link to set password. Please try again.",
+						"success": "Check your inbox for the link to set your password."
+					},
+					"submit": "Set password",
+					"title": "Your password"
+				},
+				"title": "Security",
+				"twoFactor": {
+					"title": "Two-factor authentication",
+					"description": "Add an extra layer of security to your account.",
+					"dialog": {
+						"password": {
+							"title": "Verify with password",
+							"description": "Please verify your account by entering your password:",
+							"label": "Your password:"
+						},
+						"totpUrl": {
+							"description": "Use your preferred authenticator app and scan the QR code with it or enter the secret below manually to set up two-factor authentication.",
+							"code": "Enter 6-digit code to verify setup:",
+							"title": "Enable two-factor authentication"
+						}
+					},
+					"enable": "Enable two-factor authentication",
+					"notifications": {
+						"verify": {
+							"success": {
+								"title": "Two-factor authentication has been enabled successfully."
+							}
+						},
+						"enable": {
+							"error": {
+								"title": "Could not verify your account with the provided password. Please try again."
+							}
+						},
+						"disable": {
+							"success": {
+								"title": "Two-factor authentication has been disabled successfully."
+							}
+						}
+					},
+					"disable": "Disable two-factor authentication",
+					"enabled": "You have two-factor authentication enabled for your account."
+				}
+			},
+			"subtitle": "Manage settings of your personal account.",
+			"title": "Account settings"
+		},
+		"billing": {
+			"createCustomerPortal": {
+				"label": "Manage billing",
+				"notifications": {
+					"error": {
+						"title": "Could not create a customer portal session. Please try again."
+					}
+				}
+			},
+			"activePlan": {
+				"status": {
+					"active": "Active",
+					"canceled": "Canceled",
+					"expired": "Expired",
+					"incomplete": "Incomplete",
+					"past_due": "Past due",
+					"paused": "Paused",
+					"trialing": "Trialing",
+					"unpaid": "Unpaid"
+				},
+				"title": "Your plan"
+			},
+			"changePlan": {
+				"description": "Choose a plan to subscribe to.",
+				"title": "Change your plan"
+			},
+			"title": "Billing"
+		},
+		"menu": {
+			"account": {
+				"billing": "Billing",
+				"dangerZone": "Danger zone",
+				"general": "General",
+				"security": "Security",
+				"title": "Account"
+			},
+			"organization": {
+				"billing": "Billing",
+				"general": "General",
+				"members": "Members",
+				"title": "Organization",
+				"dangerZone": "Danger zone"
+			}
+		},
+		"save": "Save"
+	},
+	"start": {
+		"subtitle": "See the latest stats of your awesome business.",
+		"welcome": "Welcome {name}!"
+	},
+	"dashboard": {
+		"greeting": {
+			"morning": "Good morning, {name}",
+			"afternoon": "Good afternoon, {name}",
+			"evening": "Good evening, {name}"
+		},
+		"subtitle": "{count, plural, =0 {Nothing filed since yesterday.} =1 {1 email filed since yesterday.} other {# emails filed since yesterday.}} {attention, plural, =0 {Nothing needed your attention.} =1 {1 item needed a look.} other {# items needed a look.}}",
+		"watching": "Watching · live",
+		"notWatching": "Not watching yet",
+		"emptyMailbox": {
+			"title": "Connect a mailbox to see your dashboard",
+			"description": "Your dashboard lights up once there's a connected inbox and some activity.",
+			"cta": "Connect mailbox"
+		},
+		"stats": {
+			"processed": {
+				"title": "Emails processed today",
+				"trendUp": "↑ {percent}% vs yesterday",
+				"trendDown": "↓ {percent}% vs yesterday",
+				"trendFlat": "No change vs yesterday"
+			},
+			"rulesFired": {
+				"title": "Rules fired",
+				"trendUp": "↑ {delta} vs yesterday",
+				"trendDown": "↓ {delta} vs yesterday",
+				"trendFlat": "Steady vs yesterday"
+			},
+			"timeSaved": {
+				"title": "Time saved (est.)",
+				"value": "{hours}h {minutes}m",
+				"valueShort": "{minutes}m",
+				"valueSeconds": "{seconds}s",
+				"trend": "≈ 20s saved per rule fire"
+			},
+			"rulesActive": {
+				"title": "Rules active",
+				"value": "{active} / {total}",
+				"trend": "{disabled, plural, =0 {All rules enabled} =1 {1 rule disabled} other {# rules disabled}}"
+			}
+		},
+		"drawer": {
+			"eyebrow": "Breakdown",
+			"processed": {
+				"title": "{count} emails processed (last 24h)",
+				"subtitle": "By rule",
+				"empty": "No emails processed in the last 24 hours."
+			},
+			"rulesFired": {
+				"title": "{count} rule fires (last 24h)",
+				"subtitle": "By rule",
+				"empty": "No rules fired in the last 24 hours."
+			},
+			"timeSaved": {
+				"title": "~{minutes} min saved today",
+				"subtitle": "Est. 20s per rule action",
+				"empty": "Nothing applied yet today."
+			},
+			"rulesActive": {
+				"title": "{active} of {total} rules active",
+				"subtitle": "Your rules and their fires in the last 7 days",
+				"empty": "No rules yet. Create one to get started.",
+				"disabledLabel": "{name} (disabled)"
+			},
+			"close": "Close"
+		},
+		"activity": {
+			"heading": "Recent activity",
+			"viewAll": "View all",
+			"empty": "Nothing to show yet. Once mail arrives, it'll stream in here.",
+			"columns": {
+				"time": "Time",
+				"rule": "Rule",
+				"email": "Email",
+				"action": "Action"
+			},
+			"statusNotMatched": "skipped",
+			"statusError": "error"
+		},
+		"topRules": {
+			"heading": "Top rules",
+			"subheading": "Last 7 days",
+			"viewAll": "All rules",
+			"fires": "{count, plural, =1 {1 fire} other {# fires}}",
+			"empty": "No rule activity in the last 7 days."
+		},
+		"calendar": {
+			"heading": "Upcoming events",
+			"subheading": "Next 7 days",
+			"empty": "No events in the next 7 days.",
+			"noTitle": "Untitled event",
+			"reconnect": {
+				"title": "Calendar access needed",
+				"description": "Reconnect your Google account to enable Calendar on your dashboard.",
+				"cta": "Reconnect Google"
+			}
+		}
+	},
+	"zod": {
+		"errors": {
+			"invalid_arguments": "Invalid function arguments",
+			"invalid_date": "Invalid date",
+			"invalid_enum_value": "Invalid enum value. Expected {- options}, received '{received}'",
+			"invalid_intersection_types": "Intersection results could not be merged",
+			"invalid_literal": "Invalid literal value, expected {expected}",
+			"invalid_return_type": "Invalid function return type",
+			"invalid_string": {
+				"cuid": "Invalid {validation}",
+				"datetime": "Invalid {validation}",
+				"email": "Invalid {validation}",
+				"endsWith": "Invalid input: must end with \"{endsWith}\"",
+				"regex": "Invalid",
+				"startsWith": "Invalid input: must start with \"{startsWith}\"",
+				"url": "Invalid {validation}",
+				"uuid": "Invalid {validation}"
+			},
+			"invalid_type": "Expected {expected}, received {received}",
+			"invalid_type_received_undefined": "Required",
+			"invalid_union": "Invalid input",
+			"invalid_union_discriminator": "Invalid discriminator value. Expected {- options}",
+			"not_finite": "Number must be finite",
+			"not_multiple_of": "Number must be a multiple of {multipleOf}",
+			"too_big": {
+				"array": {
+					"exact": "Array must contain exactly {maximum} element(s)",
+					"inclusive": "Array must contain at most {maximum} element(s)",
+					"not_inclusive": "Array must contain less than {maximum} element(s)"
+				},
+				"date": {
+					"exact": "Date must be exactly {- maximum, datetime}",
+					"inclusive": "Date must be smaller than or equal to {- maximum, datetime}",
+					"not_inclusive": "Date must be smaller than {- maximum, datetime}"
+				},
+				"number": {
+					"exact": "Number must be exactly {maximum}",
+					"inclusive": "Number must be less than or equal to {maximum}",
+					"not_inclusive": "Number must be less than {maximum}"
+				},
+				"set": {
+					"exact": "Invalid input",
+					"inclusive": "Invalid input",
+					"not_inclusive": "Invalid input"
+				},
+				"string": {
+					"exact": "String must contain exactly {maximum} character(s)",
+					"inclusive": "String must contain at most {maximum} character(s)",
+					"not_inclusive": "String must contain under {maximum} character(s)"
+				}
+			},
+			"too_small": {
+				"array": {
+					"exact": "Array must contain exactly {minimum} element(s)",
+					"inclusive": "Array must contain at least {minimum} element(s)",
+					"not_inclusive": "Array must contain more than {minimum} element(s)"
+				},
+				"date": {
+					"exact": "Date must be exactly {- minimum, datetime}",
+					"inclusive": "Date must be greater than or equal to {- minimum, datetime}",
+					"not_inclusive": "Date must be greater than {- minimum, datetime}"
+				},
+				"number": {
+					"exact": "Number must be exactly {minimum}",
+					"inclusive": "Number must be greater than or equal to {minimum}",
+					"not_inclusive": "Number must be greater than {minimum}"
+				},
+				"set": {
+					"exact": "Invalid input",
+					"inclusive": "Invalid input",
+					"not_inclusive": "Invalid input"
+				},
+				"string": {
+					"exact": "String must contain exactly {minimum} character(s)",
+					"inclusive": "String must contain at least {minimum} character(s)",
+					"not_inclusive": "String must contain over {minimum} character(s)"
+				}
+			},
+			"unrecognized_keys": "Unrecognized key(s) in object: {- keys}"
+		},
+		"types": {
+			"array": "array",
+			"bigint": "bigint",
+			"boolean": "boolean",
+			"date": "date",
+			"float": "float",
+			"function": "function",
+			"integer": "integer",
+			"map": "map",
+			"nan": "nan",
+			"never": "never",
+			"null": "null",
+			"number": "number",
+			"object": "object",
+			"promise": "promise",
+			"set": "set",
+			"string": "string",
+			"symbol": "symbol",
+			"undefined": "undefined",
+			"unknown": "unknown",
+			"void": "void"
+		},
+		"validations": {
+			"cuid": "cuid",
+			"cuid2": "cuid2",
+			"datetime": "datetime",
+			"email": "email",
+			"emoji": "emoji",
+			"ip": "up",
+			"regex": "regex",
+			"ulid": "ulid",
+			"url": "url",
+			"uuid": "uuid"
+		}
+	},
+	"choosePlan": {
+		"title": "Choose your plan",
+		"description": "To continue, please select a plan."
+	},
+	"notFound": {
+		"code": "404",
+		"title": "Page not found",
+		"goToDashboard": "Go to dashboard",
+		"goToHomepage": "Go to homepage"
+	},
+	"mailboxes": {
+		"mailboxSelect": {
+			"mailboxes": "Mailboxes",
+			"noMailbox": "No mailbox",
+			"addMailbox": "Add mailbox",
+			"otherMailboxes": "+{count} more",
+			"addNewMailbox": "Add new mailbox",
+			"error": "Failed to load mailboxes",
+			"retry": "Retry"
+		},
+		"disconnectDialog": {
+			"title": "Disconnect {email}?",
+			"description": "All rules and execution history for this mailbox will be permanently deleted. Zer0Email's access to your Gmail inbox will be revoked. You can reconnect at any time.",
+			"confirm": "Disconnect",
+			"disconnecting": "Disconnecting...",
+			"cancel": "Cancel",
+			"success": "{email} has been disconnected",
+			"error": "Failed to disconnect mailbox. Please try again.",
+			"tooltip": "Disconnect mailbox"
+		},
+		"addMailboxDialog": {
+			"title": "Connect a mailbox",
+			"description": "Connect your email account to get started.",
+			"eyebrow": "Connect mailbox",
+			"heading": "Pick a provider.",
+			"existingMailboxes": "Connected mailboxes",
+			"connected": "Connected",
+			"connectNew": "Connect new mailbox",
+			"connectWith": "Connect with {provider}",
+			"comingSoon": "soon",
+			"providers": {
+				"google": {
+					"name": "Gmail",
+					"description": "Personal or Google Workspace"
+				},
+				"outlook": {
+					"name": "Outlook",
+					"description": "Personal or Microsoft 365"
+				},
+				"imap": {
+					"name": "IMAP / other",
+					"description": "Fastmail, iCloud, self-hosted · coming soon"
+				}
+			},
+			"scopes": {
+				"title": "What we'll ask for",
+				"read": "Read & modify messages (so we can archive and label)",
+				"labels": "Manage labels (so rules can create new labels)",
+				"never": "Never: send, delete, or read attachments"
+			},
+			"cancel": "Cancel",
+			"notifications": {
+				"success": "Mailbox connected successfully",
+				"error": "Failed to connect mailbox"
+			}
+		},
+		"page": {
+			"eyebrow": "Connected inboxes",
+			"title": "Mailboxes.",
+			"subtitle": "Rules can run on one, some, or all of your connected inboxes. Disconnect anytime.",
+			"connectCta": "Connect mailbox",
+			"connectAnother": "Connect another mailbox",
+			"connectNote": "Gmail and Outlook supported. IMAP coming soon.",
+			"primaryBadge": "Primary",
+			"meta": {
+				"providerGmail": "Gmail",
+				"rulesRunning": "{count, plural, =0 {No rules running} one {# rule running} other {# rules running}}",
+				"lastActivity": "Last activity {time}",
+				"noActivity": "No activity yet"
+			},
+			"health": {
+				"healthy": "Healthy",
+				"attention": "Attention"
+			},
+			"attention": {
+				"expired": "Reauth needed",
+				"paused": "Processing paused"
+			},
+			"reconnect": "Reconnect",
+			"reconnecting": "Reconnecting…",
+			"pauseToggleLabel": "Pause processing for {email}",
+			"menu": {
+				"open": "More",
+				"disconnect": "Disconnect"
+			},
+			"detail": {
+				"title": "{email} — connection details",
+				"subtitle": "Technical info for this mailbox. Share with support if needed.",
+				"auth": "Authentication",
+				"authValue": "OAuth 2.0 · Google Identity",
+				"scopes": "Granted scopes",
+				"scopesValue": "gmail.modify, gmail.labels, gmail.metadata",
+				"push": "Push subscription",
+				"pushActive": "Active",
+				"pushInactive": "Inactive",
+				"historyId": "History ID",
+				"processed": "Processed today",
+				"processedValue": "{count} · {errors, plural, =0 {0 errors} one {# error} other {# errors}}",
+				"connected": "Connected on",
+				"connectedValue": "{date} · {relative}",
+				"lastActivity": "Last activity",
+				"pause": "Pause processing",
+				"resume": "Resume processing"
+			},
+			"empty": {
+				"title": "No mailboxes connected yet",
+				"subtitle": "Connect a Gmail inbox to start routing with rules."
+			},
+			"toast": {
+				"paused": "Processing paused",
+				"resumed": "Processing resumed",
+				"reconnecting": "Redirecting to Google…",
+				"watchError": "Couldn't update processing. Please try again."
+			}
+		}
+	},
+	"analytics": {
+		"title": "Analytics",
+		"subtitle": "Monitor your email automation performance.",
+		"totalEmailsProcessed": "Total Emails Processed",
+		"automationSuccessRate": "Automation Success Rate",
+		"activeRules": "Active Rules",
+		"activeRulesContext": "of {total}",
+		"topEmailSenders": "Top Email Senders",
+		"emailVolume": "Email Volume",
+		"emailVolumeDescription": "Daily processed emails over the last 30 days",
+		"noData": "No data available yet. Connect a mailbox and set up rules to see analytics.",
+		"emails": "Emails",
+		"matched": "Matched",
+		"errors": "Errors",
+		"sender": "Sender",
+		"count": "Emails"
+	},
+	"rules": {
+		"title": "Rules",
+		"subtitle": "Manage email automation rules for your mailbox.",
+		"noMailboxSelected": "Please select a mailbox to manage rules.",
+		"empty": "No rules yet. Create your first rule to automate your email.",
+		"createRule": "New rule",
+		"createWithAi": "Build with AI",
+		"pageHeader": {
+			"eyebrow": "Automation",
+			"subtitleEmpty": "Connect actions to inbox events. Toggle to pause; click to edit.",
+			"subtitle": "{count, plural, =1 {# rule running on {email}. Toggle to pause; click to edit.} other {# rules running on {email}. Toggle to pause; click to edit.}}",
+			"active": "{count} active",
+			"paused": "{count} paused",
+			"watching": "Watching",
+			"notWatching": "Not watching",
+			"watchRequiresPro": "Pro+"
+		},
+		"ruleRow": {
+			"fires": "{count, plural, =0 {0 fires · 7d} =1 {# fire · 7d} other {# fires · 7d}}",
+			"paused": "paused",
+			"when": "when",
+			"then": "→",
+			"and": "AND",
+			"or": "OR"
+		},
+		"drawer": {
+			"eyebrow": "Rule",
+			"definition": "Definition",
+			"performance": "Performance",
+			"sevenDayFires": "7d fires",
+			"status": "Status",
+			"statusActive": "Active",
+			"statusPaused": "Paused",
+			"actions": "Actions",
+			"recentFires": "Recent fires",
+			"recentEmpty": "No fires recorded yet for this rule.",
+			"edit": "Edit",
+			"duplicate": "Duplicate",
+			"close": "Close"
+		},
+		"backfill": {
+			"eyebrow": "Historical run",
+			"title": "Apply to your last 6 months of inbox",
+			"description": "Run this rule across older inbox mail in chunks, then keep future mail covered with the live watcher.",
+			"start": "Apply now",
+			"rerun": "Run again",
+			"progress": "{done} / {total}",
+			"summary": "{applied, plural, =0 {No matching inbox emails were changed.} =1 {1 email updated from your inbox history.} other {# emails updated from your inbox history.}}",
+			"stats": {
+				"applied": "Applied",
+				"matched": "Matched",
+				"skipped": "Skipped",
+				"errors": "Errors"
+			},
+			"status": {
+				"pending": "Queued",
+				"running": "Processing",
+				"completed": "Completed",
+				"failed": "Failed"
+			},
+			"notifications": {
+				"started": "Historical inbox processing started.",
+				"startError": "Could not start historical inbox processing. Please try again."
+			}
+		},
+		"suggestions": {
+			"heading": "Suggested for you",
+			"subheading": "We scanned recent inbox patterns and found a few likely cleanup wins.",
+			"empty": "No strong suggestions yet. As more email comes in, we’ll surface likely automations here.",
+			"impact": "{count, plural, =1 {Would likely touch 1 older inbox email} other {Would likely touch # older inbox emails}}",
+			"accept": "Accept + apply history",
+			"edit": "Edit first",
+			"dismiss": "Dismiss suggestion",
+			"confidence": {
+				"high": "High confidence",
+				"medium": "Likely match"
+			},
+			"notifications": {
+				"accepted": "Suggested rule created. Historical inbox processing started.",
+				"error": "Could not create the suggested rule. Please try again."
+			}
+		},
+		"templates": {
+			"heading": "Templates",
+			"subheading": "Jumpstart automation with a pre-built rule.",
+			"add": "Add",
+			"openAssistant": "Open assistant",
+			"newsletters": {
+				"title": "Archive newsletters",
+				"description": "Anything that looks like a marketing blast or newsletter digest."
+			},
+			"receipts": {
+				"title": "Label receipts & invoices",
+				"description": "Stripe, Apple, Amazon — routed to a Finance label."
+			},
+			"assistant": {
+				"title": "Build a custom rule",
+				"description": "Describe anything to the AI assistant. We'll wire it up."
+			}
+		},
+		"assistant": {
+			"breadcrumbRules": "Rules",
+			"breadcrumb": "AI Assistant",
+			"cancel": "Back to rules",
+			"draftBadge": "Draft",
+			"eyebrow": "Build a rule",
+			"title": "Describe what you want,\nin plain English.",
+			"panelTitle": "New rule · draft",
+			"you": "You",
+			"assistantName": "Zer0Email",
+			"greeting": "Hi {name} — tell me what you'd like to automate. I'll translate it into a rule you can turn on.",
+			"seedHeading": "Try one of these",
+			"seeds": {
+				"github": "Archive GitHub noise — keep mentions",
+				"notion": "Forward anything labeled Reading to Notion",
+				"ooo": "Auto-reply out-of-office to external email",
+				"digest": "Summarize newsletters into a daily digest"
+			},
+			"composerPlaceholder": "Describe a rule — in plain English…",
+			"send": "Send",
+			"drafting": "Drafting a rule…",
+			"drafted": "{count, plural, =1 {Drafted a rule} other {Drafted # rules}}",
+			"draftedEmpty": "I couldn't draft a rule from that. Can you add more detail?",
+			"turnOn": "Turn on",
+			"editConditions": "Edit conditions",
+			"tryAnother": "Try another",
+			"enabled": "Rule enabled — running on your inbox",
+			"enabledState": "Rule enabled ✓",
+			"error": "Couldn't draft a rule. Try rephrasing.",
+			"sidebar": {
+				"templatesHeading": "Templates · one tap",
+				"howItWorksHeading": "How it works",
+				"howItWorksBody": "Rules combine deterministic filters (sender, subject, headers) with an AI classifier that understands intent. The classifier runs once per email, in milliseconds.",
+				"gmailBadge": "Gmail API",
+				"gmailBadgeDesc": "Triggered on new email delivery",
+				"modelBadge": "Gemini 3 Flash",
+				"modelBadgeDesc": "Runs classifier per rule",
+				"latencyBadge": "Low latency",
+				"latencyBadgeDesc": "Millisecond-scale evaluation"
+			},
+			"templates": {
+				"newsletters": {
+					"title": "Archive newsletters",
+					"description": "Works for any subscribed list.",
+					"prompt": "Archive any email that looks like a newsletter or marketing blast and label it 'Newsletter'."
+				},
+				"receipts": {
+					"title": "Label receipts",
+					"description": "Stripe, Apple, Amazon, more.",
+					"prompt": "Label receipts, invoices, and order confirmations from Stripe, Apple, Amazon, and other vendors as 'Finance'."
+				},
+				"notion": {
+					"title": "Forward to Notion",
+					"description": "Anything I label 'Reading'.",
+					"prompt": "Forward anything I label 'Reading' to my Notion inbox so it shows up in my reading queue."
+				},
+				"ooo": {
+					"title": "Auto-reply out-of-office",
+					"description": "Reply to external senders.",
+					"prompt": "Auto-reply with 'Out of office — back Monday' to anyone outside my team."
+				},
+				"use": "Use"
+			},
+			"upsell": {
+				"eyebrow": "Pro feature",
+				"title": "Unlock the AI rule assistant",
+				"description": "Describe rules in plain English and let Zer0Email wire them up. Available on Pro.",
+				"cta": "See plans"
+			}
+		},
+		"engine": {
+			"title": "Rule Engine",
+			"description": "When active, incoming emails are automatically processed by your rules.",
+			"active": "Active",
+			"inactive": "Inactive",
+			"notifications": {
+				"activated": "Rule engine activated.",
+				"deactivated": "Rule engine deactivated.",
+				"activationError": "Failed to activate rule engine.",
+				"deactivationError": "Failed to deactivate rule engine."
+			}
+		},
+		"ruleForm": {
+			"createTitle": "Create a rule",
+			"editTitle": "Edit rule",
+			"name": "Rule name",
+			"namePlaceholder": "e.g., Archive newsletters",
+			"conditions": "Conditions",
+			"conditionalOperator": "Match",
+			"conditionalOperatorOptions": {
+				"AND": "All conditions (AND)",
+				"OR": "Any condition (OR)",
+				"NONE": "None"
+			},
+			"aiInstructions": "AI instructions",
+			"aiInstructionsPlaceholder": "e.g., Match emails that look like automated notifications",
+			"staticConditions": "Static conditions",
+			"from": "From",
+			"fromPlaceholder": "e.g., newsletter@example.com",
+			"to": "To",
+			"toPlaceholder": "e.g., me@example.com",
+			"subject": "Subject contains",
+			"subjectPlaceholder": "e.g., Weekly digest",
+			"actions": "Actions",
+			"addAction": "Add action",
+			"removeAction": "Remove",
+			"actionType": "Action type",
+			"actionTypes": {
+				"LABEL": "Add label",
+				"ARCHIVE": "Archive",
+				"MARK_READ": "Mark as read",
+				"DRAFT_EMAIL": "Draft email",
+				"REPLY": "Reply",
+				"FORWARD": "Forward",
+				"MARK_SPAM": "Mark as spam"
+			},
+			"actionFields": {
+				"label": "Label",
+				"to": "To",
+				"cc": "CC",
+				"bcc": "BCC",
+				"subject": "Subject",
+				"content": "Content",
+				"webhookUrl": "Webhook URL",
+				"folderName": "Folder name"
+			},
+			"save": "Save rule",
+			"cancel": "Cancel",
+			"notifications": {
+				"created": "Rule created successfully.",
+				"updated": "Rule updated successfully.",
+				"error": "Could not save the rule. Please try again."
+			}
+		},
+		"ruleItem": {
+			"edit": "Edit",
+			"delete": "Delete",
+			"enabled": "Enabled",
+			"disabled": "Disabled",
+			"test": "Test",
+			"testing": "Testing..."
+		},
+		"testResults": {
+			"summary": "{matched} of {total} emails matched",
+			"noEmails": "No recent emails found to test against.",
+			"error": "Could not test the rule. Please try again."
+		},
+		"confirmDelete": {
+			"title": "Delete rule",
+			"message": "Are you sure you want to delete this rule? This action cannot be undone.",
+			"confirm": "Delete"
+		},
+		"notifications": {
+			"deleted": "Rule deleted successfully.",
+			"deleteError": "Could not delete the rule. Please try again.",
+			"toggled": "Rule {status}.",
+			"toggleError": "Could not update the rule. Please try again."
+		},
+		"tabs": {
+			"rules": "Rules",
+			"activity": "Activity"
+		},
+		"executionLog": {
+			"title": "Recent Activity",
+			"empty": "No rule executions yet. Activity will appear here when rules process emails.",
+			"status": {
+				"matched": "Matched",
+				"not_matched": "No match",
+				"error": "Error"
+			},
+			"detail": {
+				"title": "Execution Details",
+				"rule": "Rule",
+				"status": "Status",
+				"subject": "Subject",
+				"from": "From",
+				"messageId": "Message ID",
+				"date": "Date",
+				"actions": "Actions Executed",
+				"actionSuccess": "Success",
+				"actionFailed": "Failed",
+				"error": "Error"
+			}
+		}
+	},
+	"limits": {
+		"upgrade": {
+			"title": "Upgrade Required",
+			"planRequired": "This feature requires a {plan} plan or higher.",
+			"action": "Upgrade Plan",
+			"ruleEngine": "Rule engine is only available on the Pro plan. Please upgrade to enable automatic email processing.",
+			"createRule": "You've reached the limit for rules on this mailbox. Upgrade to a higher plan for more rules.",
+			"emailsProcessed": "You've reached the monthly email processing limit for this mailbox. The limit will reset at the beginning of next month.",
+			"watch": "Watch functionality is only available on the Pro plan. Please upgrade to enable automatic email processing.",
+			"addMailbox": "The free plan supports 1 mailbox. Upgrade to Pro for unlimited mailboxes."
+		}
+	},
+	"subscription": {
+		"warning": {
+			"past_due": "Your subscription payment is past due. Please update your payment method to avoid losing access.",
+			"paused": "Your subscription is paused. Resume it to continue using all features."
+		}
+	},
+	"activity": {
+		"eyebrow": "Execution log",
+		"title": "Activity.",
+		"subtitle": "Every evaluated email, every matched rule, every action. Filterable, auditable.",
+		"liveBadge": "Live · just now",
+		"filters": {
+			"rule": {
+				"all": "All rules"
+			},
+			"status": {
+				"all": "All actions",
+				"matched": "Matched",
+				"notMatched": "No match",
+				"error": "Errors"
+			},
+			"range": {
+				"1d": "Today",
+				"7d": "Last 7 days",
+				"30d": "Last 30 days",
+				"all": "All time"
+			},
+			"search": "Search sender or subject"
+		},
+		"day": {
+			"today": "Today",
+			"yesterday": "Yesterday",
+			"actionCount": "{count, plural, =0 {0 actions} one {# action} other {# actions}}"
+		},
+		"row": {
+			"noMatch": "no match",
+			"rulesEvaluated": "{count, plural, =0 {0 rules evaluated} one {# rule evaluated} other {# rules evaluated}}"
+		},
+		"empty": {
+			"firstRun": "No activity yet. Once a rule fires, you'll see it here.",
+			"filtered": "No matches for these filters."
+		},
+		"loadMore": "Load more",
+		"drawer": {
+			"from": "From",
+			"rule": "Rule",
+			"action": "Action",
+			"actionFailed": "failed",
+			"status": "Status",
+			"messageId": "Message ID",
+			"error": "Error",
+			"buildRule": "Build a rule for this"
+		},
+		"sidebar": {
+			"thisWeek": "This week",
+			"evaluations": "{count} evaluations · {actions} actions",
+			"ruleHeat": "Rule heat",
+			"range7d": "7d"
+		}
+	}
+}

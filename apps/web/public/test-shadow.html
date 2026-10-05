@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { margin: 0; background: #0a0a0a; }
+  .wrap { width: 100vw; height: 100vh; position: relative; overflow: hidden; }
+
+  .blob {
+    position: absolute;
+    inset: -100px;
+    filter: url(#sf) blur(4px);
+  }
+  .blob-inner {
+    width: 100%; height: 100%;
+    background-color: rgba(128,128,128,1);
+    mask-image: url('/etheral-mask.png');
+    -webkit-mask-image: url('/etheral-mask.png');
+    mask-size: cover;
+    -webkit-mask-size: cover;
+    mask-repeat: no-repeat;
+    -webkit-mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-position: center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- SVG filter OUTSIDE filtered element -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <filter id="sf" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence result="undulation" numOctaves="2" baseFrequency="0.0005 0.002" seed="0" type="turbulence"/>
+        <feColorMatrix id="hue" in="undulation" result="rotated" type="hueRotate" values="0"/>
+        <feColorMatrix in="rotated" result="circulation" type="matrix" values="4 0 0 0 1  4 0 0 0 1  4 0 0 0 1  1 0 0 0 0"/>
+        <feDisplacementMap in="SourceGraphic" in2="circulation" scale="100" result="dist"/>
+        <feDisplacementMap in="dist" in2="undulation" scale="100" result="output"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="blob">
+    <div class="blob-inner"></div>
+  </div>
+
+  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:10">
+    <h1 style="color:white;font-size:4rem;font-family:sans-serif">Every account. One place.</h1>
+  </div>
+</div>
+
+<script>
+  let v = 0;
+  const el = document.getElementById('hue');
+  function tick() {
+    v = (v + 1) % 360;
+    el.setAttribute('values', v);
+    requestAnimationFrame(tick);
+  }
+  tick();
+</script>
+</body>
+</html>

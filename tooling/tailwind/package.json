@@ -1,0 +1,17 @@
+{
+	"devDependencies": {
+		"@biomejs/biome": "2.3.13",
+		"tailwindcss": "^4.1.17"
+	},
+	"exports": {
+		"./theme.css": "./theme.css",
+		"./tailwind-animate.css": "./tailwind-animate.css"
+	},
+	"main": "theme.css",
+	"name": "@repo/tailwind-config",
+	"private": true,
+	"scripts": {
+		"clean": "git clean -xdf .cache .turbo dist node_modules"
+	},
+	"version": "0.0.0"
+}

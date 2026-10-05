@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><style>
+body { background: black; margin: 0; }
+.test { width: 100vw; height: 100vh; position: relative; }
+.shadow {
+  position: absolute; inset: 0;
+  background-color: rgba(128,128,128,1);
+  -webkit-mask-image: url('/etheral-mask.png');
+  mask-image: url('/etheral-mask.png');
+  -webkit-mask-size: cover;
+  mask-size: cover;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+.raw { position: absolute; inset: 0; opacity: 0.5; }
+</style></head>
+<body>
+<div class='test'>
+  <div class='shadow'></div>
+</div>
+<hr style='border-color:white'>
+<img src='/etheral-mask.png' style='width:100%;opacity:0.5'>
+</body>
+</html>

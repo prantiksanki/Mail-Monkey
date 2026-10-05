@@ -1,0 +1,220 @@
+@theme {
+	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-foreground-faint: var(--foreground-faint);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-primary-deep: var(--primary-deep);
+	--color-primary-soft: var(--primary-soft);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-success: var(--success);
+	--color-success-foreground: var(--success-foreground);
+	--color-warning: var(--warning);
+	--color-warning-foreground: var(--warning-foreground);
+	--color-warning-soft: var(--warning-soft);
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
+	--color-destructive-soft: var(--destructive-soft);
+	--color-border: var(--border);
+	--color-border-strong: var(--border-strong);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+	--color-chart-1: var(--chart-1);
+	--color-chart-2: var(--chart-2);
+	--color-chart-3: var(--chart-3);
+	--color-chart-4: var(--chart-4);
+	--color-chart-5: var(--chart-5);
+	--radius-lg: var(--radius);
+	--radius-md: calc(var(--radius) - 2px);
+	--radius-sm: calc(var(--radius) - 4px);
+	--radius-xl: calc(var(--radius) + 2px);
+	--radius-2xl: calc(var(--radius) + 4px);
+	--radius-3xl: calc(var(--radius) + 8px);
+
+	--font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+	--font-serif: var(--font-instrument), "Times New Roman", ui-serif, serif;
+	--font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+	--animation-accordion-down: accordion-down 0.2s ease-out;
+	--animation-accordion-up: accordion-up 0.2s ease-out;
+
+	@keyframes accordion-down {
+		from {
+			height: 0;
+		}
+		to {
+			height: var(--radix-accordion-content-height);
+		}
+	}
+	@keyframes accordion-up {
+		from {
+			height: var(--radix-accordion-content-height);
+		}
+		to {
+			height: 0;
+		}
+	}
+}
+
+@layer base {
+	:root {
+		/* Light theme */
+		--background: #ffffff;
+		--foreground: #1a1a1a;
+		--foreground-faint: #6b7280;
+		--card: #ffffff;
+		--card-foreground: #1a1a1a;
+		--popover: #ffffff;
+		--popover-foreground: #1a1a1a;
+
+		/* ZerOEmail — black & white primary */
+		--primary: #000000;
+		--primary-foreground: #ffffff;
+		--primary-deep: #1a1a1a;
+		--primary-soft: rgba(0, 0, 0, 0.08);
+
+		/* secondary */
+		--secondary: #f3f4f6;
+		--secondary-foreground: #1a1a1a;
+
+		/* muted */
+		--muted: #f3f4f6;
+		--muted-foreground: #6b7280;
+
+		/* accent */
+		--accent: #f3f4f6;
+		--accent-foreground: #1a1a1a;
+
+		/* status */
+		--success: #1E8E3E;
+		--success-foreground: #FFFFFF;
+		--warning: #E37400;
+		--warning-foreground: #FFFFFF;
+		--warning-soft: #FEF3E2;
+		--destructive: #C5221F;
+		--destructive-foreground: #FFFFFF;
+		--destructive-soft: #FCE8E6;
+
+		/* strokes */
+		--border: #e5e7eb;
+		--border-strong: #d1d5db;
+		--input: #e5e7eb;
+		--ring: #000000;
+
+		/* charts — blue-forward family */
+		--chart-1: 211 100% 44%;
+		--chart-2: 199 89% 48%;
+		--chart-3: 217 33% 35%;
+		--chart-4: 262 52% 55%;
+		--chart-5: 145 63% 35%;
+
+		--radius: 0.5rem;
+		--sidebar-width: 256px;
+		--sidebar-width-collapsed: 256px;
+
+		/* sidebar */
+		--sidebar-bg: #ffffff;
+		--sidebar-border: #e5e7eb;
+		--sidebar-item-active-bg: rgba(0, 0, 0, 0.07);
+		--sidebar-item-active-text: #000000;
+		--sidebar-item-active-icon: #000000;
+		--sidebar-item-hover-bg: rgba(0, 0, 0, 0.05);
+		--sidebar-text: #374151;
+		--sidebar-text-muted: #9ca3af;
+		--sidebar-section-label: #9ca3af;
+		--sidebar-surface: #ffffff;
+		--sidebar-surface-border: #e5e7eb;
+	}
+
+	.dark {
+		/* Gmail dark theme */
+		--background: #202124;
+		--foreground: #E3E3E3;
+		--foreground-faint: #9AA0A6;
+		--card: #1F1F1F;
+		--card-foreground: #E3E3E3;
+		--popover: #2D2E30;
+		--popover-foreground: #E3E3E3;
+
+		--primary: #ffffff;
+		--primary-foreground: #000000;
+		--primary-deep: #e5e5e5;
+		--primary-soft: rgba(255, 255, 255, 0.10);
+
+		--secondary: #2D2E30;
+		--secondary-foreground: #E3E3E3;
+
+		--muted: #2D2E30;
+		--muted-foreground: #9AA0A6;
+
+		/* Gmail dark selected row = #37393B */
+		--accent: #37393B;
+		--accent-foreground: #E3E3E3;
+
+		--success: #81C995;
+		--success-foreground: #062E0F;
+		--warning: #FDD663;
+		--warning-foreground: #1F1F1F;
+		--warning-soft: rgba(253, 214, 99, 0.12);
+		--destructive: #F28B82;
+		--destructive-foreground: #1F1F1F;
+		--destructive-soft: rgba(242, 139, 130, 0.12);
+
+		--border: #3C4043;
+		--border-strong: #5F6368;
+		--input: #3C4043;
+		--ring: #ffffff;
+
+		--chart-1: 211 100% 62%;
+		--chart-2: 199 89% 60%;
+		--chart-3: 217 40% 60%;
+		--chart-4: 262 60% 68%;
+		--chart-5: 145 55% 52%;
+
+		/* sidebar */
+		--sidebar-bg: #111111;
+		--sidebar-border: #1e1e1e;
+		--sidebar-item-active-bg: rgba(255, 255, 255, 0.10);
+		--sidebar-item-active-text: #ffffff;
+		--sidebar-item-active-icon: #ffffff;
+		--sidebar-item-hover-bg: rgba(255, 255, 255, 0.06);
+		--sidebar-text: #a0a0a0;
+		--sidebar-text-muted: #666666;
+		--sidebar-section-label: #555555;
+		--sidebar-surface: #1a1a1a;
+		--sidebar-surface-border: #2a2a2a;
+	}
+
+	.marketing-theme {
+		--background: #FAFAF8;
+		--foreground: #111413;
+		--card: #FFFFFF;
+		--border: #E8E5DE;
+	}
+
+	.dark .marketing-theme {
+		--background: #0B0D0F;
+		--foreground: #EFF1EC;
+		--foreground-faint: #717774;
+		--card: #13171A;
+		--card-foreground: #EFF1EC;
+		--popover: #13171A;
+		--popover-foreground: #EFF1EC;
+		--secondary: #F3F3EF;
+		--secondary-foreground: #090909;
+		--muted: #171B1E;
+		--muted-foreground: #97A09D;
+		--border: #252A2D;
+		--border-strong: #32383C;
+		--input: #252A2D;
+	}
+}
