@@ -10,8 +10,7 @@ export function Footer() {
 		>
 			<span>
 				<span>
-					© {new Date().getFullYear()} MailMonkey. All rights
-					reserved.
+					© {new Date().getFullYear()} Popsuites. All rights reserved.
 				</span>
 			</span>
 			<span className="opacity-50"> | </span>

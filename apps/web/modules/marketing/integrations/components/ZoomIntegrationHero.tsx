@@ -35,7 +35,7 @@ export function ZoomIntegrationHero() {
 
 					<p className="mt-5 max-w-md text-[16px] leading-[1.6] text-muted-foreground">
 						Connect Zoom once. Every meeting booked through
-						MailMonkey gets its own link the moment it's confirmed —
+						Popsuites gets its own link the moment it's confirmed —
 						no copy-pasting, no manual setup, no missed invites.
 					</p>
 
@@ -83,7 +83,7 @@ export function ZoomIntegrationHero() {
 						<Field
 							className="mt-3"
 							label="Attendees"
-							value="vanya@example.com, arjun@example.com"
+							value="vanya@popsuites.ai, arjun@popsuites.ai"
 						/>
 
 						<div className="mt-3">
@@ -128,11 +128,11 @@ export function ZoomIntegrationHero() {
 					</div>
 				</div>
 
-				{/* Right: Zoom -> MailMonkey connected illustration */}
+				{/* Right: Zoom -> Popsuites connected illustration */}
 				<div className="mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
 					<Image
 						src="/images/zoom-integration-hero.png"
-						alt="Zoom connected to MailMonkey, showing a live meeting with an auto-generated Zoom link and upcoming meeting details"
+						alt="Zoom connected to Popsuites, showing a live meeting with an auto-generated Zoom link and upcoming meeting details"
 						width={1316}
 						height={1195}
 						sizes="(min-width: 1024px) 32rem, 100vw"

@@ -118,7 +118,7 @@
 	"scripts": {
 		"build": "pnpm --filter database generate && next build",
 		"clean": "git clean -xdf .cache .turbo dist node_modules .next .content-collections",
-		"dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next dev --turbo+pack",
+		"dev": "cross-env NODE_OPTIONS=--max-old-space-size=4096 next dev --webpack",
 		"e2e": "pnpm exec playwright test --ui",
 		"e2e:ci": "pnpm exec playwright test",
 		"start": "next start",

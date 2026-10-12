@@ -4,7 +4,7 @@ date: 2026-08-20
 image: https://miro.medium.com/v2/1*GoqPMnIx9PDEZuniSoLDTQ.png
 authorName: Nayan Joshi
 authorLink: https://medium.com/@nayan07joshi
-excerpt: Telegram won because anyone could bolt a bot onto it and it would just work. Email never got that. Here's how I'm building MailMonkey to close that gap.
+excerpt: Telegram won because anyone could bolt a bot onto it and it would just work. Email never got that. Here's how I'm building Popsuites to close that gap.
 tags: [productivity, email, automation, telegram]
 published: true
 ---
@@ -13,13 +13,13 @@ Telegram's real advantage was never the chat UI. It was the bot API — one inbo
 
 Email has had a fifty-year head start and still hasn't caught up. It's still a folder you have to remember to open.
 
-That's the gap I've been building [MailMonkey](/) to close.
+That's the gap I've been building [Popsuites](/) to close.
 
 ## The connector model, applied to email
 
 The reason Telegram's bot ecosystem worked isn't complicated: one stable hub, many endpoints plugged into it, each one doing a single job well. A payments bot doesn't need to understand your whole chat history — it just needs a trigger and an action.
 
-That's the model behind MailMonkey, applied to a mailbox instead of a chat:
+That's the model behind Popsuites, applied to a mailbox instead of a chat:
 
 - **The hub** is your connected email — Gmail, Outlook, or both, across multiple accounts, managed from one dashboard.
 - **The rules engine** is the trigger → condition → action layer. It runs on real-time webhooks (Gmail push notifications, Microsoft Graph subscriptions), not a polling loop, so a rule fires the moment a message lands instead of fifteen minutes later.

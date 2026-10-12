@@ -36,7 +36,7 @@ export function Welcome({
 					name="viewport"
 					content="width=device-width, initial-scale=1.0"
 				/>
-				<title>Welcome to MailMonkey</title>
+				<title>Welcome to Popsuites</title>
 			</Head>
 			<Body
 				style={{
@@ -411,7 +411,7 @@ export function Welcome({
 														>
 															After confirming,
 															you'll unlock your
-															MailMonkey workspace
+															Popsuites workspace
 															— a distraction-free
 															environment built
 															for how you actually
@@ -673,12 +673,12 @@ export function Welcome({
 													<p style={footerMeta}>
 														For support:{" "}
 														<Link
-															href="mailto:support@mailmonkey.app"
+															href="mailto:support@popsuites.ai"
 															style={
 																footerMetaLink
 															}
 														>
-															support@mailmonkey.app
+															support@popsuites.ai
 														</Link>{" "}
 														·{" "}
 														<Link
@@ -696,7 +696,7 @@ export function Welcome({
 															marginTop: "6px",
 														}}
 													>
-														© 2026 MailMonkey. All
+														© 2026 PopPush AI. All
 														rights reserved.
 													</p>
 													<p style={footerMeta}>

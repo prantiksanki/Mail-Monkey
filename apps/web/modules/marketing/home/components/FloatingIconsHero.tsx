@@ -1,5 +1,5 @@
 import NextLink from "next/link";
-import { MailMonkeyIntegrationsBeam } from "./MailMonkeyIntegrationsBeam";
+import { PopsuitesIntegrationsBeam } from "./PopsuitesIntegrationsBeam";
 
 export function FloatingIconsHero() {
 	return (
@@ -22,7 +22,7 @@ export function FloatingIconsHero() {
 			</div>
 
 			<div className="mx-auto mt-14 max-w-[900px]">
-				<MailMonkeyIntegrationsBeam />
+				<PopsuitesIntegrationsBeam />
 			</div>
 		</section>
 	);

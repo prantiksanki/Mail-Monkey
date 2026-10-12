@@ -10,7 +10,7 @@ import { setRequestLocale } from "next-intl/server";
 export function generateMetadata(): Metadata {
 	const url = `${getBaseUrl()}/pricing`;
 	const title = "Pricing";
-	const socialTitle = "Pricing — MailMonkey";
+	const socialTitle = "Pricing — Popsuites";
 	const description =
 		"Simple, transparent pricing for AI-powered email automation. Start free, upgrade when you're ready. No hidden fees.";
 
@@ -22,7 +22,7 @@ export function generateMetadata(): Metadata {
 			title: socialTitle,
 			description,
 			url,
-			siteName: "MailMonkey",
+			siteName: "Popsuites",
 			type: "website",
 			images: ["/opengraph-image"],
 		},
@@ -47,7 +47,7 @@ export default async function PricingPage({
 	const webApplication = {
 		"@context": "https://schema.org",
 		"@type": "WebApplication",
-		name: "MailMonkey",
+		name: "Popsuites",
 		applicationCategory: "BusinessApplication",
 		operatingSystem: "Web, Gmail, Outlook",
 		url: `${baseUrl}/pricing`,

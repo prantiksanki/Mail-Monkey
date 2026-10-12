@@ -25,17 +25,16 @@ export default function TermsPage() {
 
 				<Section title="Overview">
 					<p>
-						These Terms and Conditions govern your use of
-						MailMonkey, a college project built by the MailMonkey
-						team.
+						These Terms and Conditions govern your use of Zer0
+						Email, a service operated by PopPush AI.
 					</p>
 				</Section>
 
 				<Section title="Use of the Service">
 					<p>
-						You may use MailMonkey only in compliance with
-						applicable laws and these terms. You are responsible for
-						activity that occurs under your account.
+						You may use Popsuites only in compliance with applicable
+						laws and these terms. You are responsible for activity
+						that occurs under your account.
 					</p>
 				</Section>
 
@@ -43,7 +42,7 @@ export default function TermsPage() {
 					<p>
 						You are responsible for maintaining the security of your
 						account and connected services. You must provide
-						accurate information when using MailMonkey.
+						accurate information when using Popsuites.
 					</p>
 				</Section>
 
@@ -57,7 +56,7 @@ export default function TermsPage() {
 
 				<Section title="Acceptable Use">
 					<p>
-						You may not use MailMonkey for unlawful, harmful,
+						You may not use Popsuites for unlawful, harmful,
 						abusive, or unauthorized activity, including attempts to
 						interfere with the service or access data without
 						permission.
@@ -66,11 +65,11 @@ export default function TermsPage() {
 
 				<Section title="Limitation of Liability">
 					<p>
-						To the maximum extent permitted by law, MailMonkey and
-						the MailMonkey team are not liable for indirect,
-						incidental, special, consequential, or punitive damages,
-						or for loss of data, profits, or business opportunities
-						arising from use of the service.
+						To the maximum extent permitted by law, Popsuites and
+						PopPush AI are not liable for indirect, incidental,
+						special, consequential, or punitive damages, or for loss
+						of data, profits, or business opportunities arising from
+						use of the service.
 					</p>
 				</Section>
 
@@ -79,9 +78,9 @@ export default function TermsPage() {
 						If you have questions about these terms, contact{" "}
 						<a
 							className="underline"
-							href="mailto:support@mailmonkey.app"
+							href="mailto:support@popsuites.ai"
 						>
-							support@mailmonkey.app
+							support@popsuites.ai
 						</a>
 						.
 					</p>

@@ -6,7 +6,7 @@ import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { OrganizationInvitationAlert } from "@saas/organizations/components/OrganizationInvitationAlert";
 import { FloatingPaths } from "@saas/shared/components/FloatingPaths";
-import { MailMonkeyInboxDemo } from "@saas/shared/components/MailMonkeyInboxDemo";
+import { PopsuiteInboxDemo } from "@saas/shared/components/PopsuiteInboxDemo";
 import { useRouter } from "@shared/hooks/router";
 import { getSafeRedirectPath } from "@shared/lib/safe-redirect";
 import { CheckCircle2Icon, ChevronLeftIcon } from "lucide-react";
@@ -81,7 +81,7 @@ export function LoginForm() {
 				<div className="z-10 flex items-center gap-2">
 					<Link href="/" className="flex items-center gap-2">
 						<Image
-							src="/images/mailmonkey-icon.png"
+							src="/images/popsuites-icon.png"
 							alt=""
 							width={221}
 							height={160}
@@ -94,7 +94,7 @@ export function LoginForm() {
 					</Link>
 				</div>
 				<div className="z-10 flex flex-1 items-center justify-center">
-					<MailMonkeyInboxDemo />
+					<PopsuiteInboxDemo />
 				</div>
 				<div className="absolute inset-0">
 					<FloatingPaths position={1} />
@@ -124,7 +124,7 @@ export function LoginForm() {
 				<div className="mx-auto w-full max-w-sm space-y-4">
 					<div className="flex items-center gap-2 lg:hidden">
 						<Image
-							src="/images/mailmonkey-icon.png"
+							src="/images/popsuites-icon.png"
 							alt=""
 							width={221}
 							height={160}

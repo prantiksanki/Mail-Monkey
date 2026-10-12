@@ -62,7 +62,7 @@ export const FEATURES: FeatureDefinition[] = [
 		navLabel: "Every integration",
 		metaTitle: "One Inbox, Every Integration",
 		metaDescription:
-			"Gmail, Outlook, Slack, Zoom, Telegram, WhatsApp, Google Meet, HubSpot, Notion, Teams and Zoho — all connected and in sync inside MailMonkey.",
+			"Gmail, Outlook, Slack, Zoom, Telegram, WhatsApp, Google Meet, HubSpot, Notion, Teams and Zoho — all connected and in sync inside Popsuites.",
 		eyebrow: "Integrations",
 		title: (
 			<>
@@ -73,7 +73,7 @@ export const FEATURES: FeatureDefinition[] = [
 		),
 		subtitle: "All connected, all in sync.",
 		description:
-			"Telegram, Google, Slack, Zoom, WhatsApp, Meet, HubSpot, Outlook, Teams — connect the tools you already use and let MailMonkey bring every conversation into one place.",
+			"Telegram, Google, Slack, Zoom, WhatsApp, Meet, HubSpot, Outlook, Teams — connect the tools you already use and let Popsuites bring every conversation into one place.",
 		checklist: [
 			"Connect any tool in a few clicks",
 			"Every update syncs back in real time",
@@ -89,7 +89,7 @@ export const FEATURES: FeatureDefinition[] = [
 		benefitsEyebrow: "Why connect everything",
 		benefitsTitle: "Stop switching tabs to stay in the loop.",
 		benefitsIntro:
-			"MailMonkey pulls every integration into one stream, so nothing important gets stuck in a tool you forgot to check.",
+			"Popsuites pulls every integration into one stream, so nothing important gets stuck in a tool you forgot to check.",
 		benefits: [
 			{
 				title: "One place for every signal",
@@ -99,7 +99,7 @@ export const FEATURES: FeatureDefinition[] = [
 			{
 				title: "Real-time sync",
 				description:
-					"Changes in a connected tool reflect in MailMonkey instantly, and vice versa where the integration allows it.",
+					"Changes in a connected tool reflect in Popsuites instantly, and vice versa where the integration allows it.",
 			},
 			{
 				title: "Context stays attached",
@@ -125,12 +125,12 @@ export const FEATURES: FeatureDefinition[] = [
 		navLabel: "Inbox, transformed",
 		metaTitle: "Inbox, Transformed",
 		metaDescription:
-			"From chaos to calm — MailMonkey automatically unifies, labels, and archives your inbox so nothing important gets missed.",
+			"From chaos to calm — Popsuites automatically unifies, labels, and archives your inbox so nothing important gets missed.",
 		eyebrow: "The transformation",
 		title: <>Inbox, transformed.</>,
 		subtitle: "From chaos to calm — automatically.",
 		description:
-			"Newsletters, receipts, cold outreach, alerts, multiple accounts in separate tabs — MailMonkey turns the noise into a quiet, intentional space in minutes.",
+			"Newsletters, receipts, cold outreach, alerts, multiple accounts in separate tabs — Popsuites turns the noise into a quiet, intentional space in minutes.",
 		checklist: [
 			"Every account unified into one calm view",
 			"AI rules archive, label, and file everything",
@@ -146,7 +146,7 @@ export const FEATURES: FeatureDefinition[] = [
 		benefitsEyebrow: "Before and after",
 		benefitsTitle: "Hours of triage become seconds of review.",
 		benefitsIntro:
-			"The same inbox, minus the clutter. Here's what changes once MailMonkey takes over the busywork.",
+			"The same inbox, minus the clutter. Here's what changes once Popsuites takes over the busywork.",
 		benefits: [
 			{
 				title: "Fewer unread emails",
@@ -182,7 +182,7 @@ export const FEATURES: FeatureDefinition[] = [
 		navLabel: "Email intelligence",
 		metaTitle: "Email Intelligence, Built In",
 		metaDescription:
-			"MailMonkey reads your mail the way you do — understanding context, auto-labeling, and firing rules the moment mail arrives.",
+			"Popsuites reads your mail the way you do — understanding context, auto-labeling, and firing rules the moment mail arrives.",
 		eyebrow: "Intelligence",
 		title: (
 			<>
@@ -193,7 +193,7 @@ export const FEATURES: FeatureDefinition[] = [
 		),
 		subtitle: "Reads your mail the way you do.",
 		description:
-			"Not just keywords — MailMonkey understands sender, subject, body, and your past behavior to apply the right rule, every time.",
+			"Not just keywords — Popsuites understands sender, subject, body, and your past behavior to apply the right rule, every time.",
 		checklist: [
 			"Rules fire the instant mail arrives",
 			"Combine AI and static conditions in one rule",
@@ -209,7 +209,7 @@ export const FEATURES: FeatureDefinition[] = [
 		benefitsEyebrow: "How it thinks",
 		benefitsTitle: "The judgment of a great assistant, running nonstop.",
 		benefitsIntro:
-			"MailMonkey doesn't just sort by sender — it understands context well enough to act the way you would.",
+			"Popsuites doesn't just sort by sender — it understands context well enough to act the way you would.",
 		benefits: [
 			{
 				title: "Understands context",
@@ -245,7 +245,7 @@ export const FEATURES: FeatureDefinition[] = [
 		navLabel: "Smart archiving",
 		metaTitle: "Smart Archiving That Misses Nothing",
 		metaDescription:
-			"Newsletters, receipts, shipping updates, and bank statements — all auto-filed by MailMonkey the moment they arrive.",
+			"Newsletters, receipts, shipping updates, and bank statements — all auto-filed by Popsuites the moment they arrive.",
 		eyebrow: "Smart archiving",
 		title: (
 			<>
@@ -256,7 +256,7 @@ export const FEATURES: FeatureDefinition[] = [
 		),
 		subtitle: "Auto-filed the moment it arrives.",
 		description:
-			"Newsletters, receipts, shipping updates, bank statements — MailMonkey files it all away instantly, while keeping every item searchable and labeled.",
+			"Newsletters, receipts, shipping updates, bank statements — Popsuites files it all away instantly, while keeping every item searchable and labeled.",
 		checklist: [
 			"Archives run the second mail lands",
 			"Nothing is deleted — just filed and labeled",

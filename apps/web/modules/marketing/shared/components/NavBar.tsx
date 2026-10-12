@@ -94,7 +94,7 @@ export function NavBar() {
 					className="flex shrink-0 items-center gap-2 leading-none hover:no-underline"
 				>
 					<Image
-						src="/images/mailmonkey-icon.png"
+						src="/images/popsuites-icon.png"
 						alt=""
 						width={221}
 						height={160}

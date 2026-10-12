@@ -130,7 +130,7 @@
 		--popover: #ffffff;
 		--popover-foreground: #1a1a1a;
 
-		/* MailMonkey — blue primary (brand CTA/active color) */
+		/* Popsuites — blue primary (brand CTA/active color) */
 		--primary: var(--brand-blue);
 		--primary-foreground: #ffffff;
 		--primary-deep: var(--brand-navy);
@@ -171,7 +171,7 @@
 		--input: #e5e7eb;
 		--ring: #000000;
 
-		/* MailMonkey neobrutalism button tokens */
+		/* Popsuite neobrutalism button tokens */
 		--main: #5632fb;
 		--overlay: rgba(0, 0, 0, 0.8);
 		--bg: #f1eeff;
@@ -290,7 +290,7 @@
 		--input: #3C4043;
 		--ring: #ffffff;
 
-		/* MailMonkey neobrutalism button tokens */
+		/* Popsuite neobrutalism button tokens */
 		--bg: #16151c;
 		--bw: #1f1d29;
 		--blank: #fff;

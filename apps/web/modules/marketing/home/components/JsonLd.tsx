@@ -6,18 +6,18 @@ export function JsonLd() {
 	const webSite = {
 		"@context": "https://schema.org",
 		"@type": "WebSite",
-		name: "MailMonkey",
+		name: "Popsuites",
 		url: baseUrl,
 	};
 
 	const softwareApplication = {
 		"@context": "https://schema.org",
 		"@type": "SoftwareApplication",
-		name: "MailMonkey",
+		name: "Popsuites",
 		applicationCategory: "BusinessApplication",
 		operatingSystem: "Web, Gmail, Outlook",
 		description:
-			"MailMonkey makes sure nothing in your inbox gets missed — intelligent routing and auto-labeling catch what other tools automate right past.",
+			"Popsuites makes sure nothing in your inbox gets missed — intelligent routing and auto-labeling catch what other tools automate right past.",
 		url: baseUrl,
 		offers: [
 			{

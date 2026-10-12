@@ -19,7 +19,7 @@ const tiles: BenefitTile[] = [
 	{
 		title: "Lives in the inbox",
 		description:
-			"The link lands in the confirmation MailMonkey already sends. Nothing extra to check, forward, or chase.",
+			"The link lands in the confirmation Popsuites already sends. Nothing extra to check, forward, or chase.",
 	},
 	{
 		title: "Fewer no-shows",
@@ -45,7 +45,7 @@ export function ZoomIntegrationBenefits() {
 						</h2>
 					</div>
 					<p className="max-w-sm text-[14px] leading-[1.7] text-muted-foreground lg:pt-1">
-						MailMonkey and Zoom together mean every booking already
+						Popsuites and Zoom together mean every booking already
 						has what it needs — the link, the reminder, the
 						follow-up — without you touching a thing.
 					</p>

@@ -90,21 +90,39 @@ export default async function RootLayout({ children }: PropsWithChildren) {
 						__html: JSON.stringify({
 							"@context": "https://schema.org",
 							"@type": "Organization",
-							name: "MailMonkey",
+							name: "Popsuites",
+							alternateName: "Popsuites by PopPush AI",
 							url: baseUrl,
 							logo: {
 								"@type": "ImageObject",
-								url: `${baseUrl}/images/mailmonkey-icon.png`,
+								url: `${baseUrl}/images/popsuites-icon.png`,
 								width: 512,
 								height: 512,
 							},
 							description:
 								"AI-powered email management platform for Gmail and Outlook. Smart triage, inbox automation, and AI-drafted replies for professionals.",
+							foundingDate: "2026",
+							foundingLocation: "Bengaluru, India",
+							parentOrganization: {
+								"@type": "Organization",
+								name: "PopPush AI Private Limited",
+								url: "https://poppushai.com",
+							},
+							address: {
+								"@type": "PostalAddress",
+								addressLocality: "Bengaluru",
+								addressRegion: "Karnataka",
+								addressCountry: "IN",
+							},
 							contactPoint: {
 								"@type": "ContactPoint",
 								contactType: "customer support",
 								url: `${baseUrl}/contact`,
 							},
+							sameAs: [
+								"https://x.com/popsuites",
+								"https://www.producthunt.com/products/zer0-email/launches/popsuites",
+							],
 						}),
 					}}
 				/>

@@ -1,10 +1,10 @@
 ---
 title: Cookie Policy
-description: How MailMonkey uses cookies and similar technologies on our website and application.
+description: How Popsuites uses cookies and similar technologies on our website and application.
 lastUpdated: "2026-07-14"
 ---
 
-This Cookie Policy explains how MailMonkey ("we", "us", or "our") uses cookies and similar technologies on our website and application. By using MailMonkey, you consent to the use of cookies as described in this policy.
+This Cookie Policy explains how Popsuites ("we", "us", or "our") uses cookies and similar technologies on our website and application. By using Popsuites, you consent to the use of cookies as described in this policy.
 
 ---
 
@@ -18,7 +18,7 @@ Cookies are small text files placed on your device when you visit a website. The
 
 ### Essential cookies
 
-These cookies are necessary for MailMonkey to function properly. They enable core functionality such as authentication, security, and session management. The service cannot operate without these cookies.
+These cookies are necessary for Popsuites to function properly. They enable core functionality such as authentication, security, and session management. The service cannot operate without these cookies.
 
 | Cookie | Purpose | Duration |
 |--------|---------|----------|
@@ -28,7 +28,7 @@ These cookies are necessary for MailMonkey to function properly. They enable cor
 
 ### Functional cookies
 
-These cookies allow MailMonkey to remember choices you make and provide enhanced, more personalized features.
+These cookies allow Popsuites to remember choices you make and provide enhanced, more personalized features.
 
 | Cookie | Purpose | Duration |
 |--------|---------|----------|
@@ -37,7 +37,7 @@ These cookies allow MailMonkey to remember choices you make and provide enhanced
 
 ### Analytics cookies
 
-These cookies help us understand how visitors interact with MailMonkey by collecting and reporting information anonymously. We use this data to improve the service.
+These cookies help us understand how visitors interact with Popsuites by collecting and reporting information anonymously. We use this data to improve the service.
 
 | Cookie | Purpose | Duration |
 |--------|---------|----------|
@@ -70,7 +70,7 @@ Most web browsers allow you to control cookies through their settings. You can:
 - Block all cookies from being set
 - Delete all cookies when you close your browser
 
-Please note that blocking essential cookies may prevent MailMonkey from functioning properly.
+Please note that blocking essential cookies may prevent Popsuites from functioning properly.
 
 ### Cookie management links by browser
 
@@ -83,7 +83,7 @@ Please note that blocking essential cookies may prevent MailMonkey from function
 
 ## 5. Changes to this policy
 
-We may update this Cookie Policy from time to time. When we make material changes, we will notify you by updating the "Last updated" date and, where appropriate, by displaying a notice within MailMonkey.
+We may update this Cookie Policy from time to time. When we make material changes, we will notify you by updating the "Last updated" date and, where appropriate, by displaying a notice within Popsuites.
 
 ---
 
@@ -91,5 +91,5 @@ We may update this Cookie Policy from time to time. When we make material change
 
 If you have questions about this Cookie Policy, please contact us at:
 
-**The MailMonkey team**
-Email: `support@mailmonkey.app`
+**PopPush AI**
+Email: `support@popsuites.ai`

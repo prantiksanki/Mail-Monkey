@@ -117,3 +117,15 @@ scan-debug.log
 # (apps/web/next.config.ts) — regenerated locally, not hand-maintained.
 apps/web/AGENTS.md
 apps/web/CLAUDE.md
+
+# Local secrets file (no leading dot) — never commit
+/env
+
+# Inherited PopSuites AWS/EC2 deployment — MailMonkey does not deploy to AWS
+/.github/workflows/deploy-prod-ec2.yml
+/.github/workflows/deploy-staging-ec2.yml
+/.github/workflows/sync-secrets.yml
+/.github/workflows/cron-hourly.yml
+/deploy/
+/infra/
+/tools/sarvam-ai-mcp-server/deploy/

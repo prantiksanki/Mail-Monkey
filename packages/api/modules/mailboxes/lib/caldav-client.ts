@@ -685,14 +685,14 @@ export async function createCalDavEvent(
 	end: string | null;
 }> {
 	const creds = await getImapCredentials(accountId);
-	const uid = `${crypto.randomUUID()}@mailmonkey`;
+	const uid = `${crypto.randomUUID()}@popsuites`;
 	const allDay = !!input.allDayStart;
 	const compact = (d: string) => d.replace(/-/g, "");
 
 	const lines = [
 		"BEGIN:VCALENDAR",
 		"VERSION:2.0",
-		"PRODID:-//MailMonkey//Calendar//EN",
+		"PRODID:-//Popsuites//Calendar//EN",
 		"BEGIN:VEVENT",
 		`UID:${uid}`,
 		`DTSTAMP:${icsUtc(new Date().toISOString())}`,
