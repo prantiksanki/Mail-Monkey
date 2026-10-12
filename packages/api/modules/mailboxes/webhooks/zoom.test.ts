@@ -15,6 +15,8 @@ import { zoomWebhookHandler } from "./zoom";
 const mockDelete = vi.mocked(deleteZoomAccountsByZoomUserId);
 
 const SECRET = "zoom-webhook-secret";
+// Zoom sends a random challenge string here; any value works for the test.
+const PLAIN_TOKEN = "test-plain-token";
 
 function sign(
 	rawBody: string,
@@ -143,15 +145,15 @@ describe("zoomWebhookHandler — endpoint.url_validation", () => {
 		const res = await zoomWebhookHandler(
 			makeRequest({
 				event: "endpoint.url_validation",
-				payload: { plainToken: "qgg8vlvZRS6UYooatFL8Aw" },
+				payload: { plainToken: PLAIN_TOKEN },
 			}),
 		);
 
 		expect(res.status).toBe(200);
 		expect(await res.json()).toEqual({
-			plainToken: "qgg8vlvZRS6UYooatFL8Aw",
+			plainToken: PLAIN_TOKEN,
 			encryptedToken: createHmac("sha256", SECRET)
-				.update("qgg8vlvZRS6UYooatFL8Aw")
+				.update(PLAIN_TOKEN)
 				.digest("hex"),
 		});
 	});
