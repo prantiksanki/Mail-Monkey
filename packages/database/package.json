@@ -15,7 +15,7 @@
 		"dotenv-cli": "^11.0.0",
 		"drizzle-kit": "^0.31.11",
 		"prisma": "7.10.0",
-		"prisma-zod-generator": "2.1.2"
+		"prisma-zod-generator": "3.3.1"
 	},
 	"main": "./index.ts",
 	"name": "@repo/database",
