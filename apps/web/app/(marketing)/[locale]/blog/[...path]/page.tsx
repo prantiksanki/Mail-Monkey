@@ -90,10 +90,10 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 		},
 		publisher: {
 			"@type": "Organization",
-			name: "Popsuites",
+			name: "MailMonkey",
 			logo: {
 				"@type": "ImageObject",
-				url: `${baseUrl}/images/popsuites-icon.png`,
+				url: `${baseUrl}/images/mailmonkey-icon.png`,
 			},
 		},
 	};
@@ -210,7 +210,7 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 			<div className="container max-w-3xl mt-16">
 				<div className="rounded-3xl border border-border bg-card p-8 text-center">
 					<p className="font-semibold text-lg text-foreground mb-2">
-						Try Popsuites free
+						Try MailMonkey free
 					</p>
 					<p className="text-muted-foreground text-sm mb-6">
 						Connect Gmail or Outlook and let AI handle the noise.

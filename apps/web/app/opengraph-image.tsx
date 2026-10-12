@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Popsuites | Nothing In Your Inbox Gets Missed";
+export const alt = "MailMonkey | Nothing In Your Inbox Gets Missed";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -29,7 +29,7 @@ export default function OgImage() {
 					lineHeight: 1,
 				}}
 			>
-				Popsuites
+				MailMonkey
 			</div>
 			<div
 				style={{
@@ -42,17 +42,6 @@ export default function OgImage() {
 				}}
 			>
 				Nothing In Your Inbox Gets Missed
-			</div>
-			<div
-				style={{
-					color: "rgba(255,255,255,0.35)",
-					fontSize: 20,
-					marginTop: 40,
-					letterSpacing: "0.1em",
-					textTransform: "uppercase",
-				}}
-			>
-				Backed by Google for Startups · NVIDIA Inception
 			</div>
 		</div>,
 		{ ...size },

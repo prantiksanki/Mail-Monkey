@@ -65,7 +65,7 @@ const ITEMS: InboxItem[] = [
 	{
 		from: "Ankith · Linear",
 		subj: "Issue POP-142 moved to In Review",
-		rule: "if project = Popsuites → label Team",
+		rule: "if project = MailMonkey → label Team",
 		tags: [{ text: "LABEL: TEAM", color: COLORS.violet }],
 		folder: "LABEL",
 	},
@@ -110,7 +110,7 @@ function wait(ms: number) {
 	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export function PopsuiteInboxDemo() {
+export function MailMonkeyInboxDemo() {
 	const [count, setCount] = useState(0);
 	const [current, setCurrent] = useState<InboxItem>(ITEMS[0]);
 	const [cardState, setCardState] = useState<
@@ -239,7 +239,7 @@ export function PopsuiteInboxDemo() {
 							borderRadius: "50%",
 							background: COLORS.mint,
 							display: "inline-block",
-							animation: "popsuite-pulse 2s infinite",
+							animation: "mailmonkey-pulse 2s infinite",
 						}}
 					/>
 					<span
@@ -250,7 +250,7 @@ export function PopsuiteInboxDemo() {
 							fontWeight: 600,
 						}}
 					>
-						POPSUITES · LIVE
+						MailMonkey · LIVE
 					</span>
 				</div>
 				<div
@@ -390,7 +390,7 @@ export function PopsuiteInboxDemo() {
 											background: tag.color,
 											display: "inline-block",
 											animation:
-												"popsuite-pop 0.5s cubic-bezier(.34,1.56,.64,1) forwards",
+												"mailmonkey-pop 0.5s cubic-bezier(.34,1.56,.64,1) forwards",
 										}}
 									>
 										{tag.text}
@@ -465,16 +465,17 @@ export function PopsuiteInboxDemo() {
 				}}
 			>
 				Rules run in plain English — no filters to configure,{" "}
-				<b style={{ color: COLORS.paper }}>Popsuites</b> reads and acts.
+				<b style={{ color: COLORS.paper }}>MailMonkey</b> reads and
+				acts.
 			</div>
 
 			<style>{`
-				@keyframes popsuite-pulse {
+				@keyframes mailmonkey-pulse {
 					0% { box-shadow: 0 0 0 0 rgba(53,211,153,0.55); }
 					70% { box-shadow: 0 0 0 7px rgba(53,211,153,0); }
 					100% { box-shadow: 0 0 0 0 rgba(53,211,153,0); }
 				}
-				@keyframes popsuite-pop {
+				@keyframes mailmonkey-pop {
 					0% { transform: scale(0); opacity: 0; }
 					60% { transform: scale(1.15); opacity: 1; }
 					100% { transform: scale(1); opacity: 1; }

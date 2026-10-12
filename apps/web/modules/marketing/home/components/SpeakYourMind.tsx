@@ -254,7 +254,7 @@ export function SpeakYourMind() {
 				</span>
 			</h2>
 			<p className="mx-auto mt-5 max-w-[46ch] text-[18px] leading-[1.55] text-muted-foreground">
-				Ramble into the mic. Popsuites strips the filler words, fixes
+				Ramble into the mic. MailMonkey strips the filler words, fixes
 				the typos, and writes the email for you &mdash; in the tone you
 				pick.
 			</p>
@@ -442,7 +442,7 @@ export function SpeakYourMind() {
 						</DialogTitle>
 						<DialogDescription className="mx-auto mt-2 max-w-[30ch] text-[14px] leading-relaxed">
 							Your email is ready &mdash; create a free account to
-							copy it and keep using Popsuites.
+							copy it and keep using MailMonkey.
 						</DialogDescription>
 					</div>
 

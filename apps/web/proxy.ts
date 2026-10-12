@@ -63,7 +63,6 @@ function buildContentSecurityPolicy(nonce: string): string {
 			"https://images.unsplash.com", // blog hero images
 			"https://randomuser.me", // testimonial portraits
 			"https://miro.medium.com", // blog posts cross-published from Medium
-			"https://api.producthunt.com", // Product Hunt review badge (marketing footer)
 			...(storageOrigin ? [storageOrigin] : []),
 		].join(" "),
 		"font-src 'self' data:",

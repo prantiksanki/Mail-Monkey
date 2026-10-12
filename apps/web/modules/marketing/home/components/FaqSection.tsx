@@ -13,7 +13,7 @@ const faqItems: FaqItem[] = [
 		answer: "Any incoming email that matches an active rule and triggers an action. Emails that don't match a rule don't count against your monthly quota.",
 	},
 	{
-		question: "Which email providers does Popsuites support?",
+		question: "Which email providers does MailMonkey support?",
 		answer: "Gmail and Outlook. You can connect multiple accounts across both providers and manage them all from one dashboard.",
 	},
 	{

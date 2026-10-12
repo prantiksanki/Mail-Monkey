@@ -3,7 +3,6 @@ import { FeatureCarousel } from "@marketing/home/components/FeatureCarousel";
 import { FinalCta } from "@marketing/home/components/FinalCta";
 import { Hero } from "@marketing/home/components/Hero";
 import { JsonLd } from "@marketing/home/components/JsonLd";
-import { SecurityCompliance } from "@marketing/home/components/SecurityCompliance";
 import { SpeakYourMind } from "@marketing/home/components/SpeakYourMind";
 import { StatsStrip } from "@marketing/home/components/StatsStrip";
 import { getBaseUrl } from "@repo/utils";
@@ -16,9 +15,9 @@ export function generateMetadata(): Metadata {
 	const baseUrl = getBaseUrl();
 	const title = "AI Email Assistant for Gmail, Outlook & Zoho";
 	const socialTitle =
-		"AI Email Assistant for Gmail, Outlook & Zoho | Popsuites";
+		"AI Email Assistant for Gmail, Outlook & Zoho | MailMonkey";
 	const description =
-		"Popsuites sorts and labels your email with AI so nothing important gets missed. Works inside Gmail, Outlook and Zoho Mail. Free plan to start.";
+		"MailMonkey sorts and labels your email with AI so nothing important gets missed. Works inside Gmail, Outlook and Zoho Mail. Free plan to start.";
 
 	return {
 		title,
@@ -28,7 +27,7 @@ export function generateMetadata(): Metadata {
 			title: socialTitle,
 			description,
 			url: baseUrl,
-			siteName: "Popsuites",
+			siteName: "MailMonkey",
 			type: "website",
 			images: [`${baseUrl}/opengraph-image`],
 		},
@@ -57,7 +56,6 @@ export default async function Home({
 			<SpeakYourMind />
 			<FeatureCarousel />
 			<FaqSection />
-			<SecurityCompliance />
 			<FinalCta />
 		</>
 	);

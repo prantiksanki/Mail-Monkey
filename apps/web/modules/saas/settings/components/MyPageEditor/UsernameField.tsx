@@ -47,7 +47,7 @@ export function UsernameField({
 			<p className="mb-1.5 font-medium text-sm">Username</p>
 			<div className="flex items-center gap-2">
 				<div className="flex h-9 flex-1 items-center rounded-md border border-input bg-card px-3 text-sm">
-					<span className="text-foreground/40">popsuites.ai/@</span>
+					<span className="text-foreground/40">mailmonkey.app/@</span>
 					<input
 						value={value}
 						onChange={(e) => {

@@ -183,7 +183,7 @@ async function buildRawMessage(
 /**
  * Best-effort copy of a sent message into the account's Sent folder. Unlike
  * Gmail/Outlook (whose send APIs file a Sent copy automatically), plain SMTP
- * has no such behavior — without this, mail sent through Popsuites would
+ * has no such behavior — without this, mail sent through MailMonkey would
  * never show up in the user's own Sent folder. Failure here doesn't fail the
  * send itself: the message already reached its recipient.
  */

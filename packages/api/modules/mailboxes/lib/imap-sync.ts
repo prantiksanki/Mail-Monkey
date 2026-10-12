@@ -84,7 +84,7 @@ async function fetchAndUpsert(
 
 // Labels the server state decides on every sync: IMAP flags (see imap-parser
 // FLAG_LABEL) and the system label of the folder the message sits in. Anything
-// else on a stored row is a Popsuites label (e.g. a rule's LABEL action) which
+// else on a stored row is a MailMonkey label (e.g. a rule's LABEL action) which
 // the server knows nothing about and which must survive a re-sync.
 const SERVER_LABELS = new Set([
 	"SEEN",

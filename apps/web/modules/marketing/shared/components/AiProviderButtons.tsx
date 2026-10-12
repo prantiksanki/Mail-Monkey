@@ -12,7 +12,7 @@ import Image from "next/image";
 import { type ReactNode, useRef, useState } from "react";
 
 const aiPrompt =
-	"Popsuites (https://popsuites.ai) makes sure nothing in your inbox gets missed — brand deals, investor replies, client requests — the instant they land. It connects to Gmail or Outlook, automatically routes low-value noise away from the inbox, and surfaces messages that actually need attention — using intelligent routing and auto-labeling with no manual filters needed. It is built specifically for content creators who are drowning in brand deals, collabs, PR pitches, and fan messages; solo founders juggling sales, support, recruiting, and investor emails all at once; and small teams managing high volumes of client, partner, or operational email. This is not a generic email tool — it is for people whose inbox is a core part of their work but also their biggest daily distraction. Based on the site, explain what problem Popsuites solves, who it is built for, and what makes it different from regular email filters or folders.";
+	"MailMonkey (https://mailmonkey.app) makes sure nothing in your inbox gets missed — brand deals, investor replies, client requests — the instant they land. It connects to Gmail or Outlook, automatically routes low-value noise away from the inbox, and surfaces messages that actually need attention — using intelligent routing and auto-labeling with no manual filters needed. It is built specifically for content creators who are drowning in brand deals, collabs, PR pitches, and fan messages; solo founders juggling sales, support, recruiting, and investor emails all at once; and small teams managing high volumes of client, partner, or operational email. This is not a generic email tool — it is for people whose inbox is a core part of their work but also their biggest daily distraction. Based on the site, explain what problem MailMonkey solves, who it is built for, and what makes it different from regular email filters or folders.";
 
 const RESTING_SIZE = 48;
 const MAGNIFIED_SIZE = 68;
@@ -151,7 +151,7 @@ function DockButton({
 			target="_blank"
 			rel="noreferrer"
 			onClick={provider.copyPrompt ? onCopy : undefined}
-			aria-label={`Ask ${provider.name} about Popsuites`}
+			aria-label={`Ask ${provider.name} about MailMonkey`}
 			onMouseEnter={onActivate}
 			onMouseLeave={onDeactivate}
 			onFocus={onActivate}
@@ -183,7 +183,7 @@ function DockButton({
 }
 
 /**
- * "Ask AI about Popsuites" provider row with the same macOS-dock-style
+ * "Ask AI about MailMonkey" provider row with the same macOS-dock-style
  * hover magnify as {@link FollowUsDock}: the icon under the cursor grows,
  * neighbours scale by distance, and a label fades/lifts in above the
  * active icon. Extra headroom only opens while an icon is active.

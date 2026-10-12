@@ -50,7 +50,7 @@ const cards: FeatureCard[] = [
 				src="/images/integration-mockups/mockup-1.png"
 				width={1530}
 				height={1028}
-				alt="Popsuites unified inbox with Gmail, Slack, Zoom, Telegram, WhatsApp, HubSpot, Notion and more connected"
+				alt="MailMonkey unified inbox with Gmail, Slack, Zoom, Telegram, WhatsApp, HubSpot, Notion and more connected"
 			/>
 		),
 	},
@@ -80,14 +80,14 @@ const cards: FeatureCard[] = [
 			</>
 		),
 		description:
-			"Popsuites reads your mail the way you do — and acts the way you would.",
+			"MailMonkey reads your mail the way you do — and acts the way you would.",
 		href: "/features/email-intelligence",
 		visual: (
 			<MockupVisual
 				src="/images/integration-mockups/mockup-3.png"
 				width={1506}
 				height={838}
-				alt="Popsuites understanding email context, auto-labeling, and applying rules instantly"
+				alt="MailMonkey understanding email context, auto-labeling, and applying rules instantly"
 			/>
 		),
 	},
@@ -131,7 +131,7 @@ const cards: FeatureCard[] = [
 				src="/images/integration-mockups/mockup-5.png"
 				width={1536}
 				height={1024}
-				alt="Gmail, Outlook, and Yahoo Mail accounts all feeding into one unified Popsuites inbox"
+				alt="Gmail, Outlook, and Yahoo Mail accounts all feeding into one unified MailMonkey inbox"
 			/>
 		),
 	},

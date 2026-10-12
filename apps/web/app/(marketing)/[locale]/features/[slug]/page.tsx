@@ -37,7 +37,7 @@ export async function generateMetadata({
 			title: feature.metaTitle,
 			description: feature.metaDescription,
 			url,
-			siteName: "Popsuites",
+			siteName: "MailMonkey",
 			type: "website",
 			images: ["/opengraph-image"],
 		},

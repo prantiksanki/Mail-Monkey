@@ -1792,7 +1792,7 @@ async function connectTelegramAccount(message: TelegramMessage, token: string) {
 	await sendTelegramMessage(
 		chatId,
 		[
-			"Welcome to Popsuites Bot.",
+			"Welcome to MailMonkey Bot.",
 			"",
 			"Commands:",
 			"/help - navigate what you can do",
@@ -2805,7 +2805,7 @@ function getLocalParts(date: Date, timezone: string) {
 
 function buildStartLink(startParam: string) {
 	const username = (
-		process.env.TELEGRAM_BOT_USERNAME || "popsuite_bot"
+		process.env.TELEGRAM_BOT_USERNAME || "mailmonkey_bot"
 	).replace(/^@/, "");
 	return `https://t.me/${username}?start=${encodeURIComponent(startParam)}`;
 }

@@ -34,7 +34,7 @@ export function ZoomIntegrationResult() {
 						<p className="max-w-md text-[15px] leading-[1.6] text-foreground">
 							A smooth, end-to-end experience where users connect
 							Zoom once, and every booked meeting automatically
-							gets a Zoom link — all within Popsuites.
+							gets a Zoom link — all within MailMonkey.
 						</p>
 					</div>
 				</div>

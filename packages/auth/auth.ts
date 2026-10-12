@@ -76,7 +76,7 @@ const RESERVED_USERNAMES = new Set([
 	"onboarding",
 	"organization",
 	"payments",
-	"popsuites",
+	"mailmonkey",
 	"pricing",
 	"privacy",
 	"settings",
