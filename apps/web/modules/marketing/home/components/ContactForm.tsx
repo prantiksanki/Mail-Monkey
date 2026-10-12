@@ -56,7 +56,10 @@ export function ContactForm() {
 				</Alert>
 			) : (
 				<Form {...form}>
+					{/* method="post" so the no-JS fallback submission never
+					    puts the email/message in the URL query string. */}
 					<form
+						method="post"
 						onSubmit={onSubmit}
 						className="flex flex-col items-stretch gap-6"
 					>

@@ -1,5 +1,6 @@
-import { getEmailById, updateEmailLabels } from "@repo/database";
+import { getEmailById, updateEmailLabels, upsertEmail } from "@repo/database";
 import { logger } from "@repo/logs";
+import { ruleExecutionTotal, toMetricsProvider } from "@repo/metrics";
 import type { RuleAction } from "../types";
 import type { ParsedEmail } from "./email-parser";
 import { getMailProvider } from "./mail-provider";
@@ -16,7 +17,7 @@ async function executeAction(
 	email: ParsedEmail,
 	action: RuleAction,
 	mailboxEmail: string,
-	provider: "GOOGLE" | "OUTLOOK",
+	provider: "GOOGLE" | "OUTLOOK" | "IMAP",
 ): Promise<ActionResult> {
 	const mailProvider = getMailProvider(provider);
 	try {
@@ -34,17 +35,41 @@ async function executeAction(
 					email.id,
 					action.fields.label,
 				);
-				// Mirror the label name into the local DB so label-based queries work
+				// Mirror the label name into the local DB so label-based queries
+				// work. If the email hasn't been synced into the local DB yet
+				// (common for older messages a backfill reaches directly via the
+				// mail provider, bypassing the regular inbox sync), upsert a full
+				// row instead of silently skipping — otherwise the Gmail label
+				// sticks but the email never appears in this app's own
+				// label-filtered views, which read from the local DB only.
 				try {
+					const labelName = action.fields.label;
 					const dbEmail = await getEmailById(mailboxId, email.id);
 					if (dbEmail) {
-						const labelName = action.fields.label;
 						if (!dbEmail.labelIds.includes(labelName)) {
 							await updateEmailLabels(email.id, [
 								...dbEmail.labelIds,
 								labelName,
 							]);
 						}
+					} else {
+						await upsertEmail({
+							id: email.id,
+							mailboxId,
+							threadId: email.threadId,
+							from: email.from,
+							fromEmail: email.fromEmail,
+							to: email.to,
+							subject: email.subject,
+							snippet: email.snippet,
+							bodyText: email.bodyText,
+							bodyHtml: email.bodyHtml,
+							labelIds: email.labelIds.includes(labelName)
+								? email.labelIds
+								: [...email.labelIds, labelName],
+							isUnread: email.labelIds.includes("UNREAD"),
+							internalDate: email.date,
+						});
 					}
 				} catch (dbErr) {
 					logger.warn(
@@ -136,21 +161,36 @@ export async function executeActions(
 	email: ParsedEmail,
 	actions: RuleAction[],
 	mailboxEmail: string,
-	provider: "GOOGLE" | "OUTLOOK" = "GOOGLE",
+	provider: "GOOGLE" | "OUTLOOK" | "IMAP" = "GOOGLE",
 	mailboxId?: string,
 ): Promise<ActionResult[]> {
+	const metricsProvider = toMetricsProvider(provider);
 	const results: ActionResult[] = [];
-	for (const action of actions) {
-		results.push(
-			await executeAction(
-				accountId,
-				mailboxId ?? "",
-				email,
-				action,
-				mailboxEmail,
-				provider,
-			),
+	// Actions that move the message (archive, spam) change its id on IMAP and
+	// Outlook, so every other action — notably LABEL, which copies the message
+	// into a label folder — must run first while the original id is still valid.
+	// `sort` is stable, so relative order within each group is preserved.
+	const MOVING_ACTIONS = new Set(["ARCHIVE", "MARK_SPAM"]);
+	const ordered = [...actions].sort(
+		(a, b) =>
+			Number(MOVING_ACTIONS.has(a.type)) -
+			Number(MOVING_ACTIONS.has(b.type)),
+	);
+	for (const action of ordered) {
+		const result = await executeAction(
+			accountId,
+			mailboxId ?? "",
+			email,
+			action,
+			mailboxEmail,
+			provider,
 		);
+		ruleExecutionTotal.inc({
+			action_type: result.type,
+			status: result.success ? "success" : "error",
+			provider: metricsProvider,
+		});
+		results.push(result);
 	}
 	return results;
 }

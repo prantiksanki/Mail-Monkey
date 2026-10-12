@@ -1,18 +1,36 @@
+import { CATEGORY_GMAIL_COLORS, categoryForLabelName } from "../rule-templates";
 import { type GmailMessage, parseGmailMessage } from "./email-parser";
 import {
 	createDraft,
 	createLabel,
+	deleteLabel,
 	getMessage,
 	listLabels,
 	listMessages,
 	modifyMessageLabels,
 	sendMessage,
+	trashMessage,
+	updateLabelColor,
 } from "./gmail-client";
+import { type LabelColor, labelColorForName } from "./label-colors";
 import type {
 	ListMessagesOptions,
 	ListMessagesResult,
 	MailProvider,
 } from "./mail-provider-types";
+
+/**
+ * Colour for a label: when the label comes from a known rule template we use its
+ * category colour (matching the Rules-page tag / sidebar dot); otherwise we fall
+ * back to a deterministic name-hash colour. Both are Gmail-palette values so the
+ * label renders identically in Gmail and ZeroMail.
+ */
+function labelColorForLabelName(labelName: string): LabelColor {
+	const category = categoryForLabelName(labelName);
+	return category
+		? CATEGORY_GMAIL_COLORS[category]
+		: labelColorForName(labelName);
+}
 
 function encodeRfc2822(
 	from: string,
@@ -53,17 +71,26 @@ async function getOrCreateLabel(
 	accountId: string,
 	labelName: string,
 ): Promise<string> {
+	const color = labelColorForLabelName(labelName);
 	const labels = (await listLabels(accountId)) as {
 		id: string;
 		name: string;
+		color?: { backgroundColor?: string; textColor?: string };
 	}[];
 	const existing = labels.find(
 		(l) => l.name.toLowerCase() === labelName.toLowerCase(),
 	);
 	if (existing) {
+		// Correct the colour of a pre-existing label (e.g. one created before
+		// colour sync, or edited in Gmail) so Gmail matches ZeroMail.
+		if (existing.color?.backgroundColor !== color.backgroundColor) {
+			await updateLabelColor(accountId, existing.id, color);
+		}
 		return existing.id;
 	}
-	const created = (await createLabel(accountId, labelName)) as { id: string };
+	const created = (await createLabel(accountId, labelName, color)) as {
+		id: string;
+	};
 	return created.id;
 }
 
@@ -111,12 +138,35 @@ export const gmailProvider: MailProvider = {
 		await modifyMessageLabels(accountId, messageId, [labelId], []);
 	},
 
+	async deleteLabel(accountId, label) {
+		const labels = (await listLabels(accountId)) as {
+			id: string;
+			name: string;
+		}[];
+		const existing = labels.find(
+			(l) => l.name.toLowerCase() === label.toLowerCase(),
+		);
+		// Already gone (never created, or removed in Gmail) — nothing to do.
+		if (!existing) {
+			return;
+		}
+		await deleteLabel(accountId, existing.id);
+	},
+
 	async archive(accountId, messageId) {
 		await modifyMessageLabels(accountId, messageId, [], ["INBOX"]);
 	},
 
 	async markRead(accountId, messageId) {
 		await modifyMessageLabels(accountId, messageId, [], ["UNREAD"]);
+	},
+
+	async markUnread(accountId, messageId) {
+		await modifyMessageLabels(accountId, messageId, ["UNREAD"], []);
+	},
+
+	async trash(accountId, messageId) {
+		await trashMessage(accountId, messageId);
 	},
 
 	async markSpam(accountId, messageId) {

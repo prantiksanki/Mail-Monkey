@@ -1,7 +1,13 @@
 import { db, getEmailsByMailbox } from "@repo/database";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
-import { getMessage, listLabels, listMessages } from "../lib/gmail-client";
+import { getMessage, listMessages } from "../lib/gmail-client";
+import { imapProvider } from "../lib/imap-provider";
+import {
+	getLabelIdToNameMap,
+	mapLabelIdsToNames,
+	resolveLabelNameToId,
+} from "../lib/label-resolver";
 import { isUserLabel } from "../lib/label-utils";
 import {
 	getOutlookMessage,
@@ -47,7 +53,10 @@ export const listInboxMessages = protectedProcedure
 		);
 
 		// --- Try DB first for standard folders ---
-		if (DB_FOLDERS.has(input.folder)) {
+		// On IMAP a label is a real server folder, which the local copy doesn't
+		// mirror, so label views always read the folder live (below).
+		const imapLabelView = mailbox.provider === "IMAP" && !!input.label;
+		if (DB_FOLDERS.has(input.folder) && !imapLabelView) {
 			// pageToken encodes the DB offset as base64
 			const offset = input.pageToken
 				? Number(Buffer.from(input.pageToken, "base64").toString())
@@ -58,21 +67,13 @@ export const listInboxMessages = protectedProcedure
 			// Outlook stores category names directly — no ID resolution needed.
 			let resolvedLabelId: string | undefined;
 			if (input.label && mailbox.provider === "GOOGLE") {
-				try {
-					const gmailLabels = (await listLabels(
-						mailbox.accountId,
-					)) as {
-						id: string;
-						name: string;
-					}[];
-					const match = gmailLabels.find(
-						(l) =>
-							l.name.toLowerCase() === input.label?.toLowerCase(),
-					);
-					resolvedLabelId = match?.id;
-				} catch {
-					// If we can't resolve, fall back to name-only filter
-				}
+				// Resolve the label name → Gmail ID so the DB filter also matches
+				// rows that stored only the raw ID (e.g. "Label_10"). Force-refreshes
+				// on a miss so a just-created label view never silently under-matches.
+				resolvedLabelId = await resolveLabelNameToId(
+					mailbox.accountId,
+					input.label,
+				);
 			}
 
 			const emails = await getEmailsByMailbox(mailbox.id, {
@@ -90,52 +91,120 @@ export const listInboxMessages = protectedProcedure
 			// DB has emails — serve from there. When searching, the DB is the
 			// authoritative source (the live provider fallbacks below can't honor
 			// our free-text filter), so always return its result — even when empty.
-			if (emails.length > 0 || offset > 0 || input.search?.trim()) {
+			// IMAP is the exception: its live fallback can search server-side, so
+			// an empty first page (sync not finished) falls through to it.
+			const searchedDbIsFinal =
+				!!input.search?.trim() &&
+				!(mailbox.provider === "IMAP" && emails.length === 0);
+			if (emails.length > 0 || offset > 0 || searchedDbIsFinal) {
 				const nextOffset = offset + emails.length;
 				const hasMore = emails.length === input.maxResults;
 
 				// Resolve Gmail label IDs to display names. Outlook stores
 				// category names directly in the DB so no mapping is needed.
-				let labelIdToName: Record<string, string> = {};
-				if (mailbox.provider === "GOOGLE") {
-					try {
-						const gmailLabels = (await listLabels(
-							mailbox.accountId,
-						)) as {
-							id: string;
-							name: string;
-						}[];
-						labelIdToName = Object.fromEntries(
-							gmailLabels.map((l) => [l.id, l.name]),
-						);
-					} catch {
-						// Non-fatal — fall back to raw IDs
-					}
-				}
+				const labelIdToName =
+					mailbox.provider === "GOOGLE"
+						? await getLabelIdToNameMap(mailbox.accountId)
+						: {};
+
+				const isSentFolder = input.folder === "sent";
 
 				return {
-					messages: emails.map((e) => ({
-						id: e.id,
-						threadId: e.threadId,
-						from: e.from,
-						fromEmail: e.fromEmail,
-						subject: e.subject || "(No subject)",
-						snippet: e.snippet,
-						date: e.internalDate.toISOString(),
-						labelIds: (e.labelIds as string[])
-							.filter(isUserLabel)
-							.map((id) => labelIdToName[id] ?? id),
-						// Raw labels are filtered above, so surface trash state
-						// explicitly for the "delete permanently" action.
-						inTrash: (e.labelIds as string[]).includes("TRASH"),
-						isUnread: e.isUnread,
-					})),
+					messages: emails.map((e) => {
+						// Sent mail: the row should identify the recipient, not the
+						// account owner who sent it (mirrors the live Gmail fallback
+						// below, which does the same from/to swap for SENT messages).
+						const nameMatch = isSentFolder
+							? e.to.match(/^([^<]+)</)
+							: null;
+						const emailMatch = isSentFolder
+							? e.to.match(/<([^>]+)>/)
+							: null;
+						const displayFrom =
+							isSentFolder && e.to
+								? nameMatch
+									? nameMatch[1].trim()
+									: e.to
+								: e.from;
+						const displayFromEmail =
+							isSentFolder && e.to
+								? emailMatch
+									? emailMatch[1]
+									: e.to
+								: e.fromEmail;
+
+						return {
+							id: e.id,
+							threadId: e.threadId,
+							from: displayFrom,
+							fromEmail: displayFromEmail,
+							subject: e.subject || "(No subject)",
+							snippet: e.snippet,
+							date: e.internalDate.toISOString(),
+							labelIds: mapLabelIdsToNames(
+								(e.labelIds as string[]).filter(isUserLabel),
+								labelIdToName,
+							),
+							// Raw labels are filtered above, so surface trash state
+							// explicitly for the "delete permanently" action.
+							inTrash: (e.labelIds as string[]).includes("TRASH"),
+							isUnread: e.isUnread,
+						};
+					}),
 					nextPageToken: hasMore
 						? Buffer.from(String(nextOffset)).toString("base64")
 						: undefined,
 				};
 			}
 			// DB is empty (sync not done yet) — fall through to live provider below
+		}
+
+		// --- Live IMAP fallback (window before the first sync completes) ---
+		if (mailbox.provider === "IMAP") {
+			const result = await imapProvider.listInboxMessages(
+				mailbox.accountId,
+				{
+					maxResults: input.maxResults,
+					pageToken: input.pageToken,
+					search: input.search,
+					folder: input.folder,
+					label: input.label,
+				},
+			);
+			const isSentView = input.folder === "sent";
+			const messages = await Promise.all(
+				result.messages.map(async (m) => {
+					const parsed = await imapProvider.getParsedMessage(
+						mailbox.accountId,
+						m.id,
+					);
+					// Sent mail identifies the recipient, like the DB-served path.
+					const recipientName = parsed.to.match(/^([^<]+)</);
+					const recipientEmail = parsed.to.match(/<([^>]+)>/);
+					return {
+						id: parsed.id,
+						threadId: parsed.threadId,
+						from:
+							isSentView && parsed.to
+								? (recipientName?.[1].trim() ?? parsed.to)
+								: parsed.from,
+						fromEmail:
+							isSentView && parsed.to
+								? (recipientEmail?.[1] ?? parsed.to)
+								: parsed.fromEmail,
+						subject: parsed.subject || "(No subject)",
+						snippet: parsed.snippet,
+						date: parsed.date.toISOString(),
+						labelIds: [],
+						inTrash: false,
+						isUnread: !parsed.labelIds.includes("SEEN"),
+					};
+				}),
+			);
+			return {
+				messages,
+				nextPageToken: result.nextPageToken ?? undefined,
+			};
 		}
 
 		// --- Live Outlook fallback ---
@@ -258,18 +327,7 @@ export const listInboxMessages = protectedProcedure
 			return { messages: [], nextPageToken: undefined };
 		}
 
-		let liveLabelIdToName: Record<string, string> = {};
-		try {
-			const gmailLabels = (await listLabels(mailbox.accountId)) as {
-				id: string;
-				name: string;
-			}[];
-			liveLabelIdToName = Object.fromEntries(
-				gmailLabels.map((l) => [l.id, l.name]),
-			);
-		} catch {
-			// Non-fatal — fall back to raw IDs
-		}
+		const liveLabelIdToName = await getLabelIdToNameMap(mailbox.accountId);
 
 		const messages = await Promise.all(
 			list.messages.map(async (m) => {
@@ -304,9 +362,10 @@ export const listInboxMessages = protectedProcedure
 					date: msg.internalDate
 						? new Date(Number(msg.internalDate)).toISOString()
 						: new Date().toISOString(),
-					labelIds: rawLabelIds
-						.filter(isUserLabel)
-						.map((id) => liveLabelIdToName[id] ?? id),
+					labelIds: mapLabelIdsToNames(
+						rawLabelIds.filter(isUserLabel),
+						liveLabelIdToName,
+					),
 					inTrash: rawLabelIds.includes("TRASH"),
 					isUnread: rawLabelIds.includes("UNREAD"),
 				};

@@ -34,7 +34,7 @@ export const enableWatch = protectedProcedure
 		await enableWatchForMailbox(
 			mailbox.id,
 			mailbox.accountId,
-			mailbox.provider as "GOOGLE" | "OUTLOOK",
+			mailbox.provider as "GOOGLE" | "OUTLOOK" | "IMAP",
 		);
 		return { success: true };
 	});

@@ -1,0 +1,19 @@
+{
+	"dependencies": {
+		"@repo/logs": "workspace:*",
+		"@repo/utils": "workspace:*"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.3.13",
+		"@repo/tsconfig": "workspace:*",
+		"@types/node": "^24.10.1"
+	},
+	"main": "./index.ts",
+	"name": "@repo/analytics",
+	"scripts": {
+		"clean": "git clean -xdf .cache .turbo dist node_modules",
+		"type-check": "tsc --noEmit"
+	},
+	"types": "./index.ts",
+	"version": "0.0.0"
+}

@@ -3,6 +3,7 @@ import { config as paymentsConfig } from "@repo/payments/config";
 import { SessionProvider } from "@saas/auth/components/SessionProvider";
 import { sessionQueryKey } from "@saas/auth/lib/api";
 import { getOrganizationList, getSession } from "@saas/auth/lib/server";
+import { PendingImapMailboxConnector } from "@saas/mailboxes/components/PendingImapMailboxConnector";
 import { ActiveOrganizationProvider } from "@saas/organizations/components/ActiveOrganizationProvider";
 import { organizationListQueryKey } from "@saas/organizations/lib/api";
 import { ConfirmationAlertProvider } from "@saas/shared/components/ConfirmationAlertProvider";
@@ -53,6 +54,7 @@ export default async function SaaSLayout({ children }: PropsWithChildren) {
 					<SessionProvider>
 						<ActiveOrganizationProvider>
 							<ConfirmationAlertProvider>
+								<PendingImapMailboxConnector />
 								{children}
 							</ConfirmationAlertProvider>
 						</ActiveOrganizationProvider>

@@ -15,7 +15,7 @@ import {
 	MapPinIcon,
 	RefreshCwIcon,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = [
@@ -62,6 +62,11 @@ function eventTone(isAllDay: boolean) {
 }
 
 export function CalendarPage() {
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => {
+		setMounted(true);
+	}, []);
+
 	const todayRef = useMemo(() => new Date(), []);
 	const [currentYear, setCurrentYear] = useState(todayRef.getFullYear());
 	const [currentMonth, setCurrentMonth] = useState(todayRef.getMonth());
@@ -90,6 +95,9 @@ export function CalendarPage() {
 
 	const needsReconnect = !calendarLoading && !!calendarData?.needsReconnect;
 	const serviceDisabled = !calendarLoading && !!calendarData?.serviceDisabled;
+	const calendarError = calendarLoading
+		? null
+		: (calendarData?.calendarError ?? null);
 
 	const events = useMemo((): CalendarEvent[] => {
 		if (!calendarData || needsReconnect || serviceDisabled) {
@@ -159,7 +167,7 @@ export function CalendarPage() {
 					No mailbox connected
 				</h2>
 				<p className="text-sm text-foreground/60">
-					Connect a Google account to see your calendar.
+					Connect a mailbox to see your calendar.
 				</p>
 			</div>
 		);
@@ -172,8 +180,10 @@ export function CalendarPage() {
 					<p className="font-mono text-[11px] uppercase tracking-[0.35em] text-foreground/45">
 						Calendar
 					</p>
-					<h1 className="font-serif text-3xl font-normal tracking-tight md:text-5xl">
-						{MONTHS[currentMonth]} {currentYear}
+					<h1 className="text-balance font-serif font-normal text-4xl leading-[1.05] tracking-tight md:text-5xl">
+						{mounted
+							? `${MONTHS[currentMonth]} ${currentYear}`
+							: ""}
 					</h1>
 				</div>
 				<div className="flex items-center gap-2">
@@ -212,6 +222,17 @@ export function CalendarPage() {
 							Google Calendar API is disabled.
 						</span>{" "}
 						Enable it in the Google Cloud Console for this project.
+					</p>
+				</div>
+			)}
+			{calendarError && (
+				<div className="mb-4 flex items-center gap-4 rounded-xl border border-border bg-muted px-4 py-3">
+					<CalendarIcon className="size-4 shrink-0 text-foreground" />
+					<p className="text-sm text-foreground">
+						<span className="font-medium">
+							Couldn't load your calendar.
+						</span>{" "}
+						{calendarError}
 					</p>
 				</div>
 			)}
@@ -358,11 +379,13 @@ export function CalendarPage() {
 				<div className="flex w-72 shrink-0 flex-col overflow-hidden rounded-[2rem] border border-border bg-card shadow-[0_18px_50px_-32px_rgba(0,0,0,0.24)]">
 					<div className="border-b border-border px-5 py-4">
 						<p className="font-serif text-2xl font-normal leading-none text-foreground">
-							{selectedDay.toLocaleDateString([], {
-								weekday: "long",
-								month: "long",
-								day: "numeric",
-							})}
+							{mounted
+								? selectedDay.toLocaleDateString([], {
+										weekday: "long",
+										month: "long",
+										day: "numeric",
+									})
+								: ""}
 						</p>
 						{!needsReconnect && (
 							<p className="mt-2 font-mono text-[11px] uppercase tracking-[0.26em] text-foreground/45">

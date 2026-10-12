@@ -1,6 +1,6 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { ORPCError } from "@orpc/server";
-import { generateObject } from "@repo/ai";
+import { generateObject, TEXT_MODEL_ID } from "@repo/ai";
 import { logger } from "@repo/logs";
 import { canUseRuleEngine } from "@repo/payments/lib/plan-limits";
 import { z } from "zod";
@@ -49,7 +49,11 @@ const RULE_ZOD_SCHEMA = z.object({
 				staticTo: z.string(),
 				staticSubject: z.string(),
 			}),
-			actions: z.array(ActionZodSchema).min(1),
+			// NOT .min(1): the model sometimes emits an action-less rule (e.g.
+			// "keep X" exceptions). If the generation schema required >=1, the
+			// AI SDK throws AI_TypeValidationError before our code can filter
+			// these out. We allow empty here and drop such rules downstream.
+			actions: z.array(ActionZodSchema),
 		}),
 	),
 });
@@ -82,6 +86,12 @@ ${AI_INSTRUCTIONS_STYLE}
 <action_types>
 LABEL, ARCHIVE, MARK_READ, DRAFT_EMAIL, REPLY, FORWARD, MARK_SPAM
 </action_types>
+
+<rules_must_have_actions>
+Every rule MUST have at least one action. Never emit a rule with an empty actions array.
+
+When the user describes an EXCEPTION ("archive X but keep/except Y", "... unless it's Y"), do NOT create a separate rule for the exception with no action. Instead, write ONE rule for the actioned case and encode the exception inside aiInstructions (e.g., "... AND is NOT a direct mention of the user"). Example: "Archive GitHub noise but keep mentions" → a single ARCHIVE rule whose aiInstructions describes a general GitHub notification that is not a direct mention.
+</rules_must_have_actions>
 </context>
 
 <examples>
@@ -269,13 +279,30 @@ For each rule, decide: does the user want to match ALL emails from a sender, or 
 			};
 
 			const runCompiler = async (userPrompt: string) => {
-				const { object } = await generateObject({
-					model: google("gemini-3.5-flash"),
-					schema: RULE_ZOD_SCHEMA,
-					temperature: 0.1,
-					system: SYSTEM_PROMPT,
-					prompt: userPrompt,
-				});
+				const generate = () =>
+					generateObject({
+						model: google(TEXT_MODEL_ID),
+						schema: RULE_ZOD_SCHEMA,
+						temperature: 0.1,
+						system: SYSTEM_PROMPT,
+						prompt: userPrompt,
+					});
+
+				let object: Awaited<ReturnType<typeof generate>>["object"];
+				try {
+					({ object } = await generate());
+				} catch (error) {
+					// Retry once on transient schema-mismatch — a single bad
+					// generation shouldn't surface as a hard error to the user.
+					logger.warn(
+						"Rule compilation retry after schema mismatch",
+						{
+							error:
+								error instanceof Error ? error.message : error,
+						},
+					);
+					({ object } = await generate());
+				}
 				return transformResponse(object);
 			};
 

@@ -56,7 +56,7 @@ export const applyRulesToRecent = protectedProcedure
 				return { results: [] };
 			}
 
-			const provider = mailbox.provider as "GOOGLE" | "OUTLOOK";
+			const provider = mailbox.provider as "GOOGLE" | "OUTLOOK" | "IMAP";
 			const mailProvider = getMailProvider(provider);
 
 			let list: Awaited<

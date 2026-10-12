@@ -47,7 +47,7 @@ export function Newsletter() {
 						<p className="mb-3 font-mono text-[11px] uppercase tracking-[0.3em] text-foreground">
 							Newsletter
 						</p>
-						<h1 className="font-serif text-xl font-normal leading-tight text-foreground md:text-2xl lg:text-3xl xl:text-4xl">
+						<h1 className="font-sans text-xl font-normal leading-tight text-foreground md:text-2xl lg:text-3xl xl:text-4xl">
 							{t("newsletter.title")}
 						</h1>
 						<p className="mt-3 text-sm text-foreground sm:text-base">

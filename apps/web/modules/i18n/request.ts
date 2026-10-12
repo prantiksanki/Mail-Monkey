@@ -16,6 +16,10 @@ export default getRequestConfig(async ({ requestLocale }) => {
 
 	return {
 		locale,
+		// Provide a stable `now` so next-intl serializes the server value to the
+		// client (inherited by NextIntlClientProvider), keeping useNow()/date
+		// formatting hydration-safe.
+		now: new Date(),
 		messages: await getMessagesForLocale(locale),
 	};
 });

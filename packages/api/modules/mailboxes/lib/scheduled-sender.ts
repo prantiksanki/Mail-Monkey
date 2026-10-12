@@ -4,7 +4,7 @@ import {
 	markScheduledEmailSent,
 } from "@repo/database";
 import { logger } from "@repo/logs";
-import { sendEmailViaGmail } from "./email-sender";
+import { sendEmailForMailbox } from "./email-sender";
 
 export interface ProcessScheduledResult {
 	processed: number;
@@ -28,15 +28,18 @@ export async function processDueScheduledEmails(
 
 	for (const item of due) {
 		try {
-			const { messageId } = await sendEmailViaGmail({
-				accountId: item.mailbox.accountId,
-				from: item.mailbox.email,
-				to: item.to,
-				cc: item.cc,
-				bcc: item.bcc,
-				subject: item.subject,
-				body: item.body,
-			});
+			const { messageId } = await sendEmailForMailbox(
+				item.mailbox.provider,
+				{
+					accountId: item.mailbox.accountId,
+					from: item.mailbox.email,
+					to: item.to,
+					cc: item.cc,
+					bcc: item.bcc,
+					subject: item.subject,
+					body: item.body,
+				},
+			);
 			await markScheduledEmailSent(item.id, messageId);
 			sent++;
 		} catch (error) {

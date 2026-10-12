@@ -7,24 +7,23 @@ export function Logo({
 	className?: string;
 	withLabel?: boolean;
 }) {
-	const mark = (
-		<span
-			className="inline-block size-2.5 shrink-0 rounded-full bg-primary shadow-[0_0_12px_var(--primary)]"
-			aria-hidden="true"
-		/>
-	);
-
 	if (!withLabel) {
 		return (
 			<span
 				className={cn(
 					"flex items-center font-semibold text-foreground leading-none",
-					className,
 				)}
 				role="img"
-				aria-label="Zer0Email"
+				aria-label="Popsuites"
 			>
-				{mark}
+				<img
+					src="/images/logo-mark-32.png"
+					alt=""
+					width={32}
+					height={32}
+					className={cn("size-6 shrink-0", className)}
+					aria-hidden="true"
+				/>
 			</span>
 		);
 	}
@@ -32,12 +31,20 @@ export function Logo({
 	return (
 		<span
 			className={cn(
-				"flex items-center font-semibold text-foreground leading-none",
+				"flex items-center gap-2 font-semibold text-foreground leading-none",
 				className,
 			)}
 		>
-			<span className="text-lg font-semibold tracking-[-0.03em]">
-				Zer0Email
+			<img
+				src="/images/logo-mark-32.png"
+				alt=""
+				width={32}
+				height={32}
+				className="size-8 shrink-0"
+				aria-hidden="true"
+			/>
+			<span className="text-xl font-semibold tracking-[-0.03em]">
+				Popsuites
 			</span>
 		</span>
 	);

@@ -1,26 +1,34 @@
 import { getBaseUrl } from "@repo/utils";
+import { BreadcrumbJsonLd } from "@shared/components/BreadcrumbJsonLd";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { setRequestLocale } from "next-intl/server";
 
 export function generateMetadata(): Metadata {
 	const url = `${getBaseUrl()}/about`;
-	const title = "About — Zer0Email";
+	const title = "About";
+	const socialTitle = "About — Popsuites";
 	const description =
-		"Zer0Email is built by PopPush AI to give every professional an AI chief of staff for their inbox. Learn who we are, why we built this, and how we think about email.";
+		"Popsuites is built by PopPush AI to make sure the brand deals, client requests, and investor replies in your inbox never get missed. Learn who we are, why we built this, and how we think about email.";
 
 	return {
 		title,
 		description,
 		alternates: { canonical: url },
 		openGraph: {
-			title,
+			title: socialTitle,
 			description,
 			url,
-			siteName: "Zer0Email",
+			siteName: "Popsuites",
 			type: "website",
+			images: ["/opengraph-image"],
 		},
-		twitter: { card: "summary_large_image", title, description },
+		twitter: {
+			card: "summary_large_image",
+			title: socialTitle,
+			description,
+			images: ["/opengraph-image"],
+		},
 	};
 }
 
@@ -32,8 +40,16 @@ export default async function AboutPage({
 	const { locale } = await params;
 	setRequestLocale(locale);
 
+	const baseUrl = getBaseUrl();
+
 	return (
 		<div className="container max-w-4xl px-6 pt-24 pb-20">
+			<BreadcrumbJsonLd
+				items={[
+					{ name: "Home", url: baseUrl },
+					{ name: "About", url: `${baseUrl}/about` },
+				]}
+			/>
 			<div className="mx-auto max-w-3xl">
 				{/* Header */}
 				<div className="mb-16 pt-8">
@@ -50,7 +66,7 @@ export default async function AboutPage({
 				{/* Entity bio */}
 				<section className="mb-12 space-y-5 text-lg leading-relaxed text-foreground/80">
 					<p>
-						<strong className="text-foreground">Zer0Email</strong>{" "}
+						<strong className="text-foreground">Popsuites</strong>{" "}
 						is an AI-powered email management platform built by{" "}
 						<strong className="text-foreground">
 							PopPush AI Private Limited
@@ -66,7 +82,7 @@ export default async function AboutPage({
 						using AI-powered rules.
 					</p>
 					<p>
-						Zer0Email started with a simple frustration: the inbox
+						Popsuites started with a simple frustration: the inbox
 						had become a second job. Newsletters, marketing blasts,
 						thread replies, calendar invites, and the occasional
 						message that actually mattered — all arriving in the
@@ -82,7 +98,7 @@ export default async function AboutPage({
 						and acted on our behalf. Not another toggle.
 					</p>
 					<p>
-						So we built one. Zer0Email connects to your Gmail or
+						So we built one. Popsuites connects to your Gmail or
 						Outlook account via OAuth, processes incoming mail
 						against rules you define (in plain English or with our
 						rule editor), and takes action — labeling, archiving,
@@ -119,8 +135,8 @@ export default async function AboutPage({
 						<p>
 							We care about three things above everything else:
 							speed (rules execute in milliseconds, not minutes),
-							privacy (email content is processed in memory and
-							never stored on our servers), and trust (we are
+							privacy (email content is encrypted at rest and
+							never used to train AI models), and trust (we are
 							working through CASA Tier 2 certification for our
 							Google API scopes so you can verify our security
 							posture independently).
@@ -197,10 +213,10 @@ export default async function AboutPage({
 						idea, or just want to talk about email automation, reach
 						us at{" "}
 						<a
-							href="mailto:founder@zer0email.com"
+							href="mailto:support@popsuites.ai"
 							className="font-medium text-foreground underline underline-offset-2 hover:opacity-70"
 						>
-							founder@zer0email.com
+							support@popsuites.ai
 						</a>
 						.
 					</p>

@@ -8,7 +8,7 @@ import {
 	PowerIcon,
 	RefreshCwIcon,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import { toast } from "sonner";
 
@@ -20,51 +20,128 @@ type TelegramStatus = {
 	lastName: string | null;
 	timezone: string;
 	dailyDigestTime: string;
+	updatedAt: string | null;
 };
+
+// The connect link (and its QR) is only valid for 15 minutes server-side; never
+// keep it on screen longer than that.
+const MAX_LINK_LIFETIME_MS = 15 * 60 * 1000;
+// How often to check whether the pending QR has been scanned/connected.
+const CONNECT_POLL_INTERVAL_MS = 4000;
 
 export function TelegramConnectBlock() {
 	const [status, setStatus] = useState<TelegramStatus | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [connecting, setConnecting] = useState(false);
 	const [connectUrl, setConnectUrl] = useState<string | null>(null);
+	const [expiresAt, setExpiresAt] = useState<number | null>(null);
+	// The connection's updatedAt when the current link was generated, so polling
+	// can tell a *new* scan apart from an already-existing connection.
+	const linkBaselineRef = useRef<string | null>(null);
 
-	const loadStatus = async () => {
+	const fetchStatus = useCallback(async () => {
+		const response = await fetch("/api/telegram/status");
+		if (!response.ok) {
+			throw new Error("Failed to load Telegram status");
+		}
+		return (await response.json()) as TelegramStatus;
+	}, []);
+
+	const loadStatus = useCallback(async () => {
 		setLoading(true);
 		try {
-			const response = await fetch("/api/telegram/status");
-			if (!response.ok) {
-				throw new Error("Failed to load Telegram status");
-			}
-			setStatus((await response.json()) as TelegramStatus);
+			setStatus(await fetchStatus());
 		} catch {
 			toast.error("Could not load Telegram status");
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [fetchStatus]);
 
 	useEffect(() => {
 		void loadStatus();
+	}, [loadStatus]);
+
+	const clearPendingLink = useCallback(() => {
+		setConnectUrl(null);
+		setExpiresAt(null);
+		linkBaselineRef.current = null;
 	}, []);
 
 	const createLink = async () => {
 		setConnecting(true);
-		setConnectUrl(null);
+		clearPendingLink();
 		try {
+			// Snapshot the current connection identity so the poller can detect a
+			// brand-new connection (first connect: null → connected; reconnect:
+			// updatedAt changes) and hide the QR the moment it happens.
+			linkBaselineRef.current = status?.updatedAt ?? null;
 			const response = await fetch("/api/telegram/link", {
 				method: "POST",
 			});
 			if (!response.ok) {
 				throw new Error("Failed to create Telegram link");
 			}
-			const data = (await response.json()) as { url: string };
+			const data = (await response.json()) as {
+				url: string;
+				expiresAt: string;
+			};
 			setConnectUrl(data.url);
+			// Never show the QR past its 15-minute server lifetime.
+			const expiry = data.expiresAt
+				? new Date(data.expiresAt).getTime()
+				: Date.now() + MAX_LINK_LIFETIME_MS;
+			setExpiresAt(Math.min(expiry, Date.now() + MAX_LINK_LIFETIME_MS));
 		} catch {
-			toast.error("Could not create Telegram link");
+			toast.error("Could not create a Telegram link");
+			clearPendingLink();
 		} finally {
 			setConnecting(false);
 		}
 	};
+
+	// While a QR is on screen, poll for the connection landing and hide it the
+	// moment the user connects.
+	useEffect(() => {
+		if (!connectUrl) {
+			return;
+		}
+		const interval = setInterval(async () => {
+			let next: TelegramStatus;
+			try {
+				next = await fetchStatus();
+			} catch {
+				return;
+			}
+			setStatus(next);
+			const baseline = linkBaselineRef.current;
+			const isNewConnection =
+				next.connected &&
+				(baseline === null || next.updatedAt !== baseline);
+			if (isNewConnection) {
+				clearPendingLink();
+				toast.success("Telegram connected");
+			}
+		}, CONNECT_POLL_INTERVAL_MS);
+		return () => clearInterval(interval);
+	}, [connectUrl, fetchStatus, clearPendingLink]);
+
+	// Expire the QR (never longer than 15 minutes) so a stale link never lingers.
+	useEffect(() => {
+		if (!connectUrl || !expiresAt) {
+			return;
+		}
+		const ms = expiresAt - Date.now();
+		if (ms <= 0) {
+			clearPendingLink();
+			return;
+		}
+		const timeout = setTimeout(() => {
+			clearPendingLink();
+			toast.info("Telegram link expired — generate a new one.");
+		}, ms);
+		return () => clearTimeout(timeout);
+	}, [connectUrl, expiresAt, clearPendingLink]);
 
 	const setDelivery = async (enabled: boolean) => {
 		setConnecting(true);

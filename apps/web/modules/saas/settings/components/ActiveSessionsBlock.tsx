@@ -5,6 +5,7 @@ import { Skeleton } from "@repo/ui/components/skeleton";
 import { useSession } from "@saas/auth/hooks/use-session";
 import { sessionQueryKey } from "@saas/auth/lib/api";
 import { SettingsItem } from "@saas/shared/components/SettingsItem";
+import { clearClientStateOnLogout } from "@saas/shared/lib/clear-client-state";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ComputerIcon, XIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -47,6 +48,7 @@ export function ActiveSessionsBlock() {
 							queryKey: sessionQueryKey,
 						});
 
+						clearClientStateOnLogout();
 						window.location.href = new URL(
 							config.saas.redirectAfterLogout,
 							window.location.origin,

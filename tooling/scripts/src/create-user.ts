@@ -42,6 +42,11 @@ async function main() {
 		role: isAdmin ? "admin" : "user",
 		emailVerified: true,
 		onboardingComplete: true,
+		// CASA 1.1.2: this password is system-generated, not chosen by the
+		// user, so it must be changed before the account can be used. The
+		// /app route gate (apps/web/app/(saas)/app/layout.tsx) redirects to
+		// /force-password-change until this is cleared.
+		mustChangePassword: true,
 	});
 
 	if (!adminUser) {
@@ -58,6 +63,9 @@ async function main() {
 
 	logger.success("User created successfully!");
 	logger.info(`Here is the password for the new user: ${adminPassword}`);
+	logger.info(
+		"This is a temporary password — the user will be required to set their own on first sign-in.",
+	);
 }
 
 main();

@@ -98,6 +98,34 @@ export const CANONICAL_EXAMPLES = {
 			},
 		},
 	},
+	urgentAttention: {
+		aiInstructions:
+			"Email requires the recipient's urgent personal attention or action — look for a human sender asking for a same-day reply, call, or decision, rather than automated security alerts, sign-in notifications, or system-generated messages that merely contain alarming words",
+		evaluatorExamples: {
+			match: {
+				from: "Alex Morgan <alex.morgan@company.com>",
+				to: "user@example.com",
+				subject: "Urgent: need you today — project update",
+				snippet:
+					"Something's come up on the project and I need to sync with you today.",
+				body: "Hi, something's come up on the project and I need to sync with you today. What's your availability in the next couple of hours?",
+				labels: "INBOX",
+				reasoning:
+					"A real person is asking the recipient for a same-day response about a specific matter. Genuinely time-sensitive personal action.",
+			},
+			noMatch: {
+				from: "Google <no-reply@accounts.google.com>",
+				to: "user@example.com",
+				subject: "Security alert",
+				snippet:
+					"You allowed access to some of your Google Account data. If you didn't do this, someone may be trying to access your account.",
+				body: "You allowed access to some of your Google Account data. If you didn't allow this, someone else may be trying to access your account. Review activity.",
+				labels: "INBOX",
+				reasoning:
+					"An automated security alert from a no-reply system sender. Although it contains alarming words ('someone may be trying to access'), it is not a human requesting the recipient's urgent action — the rule excludes automated/system messages.",
+			},
+		},
+	},
 	deployFailure: {
 		aiInstructions:
 			"Email is a deployment notification indicating failure — look for phrases like 'deploy failed', 'build failed', 'deployment error', or 'pipeline broken'",

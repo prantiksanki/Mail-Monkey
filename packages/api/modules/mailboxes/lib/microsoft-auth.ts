@@ -1,13 +1,15 @@
 import { ORPCError } from "@orpc/server";
 import { db } from "@repo/database";
 import { logger } from "@repo/logs";
+import { decryptToken, encryptToken } from "@repo/utils/lib/token-crypto";
 
 export async function getMicrosoftAccessToken(
 	accountId: string,
 ): Promise<string> {
 	const account = await db.account.findUnique({ where: { id: accountId } });
 
-	if (!account?.refreshToken) {
+	const refreshToken = decryptToken(account?.refreshToken);
+	if (!refreshToken) {
 		throw new ORPCError("UNAUTHORIZED", {
 			message:
 				"No Microsoft refresh token — please reconnect your Outlook mailbox.",
@@ -16,11 +18,12 @@ export async function getMicrosoftAccessToken(
 
 	// Return cached token if it's still valid (with 60-second buffer)
 	if (
-		account.accessToken &&
+		account?.accessToken &&
 		account.accessTokenExpiresAt &&
 		account.accessTokenExpiresAt > new Date(Date.now() + 60_000)
 	) {
-		return account.accessToken;
+		// biome-ignore lint/style/noNonNullAssertion: guarded by the accessToken truthy check above
+		return decryptToken(account.accessToken)!;
 	}
 
 	const clientId = process.env.MICROSOFT_CLIENT_ID;
@@ -38,7 +41,7 @@ export async function getMicrosoftAccessToken(
 		client_id: clientId,
 		client_secret: clientSecret,
 		grant_type: "refresh_token",
-		refresh_token: account.refreshToken,
+		refresh_token: refreshToken,
 		scope: "https://graph.microsoft.com/.default offline_access",
 	});
 
@@ -81,9 +84,11 @@ export async function getMicrosoftAccessToken(
 	await db.account.update({
 		where: { id: accountId },
 		data: {
-			accessToken: data.access_token,
+			accessToken: encryptToken(data.access_token),
 			accessTokenExpiresAt: new Date(Date.now() + data.expires_in * 1000),
-			...(data.refresh_token ? { refreshToken: data.refresh_token } : {}),
+			...(data.refresh_token
+				? { refreshToken: encryptToken(data.refresh_token) }
+				: {}),
 		},
 	});
 

@@ -1,0 +1,882 @@
+<title>ZeroMail Creator Mode — Idea Document</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<style>
+  :root {
+    --ink: #0b0a10;
+    --ink-soft: #2a2438;
+    --paper: #fbfaf9;
+    --paper-dim: #f4f1f5;
+    --violet: #6e3bff;
+    --violet-deep: #2a1256;
+    --violet-bright: #9b6bff;
+    --violet-mist: #f1edfc;
+    --line: #e4dff2;
+    --line-strong: #d3c9ee;
+    --white: #ffffff;
+    --shadow: 0 1px 2px rgba(20, 10, 40, 0.04);
+    --font-display: Georgia, "Iowan Old Style", "Palatino Linotype", "URW Palladio L", Palatino, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Consolas, monospace;
+  }
+
+  :root[data-theme="dark"] {
+    --ink: #f3f0f8;
+    --ink-soft: #cabfe6;
+    --paper: #0b0a10;
+    --paper-dim: #14111d;
+    --violet: #a683ff;
+    --violet-deep: #d9c9ff;
+    --violet-bright: #c3adff;
+    --violet-mist: #1c1730;
+    --line: #2b2440;
+    --line-strong: #3c3358;
+    --white: #16131f;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #f3f0f8;
+      --ink-soft: #cabfe6;
+      --paper: #0b0a10;
+      --paper-dim: #14111d;
+      --violet: #a683ff;
+      --violet-deep: #d9c9ff;
+      --violet-bright: #c3adff;
+      --violet-mist: #1c1730;
+      --line: #2b2440;
+      --line-strong: #3c3358;
+      --white: #16131f;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  ::selection { background: var(--violet); color: var(--white); }
+
+  a { color: var(--violet); }
+
+  .wrap {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  .wide {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* ---------- Hero ---------- */
+
+  .hero {
+    background: radial-gradient(120% 140% at 15% -10%, var(--violet-deep) 0%, var(--ink) 55%);
+    color: #f3f0f8;
+    padding: 88px 0 76px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 82% 20%, rgba(155, 107, 255, 0.35), transparent 45%),
+      radial-gradient(circle at 100% 100%, rgba(155, 107, 255, 0.18), transparent 55%);
+    pointer-events: none;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: #cabfe6;
+    border: 1px solid rgba(202, 191, 230, 0.35);
+    border-radius: 100px;
+    padding: 6px 14px;
+    position: relative;
+    z-index: 1;
+  }
+  .eyebrow .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--violet-bright);
+    box-shadow: 0 0 0 3px rgba(155, 107, 255, 0.25);
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.3rem, 5.2vw, 3.6rem);
+    line-height: 1.08;
+    margin: 26px 0 20px;
+    text-wrap: balance;
+    position: relative;
+    z-index: 1;
+    max-width: 15ch;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--violet-bright);
+  }
+  .hero p.lede {
+    font-size: 1.15rem;
+    color: #d9d0ec;
+    max-width: 56ch;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+    margin-top: 40px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(202, 191, 230, 0.2);
+    position: relative;
+    z-index: 1;
+  }
+  .hero-meta div { min-width: 140px; }
+  .hero-meta .k {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9a8dc0;
+    margin-bottom: 4px;
+  }
+  .hero-meta .v { font-size: 0.95rem; color: #efe9fb; }
+
+  /* ---------- Section scaffolding ---------- */
+
+  section.doc { padding: 68px 0; }
+  section.doc + section.doc { border-top: 1px solid var(--line); }
+  section.doc.tinted { background: var(--paper-dim); }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--violet);
+    margin: 0 0 14px;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3vw, 2.15rem);
+    line-height: 1.2;
+    margin: 0 0 22px;
+    text-wrap: balance;
+    color: var(--ink);
+  }
+
+  h3 {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin: 0 0 8px;
+    color: var(--ink);
+  }
+
+  p { color: var(--ink-soft); margin: 0 0 16px; max-width: 68ch; }
+  section.doc p:last-child { margin-bottom: 0; }
+
+  .lead-para {
+    font-size: 1.08rem;
+    color: var(--ink);
+    max-width: 62ch;
+  }
+
+  /* ---------- Problem / opportunity cards ---------- */
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 32px;
+  }
+
+  .card {
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 24px 26px;
+    box-shadow: var(--shadow);
+  }
+  .card h3 { display: flex; align-items: center; gap: 10px; }
+  .card p { margin-bottom: 0; font-size: 0.95rem; }
+  .card-icon {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--violet-mist);
+    color: var(--violet);
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .compare-note {
+    margin-top: 28px;
+    border-left: 3px solid var(--violet);
+    padding: 4px 0 4px 20px;
+  }
+  .compare-note p { font-size: 0.95rem; }
+  .compare-note strong { color: var(--ink); }
+
+  /* ---------- Account type table ---------- */
+
+  .table-scroll { overflow-x: auto; margin-top: 32px; }
+  table.types {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+    font-size: 0.92rem;
+  }
+  table.types th, table.types td {
+    text-align: left;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  table.types thead th {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-weight: 500;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  table.types tbody th {
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  table.types td { color: var(--ink-soft); }
+  table.types thead th:nth-child(4) { color: var(--violet); }
+  table.types tbody tr td:nth-child(3),
+  table.types tbody tr td:nth-child(4) { text-align: center; }
+  .yes { color: var(--violet); font-weight: 700; }
+  .no { color: var(--ink-soft); opacity: 0.35; }
+  .col-creator { background: var(--violet-mist); }
+
+  /* ---------- Journey ---------- */
+
+  .journey {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 20px;
+    padding: 22px 0;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 23px;
+    top: 56px;
+    bottom: -6px;
+    width: 1px;
+    background: var(--line-strong);
+  }
+  .step-num {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--paper);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    z-index: 1;
+  }
+  .step:nth-child(4) .step-num,
+  .step:nth-child(5) .step-num {
+    background: var(--violet);
+    color: #fff;
+  }
+  .step-body h3 { margin-bottom: 6px; }
+  .step-body p { font-size: 0.95rem; margin-bottom: 0; }
+  .step-actor {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--violet);
+    background: var(--violet-mist);
+    border-radius: 3px;
+    padding: 2px 7px;
+    margin-bottom: 8px;
+  }
+
+  /* ---------- Pillars ---------- */
+
+  .pillars {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 32px;
+  }
+  .pillar {
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 4px;
+    padding: 28px 24px 26px;
+  }
+  :root[data-theme="dark"] .pillar,
+  .pillar { background: var(--ink); }
+  .pillar .pillar-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--violet-bright);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .pillar h3 { color: var(--paper); font-family: var(--font-display); font-size: 1.2rem; font-weight: 400; }
+  .pillar p { color: #c7bfdc; font-size: 0.92rem; margin-bottom: 0; }
+
+  /* ---------- Grounding / today ---------- */
+
+  .ground-list {
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .ground-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 24px;
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+  }
+  .ground-row:last-child { border-bottom: 1px solid var(--line); }
+  .ground-row code {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    background: var(--violet-mist);
+    color: var(--violet-deep);
+    padding: 3px 7px;
+    border-radius: 3px;
+    display: inline-block;
+  }
+  :root[data-theme="dark"] .ground-row code { color: var(--violet-bright); }
+  .ground-row .status {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    display: block;
+    margin-top: 8px;
+    color: var(--ink-soft);
+  }
+  .ground-row p { font-size: 0.93rem; margin-bottom: 0; }
+
+  /* ---------- Roadmap ---------- */
+
+  .roadmap { margin-top: 36px; }
+  .phase {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 24px;
+    padding: 26px 0;
+    border-top: 1px solid var(--line);
+  }
+  .phase:last-child { border-bottom: 1px solid var(--line); }
+  .phase-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--violet);
+  }
+  .phase-tag .n { display: block; font-family: var(--font-display); font-size: 1.8rem; color: var(--ink); margin-top: 4px; }
+  .phase h3 { margin-bottom: 8px; }
+  .phase p { font-size: 0.95rem; }
+  .phase ul { margin: 12px 0 0; padding-left: 18px; }
+  .phase li { font-size: 0.9rem; color: var(--ink-soft); margin-bottom: 4px; }
+
+  /* ---------- GTM loop ---------- */
+
+  .loop-diagram {
+    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+  }
+  .loop-node {
+    background: var(--white);
+    border: 1px solid var(--line-strong);
+    border-radius: 100px;
+    padding: 10px 18px;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  .loop-node.accent { background: var(--violet); border-color: var(--violet); color: #fff; }
+  .loop-arrow { color: var(--ink-soft); padding: 0 10px; font-size: 1rem; }
+
+  /* ---------- Risks ---------- */
+
+  .risk-list { margin-top: 28px; display: flex; flex-direction: column; gap: 16px; }
+  .risk {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: 14px;
+    padding: 16px 20px;
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--violet-deep);
+    border-radius: 3px;
+  }
+  :root[data-theme="dark"] .risk { border-left-color: var(--violet-bright); }
+  .risk .mark { font-family: var(--font-display); font-style: italic; color: var(--violet); font-size: 1.1rem; }
+  .risk h3 { font-size: 0.95rem; margin-bottom: 4px; }
+  .risk p { font-size: 0.9rem; margin-bottom: 0; }
+
+  /* ---------- Closing ---------- */
+
+  .closing {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 72px 0 64px;
+  }
+  .closing .wrap { position: relative; }
+  .closing h2 { color: var(--paper); }
+  .closing p { color: #cabfe6; }
+  .closing .scope-box {
+    margin-top: 30px;
+    border: 1px solid rgba(202, 191, 230, 0.25);
+    border-radius: 4px;
+    padding: 24px 26px;
+  }
+  .closing .scope-box .section-label { color: var(--violet-bright); }
+  .closing .scope-box ul { margin: 0; padding-left: 20px; }
+  .closing .scope-box li { color: #d9d0ec; font-size: 0.95rem; margin-bottom: 8px; }
+  .closing .scope-box li:last-child { margin-bottom: 0; }
+  .closing footer {
+    margin-top: 44px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(202, 191, 230, 0.2);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: #8a7cae;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  @media (max-width: 720px) {
+    .grid-2, .pillars { grid-template-columns: 1fr; }
+    .ground-row, .phase { grid-template-columns: 1fr; gap: 8px; }
+    .hero { padding: 64px 0 56px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* biome-ignore lint/complexity/noImportantStyles: must override inline/animated scroll-behavior */
+    * { scroll-behavior: auto !important; }
+  }
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span>Idea Document · Just an Idea for Now</span>
+    <h1>Turn your email into <em>the front door</em> of your work.</h1>
+    <p class="lede">
+      A new idea for ZeroMail: special accounts for creators and freelancers. Each gets a public page,
+      a calendar people can book, and a smart inbox — built for anyone who puts their email in their Instagram bio.
+    </p>
+    <div class="hero-meta">
+      <div><div class="k">Made for</div><div class="v">ZeroMail team</div></div>
+      <div><div class="k">Stage</div><div class="v">Just an idea, not built yet</div></div>
+      <div><div class="k">Who it's for</div><div class="v">Content creators, freelancers, solo workers</div></div>
+      <div><div class="k">Main page</div><div class="v">zeromail.com/@yourname</div></div>
+    </div>
+  </div>
+</header>
+
+<section class="doc">
+  <div class="wrap">
+    <p class="section-label">01 — The Problem</p>
+    <h2>Sharing your email doesn't work well today.</h2>
+    <p class="lead-para">
+      Creators and freelancers do this all the time: they put their email in their Instagram bio, their YouTube
+      "About" page, or their portfolio site. It's one of the most common things people do online. But when someone
+      taps that email, they land on a blank, empty
+      <code style="font-family: var(--font-mono); background: var(--violet-mist); padding: 2px 6px; border-radius: 3px;">mailto:</code>
+      screen. No photo, no info, no way to know if you're even free to chat this week.
+    </p>
+    <div class="grid-2">
+      <div class="card">
+        <h3><span class="card-icon">＠</span>What happens now</h3>
+        <p>Tapping an email just opens a blank message box. No branding, no bio, nothing to show who you are or why someone should reach out.</p>
+      </div>
+      <div class="card">
+        <h3><span class="card-icon">↻</span>What it costs you</h3>
+        <p>Good opportunities — brand deals, client jobs, collab offers — get typed into a cold, empty message and often never get sent at all.</p>
+      </div>
+    </div>
+    <div class="compare-note">
+      <p>
+        Linktree gives you one link for everything. Calendly lets people book time with you. But neither one is
+        an inbox — so creators end up using three different tools and still have to go back to email anyway.
+        <strong>ZeroMail is already an inbox.</strong> We just need to add a public page on top of it.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="doc tinted">
+  <div class="wrap">
+    <p class="section-label">02 — Who This Is For</p>
+    <h2>Three types of accounts, one app.</h2>
+    <p class="lead-para">
+      Not everyone on ZeroMail wants a public page. So this is a feature people can turn on if they want it —
+      added on top of the account they already have. It's not a new app, and it doesn't change the inbox for anyone else.
+    </p>
+  </div>
+  <div class="wide">
+    <div class="table-scroll">
+      <table class="types">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>Standard</th>
+            <th>Freelancer</th>
+            <th class="col-creator">Creator</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Private inbox, rules, AI writing help</th>
+            <td>Yes</td>
+            <td>Yes</td>
+            <td class="col-creator">Yes</td>
+          </tr>
+          <tr>
+            <th scope="row">Public page at /@yourname</th>
+            <td class="no">—</td>
+            <td><span class="yes">✓</span></td>
+            <td class="col-creator"><span class="yes">✓</span></td>
+          </tr>
+          <tr>
+            <th scope="row">Calendar people can book</th>
+            <td class="no">—</td>
+            <td><span class="yes">✓</span> client calls</td>
+            <td class="col-creator"><span class="yes">✓</span> collab slots</td>
+          </tr>
+          <tr>
+            <th scope="row">Contact form that goes to your inbox</th>
+            <td class="no">—</td>
+            <td><span class="yes">✓</span></td>
+            <td class="col-creator"><span class="yes">✓</span></td>
+          </tr>
+          <tr>
+            <th scope="row">List of services and prices</th>
+            <td class="no">—</td>
+            <td><span class="yes">✓</span></td>
+            <td class="no">—</td>
+          </tr>
+          <tr>
+            <th scope="row">Media kit for brand deals</th>
+            <td class="no">—</td>
+            <td class="no">—</td>
+            <td class="col-creator"><span class="yes">✓</span></td>
+          </tr>
+          <tr>
+            <th scope="row">See who visited your page</th>
+            <td class="no">—</td>
+            <td><span class="yes">✓</span></td>
+            <td class="col-creator"><span class="yes">✓</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="doc">
+  <div class="wrap">
+    <p class="section-label">03 — The Journey</p>
+    <h2>From Instagram bio to inbox, in five steps.</h2>
+    <p class="lead-para">Here's the whole idea in one simple flow. The visitor never has to sign up for anything.</p>
+  </div>
+  <div class="wrap">
+    <div class="journey">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <span class="step-actor">Creator</span>
+          <h3>Turns on Creator or Freelancer mode</h3>
+          <p>Just one switch in account settings. They pick a name for their page, write a short bio, add links, upload a photo, and set the times they're free.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <span class="step-actor">Creator</span>
+          <h3>Shares their page link, not their raw email</h3>
+          <p><code style="font-family: var(--font-mono);">zeromail.com/@mayaedits</code> goes in the Instagram bio, YouTube about page, or website footer — instead of a plain email address.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <span class="step-actor">Visitor</span>
+          <h3>Sees a real page, not a blank form</h3>
+          <p>They see the creator's bio, links, work or services, and — if turned on — the times they're free. It all looks like the creator's own style.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <span class="step-actor">Visitor</span>
+          <h3>Sends a message or books a time — no account needed</h3>
+          <p>They fill in a short form (name, what it's about, budget) or pick a time on the calendar. Just one step, no app to download.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <span class="step-actor">Creator</span>
+          <h3>It shows up as a real email, already sorted</h3>
+          <p>The message lands in the creator's normal ZeroMail inbox, already labeled "Profile inquiry," ready for the same tools and AI help every other email gets.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="doc tinted">
+  <div class="wrap">
+    <p class="section-label">04 — What We'd Build</p>
+    <h2>Three main pieces.</h2>
+  </div>
+  <div class="wide">
+    <div class="pillars">
+      <div class="pillar">
+        <div class="pillar-tag">Piece One</div>
+        <h3>Public Profile Page</h3>
+        <p>A page at the creator's own link: bio, photo, links, and a list of services or a media kit. This is the front door — easy to find, easy to share, and quick to load even if it gets a big spike of visits from one Instagram story.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-tag">Piece Two</div>
+        <h3>Public Calendar</h3>
+        <p>Not the same as the private calendar already in the app. This is a separate, public view that only shows the times the creator chooses to open up — a stranger never sees the real, private calendar underneath.</p>
+      </div>
+      <div class="pillar">
+        <div class="pillar-tag">Piece Three</div>
+        <h3>Messages Go Straight to the Inbox</h3>
+        <p>Every message or booking becomes a normal email in the inbox — not a separate tool to check. It gets the same rules, AI help, and reminders as any other email, so there's still just one place to keep track of everything.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="doc">
+  <div class="wrap">
+    <p class="section-label">05 — How This Fits Into ZeroMail Today</p>
+    <h2>We already have a head start.</h2>
+    <p class="lead-para">Most of the pieces we'd need already exist in some form in the app. This isn't starting from zero.</p>
+    <div class="ground-list">
+      <div class="ground-row">
+        <div>
+          <code>User.username</code>
+          <span class="status">Already there · not used for a public page yet</span>
+        </div>
+        <p>Every account already has its own <code style="font-family: var(--font-mono); background: none; padding: 0; color: inherit;">username</code>. We can use that same name for <code style="font-family: var(--font-mono); background: none; padding: 0; color: inherit;">/@yourname</code> — no need to build a new naming system, just a new public page that shows it.</p>
+      </div>
+      <div class="ground-row">
+        <div>
+          Contact form tool
+          <span class="status">Already built · needs a public version</span>
+        </div>
+        <p>We already have a way for someone to fill out a form and have the message reach a user. A profile inquiry works the same way, just pointed at one specific person's inbox.</p>
+      </div>
+      <div class="ground-row">
+        <div>
+          Calendar feature
+          <span class="status">Private only right now · booking is new work</span>
+        </div>
+        <p>The calendar we have today only shows a signed-in user their own Google Calendar. There's no public or bookable version yet — that part would be new work.</p>
+      </div>
+      <div class="ground-row">
+        <div>
+          Paid plans
+          <span class="status">Two plans today · room for a third</span>
+        </div>
+        <p>Billing already has a free plan and a paid plan, each with its own limits. Creator and Freelancer features can be added as a new plan, without changing how billing works.</p>
+      </div>
+      <div class="ground-row">
+        <div>
+          Public pages
+          <span class="status">Already done elsewhere in the app</span>
+        </div>
+        <p>The app already has public pages that don't need a login. A profile page would work the same way — nothing new to invent there.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="doc tinted">
+  <div class="wrap">
+    <p class="section-label">06 — How We'd Build It</p>
+    <h2>Four steps. Each one works on its own.</h2>
+  </div>
+  <div class="wrap">
+    <div class="roadmap">
+      <div class="phase">
+        <div class="phase-tag">Step<span class="n">01</span></div>
+        <div>
+          <h3>Simple profile page first</h3>
+          <p>Add the account type switch, let people claim their page name, and build a public bio/links page. No calendar or stats yet — first check that people actually share and use it.</p>
+          <ul>
+            <li>Account type field and settings switch</li>
+            <li>Public profile page</li>
+            <li>Contact form that sends to the inbox</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-tag">Step<span class="n">02</span></div>
+        <div>
+          <h3>Add the bookable calendar</h3>
+          <p>The public calendar view: creators set the times they're free each week, visitors pick a time, and both people get a confirmation.</p>
+          <ul>
+            <li>Free/busy times kept separate from the private calendar</li>
+            <li>Booking confirmations, plus reschedule and cancel</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-tag">Step<span class="n">03</span></div>
+        <div>
+          <h3>Add paid features and more detail</h3>
+          <p>Paid booking slots for freelancers, media kits for creators, page-visit stats, and the ability to customize how the page looks.</p>
+          <ul>
+            <li>Paid booking slots (freelancer plan)</li>
+            <li>Page visits and inquiry stats</li>
+            <li>Custom colors, layout, and domain</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-tag">Step<span class="n">04</span></div>
+        <div>
+          <h3>Help people find each other</h3>
+          <p>An optional directory where people can browse creators by category, so pages start bringing in visitors on their own, not just from shared links.</p>
+          <ul>
+            <li>Public directory with category filters</li>
+            <li>"People like this" suggestions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="doc">
+  <div class="wrap">
+    <p class="section-label">07 — How This Helps Us Grow</p>
+    <h2>Every shared page is a free ad for ZeroMail.</h2>
+    <p class="lead-para">
+      When a creator puts their page link in their bio, it's basically a free ad for ZeroMail —
+      because it's genuinely useful to them, not because we asked them to promote us.
+    </p>
+    <div class="loop-diagram">
+      <span class="loop-node accent">Creator shares /@yourname</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-node">Visitor arrives, no signup needed</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-node">Sends a message or books a time</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-node">Sees "Powered by ZeroMail"</span>
+      <span class="loop-arrow">→</span>
+      <span class="loop-node accent">Some visitors sign up too</span>
+    </div>
+  </div>
+</section>
+
+<section class="doc tinted">
+  <div class="wrap">
+    <p class="section-label">08 — Things to Decide First</p>
+    <h2>Questions to answer before we start building.</h2>
+    <div class="risk-list">
+      <div class="risk">
+        <span class="mark">?</span>
+        <div>
+          <h3>Spam on the public contact form</h3>
+          <p>Since anyone can send a message without logging in, we need spam limits, bot blocking, and a way to report or block someone, right from the start.</p>
+        </div>
+      </div>
+      <div class="risk">
+        <span class="mark">?</span>
+        <div>
+          <h3>People taking names that aren't theirs</h3>
+          <p>Since <code style="font-family: var(--font-mono); background: none; padding: 0; color: inherit;">username</code> can already be picked by anyone, we need a simple way to check or dispute a name, especially for well-known people.</p>
+        </div>
+      </div>
+      <div class="risk">
+        <span class="mark">?</span>
+        <div>
+          <h3>Keeping the real calendar private</h3>
+          <p>The public calendar must only ever show "free" or "busy" during the hours the creator has chosen to open up — never any real event details from their private calendar.</p>
+        </div>
+      </div>
+      <div class="risk">
+        <span class="mark">?</span>
+        <div>
+          <h3>How we price it</h3>
+          <p>Should Creator/Freelancer mode be a paid plan, a free feature that gets people to later pay for more inbox features, or both? This affects how hard we push it at launch.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="closing">
+  <div class="wrap">
+    <p class="section-label">09 — Next Step</p>
+    <h2>A small first version we could actually build.</h2>
+    <p class="lead-para">If we like this idea, the first step alone is small and low-risk: no booking system, no billing changes, no calendar work — just the profile page and the contact form.</p>
+    <div class="scope-box">
+      <p class="section-label">First version could include</p>
+      <ul>
+        <li>Account type switch (Standard / Freelancer / Creator) in settings</li>
+        <li>Public profile page at <code style="font-family: var(--font-mono); background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 3px; color: #efe9fb;">zeromail.com/@yourname</code> — bio, photo, links</li>
+        <li>A contact form that sends messages straight to the creator's inbox, already labeled</li>
+        <li>Basic protection so people can't take names that aren't theirs</li>
+      </ul>
+    </div>
+    <footer>
+      <span>ZeroMail — Idea Document</span>
+      <span>This is just an idea, not a final build plan</span>
+    </footer>
+  </div>
+</section>

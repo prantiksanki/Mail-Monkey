@@ -3,6 +3,7 @@ import { ORPCError, streamToEventIterator } from "@orpc/client";
 import {
 	convertToModelMessages,
 	streamText,
+	TEXT_MODEL_ID,
 	tool,
 	type UIMessage,
 } from "@repo/ai";
@@ -131,7 +132,7 @@ export const rulesAssistant = protectedProcedure
 		});
 
 		const response = streamText({
-			model: google("gemini-3.5-flash"),
+			model: google(TEXT_MODEL_ID),
 			system: SYSTEM_PROMPT,
 			messages: await convertToModelMessages(
 				messages as unknown as UIMessage[],

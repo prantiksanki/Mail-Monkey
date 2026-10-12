@@ -63,6 +63,8 @@ const legalPages = defineCollection({
 	include: "**/*.{mdx,md}",
 	schema: z.object({
 		title: z.string(),
+		description: z.string().optional(),
+		lastUpdated: z.string().optional(),
 		content: z.string(),
 	}),
 	transform: async (document, context) => {

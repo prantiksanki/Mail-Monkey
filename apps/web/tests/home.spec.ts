@@ -8,7 +8,7 @@ test.describe("home page", () => {
 
 			await expect(
 				page.getByRole("heading", {
-					name: /meet\s*your\s*ai\s*chief\s*of\s*staff\s*for\s*email\./i,
+					name: /think\s*email\.\s*think\s*popsuites\./i,
 				}),
 			).toBeVisible();
 		});

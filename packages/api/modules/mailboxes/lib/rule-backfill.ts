@@ -211,11 +211,17 @@ export async function processRuleBackfillRun(runId: string) {
 			const isComplete = !nextPageToken;
 			// When done, use actual processedCount as the total — Gmail's
 			// resultSizeEstimate is approximate and often wrong.
+			// While running, clamp the estimate to the backfill cap: the run
+			// can never process more than RULE_BACKFILL_MAX_EMAILS, so showing
+			// Gmail's (often rounded) larger estimate makes a progress bar that
+			// can never reach 100%.
+			const rawEstimate =
+				run.estimatedTotal ??
+				listResult.resultSizeEstimate ??
+				processedCount;
 			const estimatedTotal = isComplete
 				? processedCount
-				: (run.estimatedTotal ??
-					listResult.resultSizeEstimate ??
-					processedCount);
+				: Math.min(rawEstimate, RULE_BACKFILL_MAX_EMAILS);
 
 			return await updateRuleBackfillRun({
 				id: run.id,

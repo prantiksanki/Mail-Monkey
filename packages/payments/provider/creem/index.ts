@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 import {
 	createPurchase,
 	deletePurchaseBySubscriptionId,
@@ -59,7 +59,13 @@ export const createCheckoutLink: CreateCheckoutLink = async (options) => {
 	});
 
 	if (!response.ok) {
-		logger.error("Failed to create checkout link", await response.json());
+		const errorBody = await response
+			.json()
+			.catch(() => null as { message?: string; error?: string } | null);
+		logger.error("Failed to create checkout link", {
+			status: response.status,
+			message: errorBody?.message ?? errorBody?.error,
+		});
 		throw new Error("Failed to create checkout link");
 	}
 
@@ -145,7 +151,13 @@ export const webhookHandler: WebhookHandler = async (req) => {
 		.update(bodyText)
 		.digest("hex");
 
-	if (computedSignature !== signature) {
+	const computedBuf = Buffer.from(computedSignature, "utf8");
+	const signatureBuf = Buffer.from(signature, "utf8");
+
+	if (
+		computedBuf.length !== signatureBuf.length ||
+		!timingSafeEqual(computedBuf, signatureBuf)
+	) {
 		return new Response("Invalid signature.", {
 			status: 400,
 		});

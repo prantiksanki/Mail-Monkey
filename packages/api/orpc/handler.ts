@@ -11,7 +11,12 @@ import { router } from "./router";
 export const rpcHandler = new RPCHandler(router, {
 	clientInterceptors: [
 		onError((error) => {
-			logger.error(error);
+			// Log only the message, never the error object wholesale — a
+			// thrown ORPCError can carry an arbitrary `.data` payload, and
+			// validation errors can echo submitted field values.
+			logger.error(
+				error instanceof Error ? error.message : String(error),
+			);
 		}),
 	],
 });
@@ -51,7 +56,12 @@ export const openApiHandler = new OpenAPIHandler(router, {
 	],
 	clientInterceptors: [
 		onError((error) => {
-			logger.error(error);
+			// Log only the message, never the error object wholesale — a
+			// thrown ORPCError can carry an arbitrary `.data` payload, and
+			// validation errors can echo submitted field values.
+			logger.error(
+				error instanceof Error ? error.message : String(error),
+			);
 		}),
 	],
 });

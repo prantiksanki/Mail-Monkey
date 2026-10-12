@@ -44,7 +44,7 @@ export const testRule = protectedProcedure
 			context.user.id,
 		);
 
-		const provider = mailbox.provider as "GOOGLE" | "OUTLOOK";
+		const provider = mailbox.provider as "GOOGLE" | "OUTLOOK" | "IMAP";
 		const mailProvider = getMailProvider(provider);
 
 		let list: Awaited<ReturnType<typeof mailProvider.listInboxMessages>>;

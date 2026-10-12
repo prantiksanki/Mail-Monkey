@@ -1,7 +1,9 @@
 import { logger } from "@repo/logs";
 import { processDueScheduledEmails } from "./scheduled-sender";
 
-const POLL_INTERVAL_MS = 60_000;
+// Short enough that a ~10s undo-send window is honored promptly, while still
+// cheap for the common case of genuine "send later" scheduling.
+const POLL_INTERVAL_MS = 5_000;
 
 declare global {
 	var __scheduledEmailPoller: NodeJS.Timeout | undefined;

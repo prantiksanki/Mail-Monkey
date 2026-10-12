@@ -34,7 +34,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useDebounceValue } from "usehooks-ts";
-import { buildForwardHtml } from "../lib/email-html";
+import { buildEmailSrcDoc, buildForwardHtml } from "../lib/email-html";
 import {
 	useArchiveMessageMutation,
 	useCancelScheduledEmailMutation,
@@ -55,6 +55,7 @@ import {
 	useTrashMessageMutation,
 	useTriggerSyncMutation,
 } from "../lib/inbox-api";
+import { AiDraftPanel } from "./AiDraftPanel";
 import { ComposeDialog } from "./ComposeDialog";
 import { MailboxSwitcher } from "./MailboxSwitcher";
 import { SenderDetailsPopover } from "./SenderDetailsPopover";
@@ -509,11 +510,14 @@ function RowActions({
 	messageId,
 	isUnread,
 	inTrash = false,
+	onReadStateChange,
 }: {
 	mailboxId: string;
 	messageId: string;
 	isUnread: boolean;
 	inTrash?: boolean;
+	/** Notified with the new read state once a mark read/unread mutation succeeds. */
+	onReadStateChange?: (isUnread: boolean) => void;
 }) {
 	const archiveMutation = useArchiveMessageMutation(mailboxId);
 	const trashMutation = useTrashMessageMutation(mailboxId);
@@ -599,9 +603,13 @@ function RowActions({
 				onClick={(e) => {
 					e.stopPropagation();
 					if (isUnread) {
-						markReadMutation.mutate(messageId);
+						markReadMutation.mutate(messageId, {
+							onSuccess: () => onReadStateChange?.(false),
+						});
 					} else {
-						markUnreadMutation.mutate(messageId);
+						markUnreadMutation.mutate(messageId, {
+							onSuccess: () => onReadStateChange?.(true),
+						});
 					}
 				}}
 			/>
@@ -691,7 +699,8 @@ function RowActions({
 const MessageListItem = memo(function MessageListItem({
 	mailboxId,
 	message,
-	markedRead,
+	readOverride,
+	onReadStateChange,
 	isSelected,
 	onSelect,
 }: {
@@ -706,13 +715,14 @@ const MessageListItem = memo(function MessageListItem({
 		labelIds?: string[];
 		inTrash?: boolean;
 	};
-	/** Locally marked read (optimistic) — overrides the server's isUnread. */
-	markedRead: boolean;
+	/** Locally toggled read state (optimistic) — overrides the server's isUnread until refetch. */
+	readOverride?: boolean;
+	onReadStateChange: (id: string, isUnread: boolean) => void;
 	isSelected: boolean;
 	onSelect: (id: string) => void;
 }) {
 	const labels = filterUserLabels(message.labelIds);
-	const isUnread = message.isUnread && !markedRead;
+	const isUnread = readOverride ?? message.isUnread;
 	// Mount the heavy action toolbar (mutation hooks + dropdown) only after the
 	// row is first hovered/focused. Keeps scrolling cheap; once activated it
 	// stays mounted so the hover affordance is instant on subsequent hovers.
@@ -726,51 +736,9 @@ const MessageListItem = memo(function MessageListItem({
 		}
 	};
 
-	const archiveMutation = useArchiveMessageMutation(mailboxId);
-	const trashMutation = useTrashMessageMutation(mailboxId);
-	const deleteMutation = useDeleteMessageMutation(mailboxId);
-	const markReadMutation = useMarkReadMessageMutation(mailboxId);
-	const markUnreadMutation = useMarkUnreadMessageMutation(mailboxId);
-	const snoozeMutation = useSnoozeMessageMutation(mailboxId);
-
 	// In Trash, the delete button permanently removes the message instead of
 	// re-trashing it.
 	const inTrash = message.inTrash ?? false;
-	const removeMessage = () => {
-		if (inTrash) {
-			deleteMutation.mutate(message.id, {
-				onSuccess: () => toast.success("Deleted permanently"),
-			});
-		} else {
-			trashMutation.mutate(message.id, {
-				onSuccess: () => toast.success("Moved to trash"),
-			});
-		}
-	};
-
-	const [snoozeOpen, setSnoozeOpen] = useState(false);
-	const [showCustomSnooze, setShowCustomSnooze] = useState(false);
-	const [customSnoozeAt, setCustomSnoozeAt] = useState("");
-	const presets = buildSnoozePresets(new Date());
-
-	const handleSnooze = (at: Date) => {
-		if (at.getTime() <= Date.now()) {
-			toast.error("Pick a time in the future");
-			return;
-		}
-		snoozeMutation.mutate(
-			{ messageId: message.id, snoozeUntil: at.toISOString() },
-			{
-				onSuccess: () =>
-					toast.success(`Snoozed until ${formatSnoozePreset(at)}`),
-				onError: (e) =>
-					toast.error(
-						e instanceof Error ? e.message : "Failed to snooze",
-					),
-			},
-		);
-		setSnoozeOpen(false);
-	};
 
 	return (
 		// biome-ignore lint/a11y/useSemanticElements: must be a div, not a <button>, because it contains the hover action <button>s (nested buttons are invalid HTML); keyboard support is provided via role/tabIndex/onKeyDown.
@@ -840,173 +808,14 @@ const MessageListItem = memo(function MessageListItem({
 					messageId={message.id}
 					isUnread={isUnread}
 					inTrash={inTrash}
+					onReadStateChange={(newIsUnread) =>
+						onReadStateChange(message.id, newIsUnread)
+					}
 				/>
 			)}
-			{/* Hover quick actions */}
-			<div
-				className={cn(
-					"absolute right-2 top-2 flex items-center gap-0.5 rounded-lg border border-border bg-card px-1 py-0.5 shadow-sm transition-opacity",
-					snoozeOpen
-						? "opacity-100"
-						: "opacity-0 group-hover:opacity-100 focus-within:opacity-100",
-				)}
-			>
-				<ActionBtn
-					icon={ArchiveIcon}
-					label="Archive"
-					disabled={archiveMutation.isPending}
-					onClick={(e) => {
-						e.stopPropagation();
-						archiveMutation.mutate(message.id, {
-							onSuccess: () => toast.success("Archived"),
-						});
-					}}
-				/>
-				<ActionBtn
-					icon={Trash2Icon}
-					label={inTrash ? "Delete permanently" : "Delete"}
-					disabled={
-						trashMutation.isPending || deleteMutation.isPending
-					}
-					onClick={(e) => {
-						e.stopPropagation();
-						removeMessage();
-					}}
-				/>
-				<ActionBtn
-					icon={message.isUnread ? MailOpenIcon : MailIcon}
-					label={message.isUnread ? "Mark as read" : "Mark as unread"}
-					disabled={
-						markReadMutation.isPending ||
-						markUnreadMutation.isPending
-					}
-					onClick={(e) => {
-						e.stopPropagation();
-						if (message.isUnread) {
-							markReadMutation.mutate(message.id);
-						} else {
-							markUnreadMutation.mutate(message.id);
-						}
-					}}
-				/>
-				<DropdownMenu
-					open={snoozeOpen}
-					onOpenChange={(open) => {
-						setSnoozeOpen(open);
-						if (!open) {
-							setShowCustomSnooze(false);
-						}
-					}}
-				>
-					<DropdownMenuTrigger asChild>
-						<button
-							type="button"
-							title="Snooze"
-							aria-label="Snooze"
-							onClick={(e) => e.stopPropagation()}
-							className="flex h-8 w-8 items-center justify-center rounded-full border border-transparent text-muted-foreground transition-colors hover:border-border hover:bg-muted hover:text-foreground"
-						>
-							<ClockIcon className="size-4" />
-						</button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent
-						align="end"
-						className="w-56"
-						onClick={(e) => e.stopPropagation()}
-					>
-						<div className="px-2 py-1.5 text-xs font-medium text-muted-foreground">
-							Snooze until
-						</div>
-						{presets.map((preset) => (
-							<DropdownMenuItem
-								key={preset.label}
-								onSelect={() => handleSnooze(preset.at)}
-								className="flex items-center justify-between gap-3"
-							>
-								<span>{preset.label}</span>
-								<span className="text-xs text-muted-foreground">
-									{formatSnoozePreset(preset.at)}
-								</span>
-							</DropdownMenuItem>
-						))}
-						<DropdownMenuSeparator />
-						<DropdownMenuItem
-							onSelect={(e) => {
-								e.preventDefault();
-								setShowCustomSnooze(true);
-							}}
-						>
-							<ClockIcon className="mr-2 size-3.5" />
-							Pick date & time
-						</DropdownMenuItem>
-						{showCustomSnooze && (
-							<div className="flex flex-col gap-2 px-2 py-2">
-								<input
-									type="datetime-local"
-									aria-label="Snooze date and time"
-									title="Snooze date and time"
-									value={customSnoozeAt}
-									min={toDatetimeLocalValue(new Date())}
-									onChange={(e) =>
-										setCustomSnoozeAt(e.target.value)
-									}
-									onClick={(e) => e.stopPropagation()}
-									className="w-full rounded border border-border bg-background px-2 py-1 text-sm outline-none"
-								/>
-								<Button
-									size="sm"
-									disabled={
-										!customSnoozeAt ||
-										snoozeMutation.isPending
-									}
-									onClick={() =>
-										handleSnooze(new Date(customSnoozeAt))
-									}
-								>
-									Snooze
-								</Button>
-							</div>
-						)}
-					</DropdownMenuContent>
-				</DropdownMenu>
-			</div>
 		</div>
 	);
 });
-
-// Wraps raw email HTML in a self-contained, sandboxed document. Module-level
-// and pure so the output is referentially stable when memoized by the caller.
-function buildEmailSrcDoc(html: string): string {
-	// Strip cid: images (inline attachments not fetched) to avoid broken img icons
-	const sanitized = html.replace(/src="cid:[^"]*"/gi, 'src=""');
-	return `<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' https:; font-src https: data:; img-src https: data: blob:; script-src 'none';">
-<base target="_blank" rel="noopener noreferrer">
-<style>
-  * { box-sizing: border-box; }
-  html, body {
-    margin: 0; padding: 0;
-    background: #ffffff;
-    color: #1a1a1a;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
-    word-break: break-word;
-  }
-  img { max-width: 100%; height: auto; display: inline-block; }
-  a { color: #1a73e8; }
-  table { max-width: 100% !important; }
-  td, th { word-break: break-word; }
-  pre { white-space: pre-wrap; font-family: inherit; }
-</style>
-</head>
-<body>${sanitized}</body>
-</html>`;
-}
 
 function MessageDetail({
 	mailboxId,
@@ -1014,11 +823,13 @@ function MessageDetail({
 	onBack,
 	onReply,
 	onForward,
+	onReadStateChange,
 }: {
 	mailboxId: string;
 	messageId: string;
 	onBack: () => void;
 	onReply: (to: string, subject: string) => void;
+	onReadStateChange: (id: string, isUnread: boolean) => void;
 	onForward: (source: {
 		from: string;
 		to: string;
@@ -1233,10 +1044,16 @@ function MessageDetail({
 						disabled={isBusy}
 						onClick={() => {
 							if (isUnread) {
-								markReadMutation.mutate(messageId);
+								markReadMutation.mutate(messageId, {
+									onSuccess: () =>
+										onReadStateChange(messageId, false),
+								});
 							} else {
 								markUnreadMutation.mutate(messageId, {
-									onSuccess: onBack,
+									onSuccess: () => {
+										onReadStateChange(messageId, true);
+										onBack();
+									},
 								});
 							}
 						}}
@@ -1508,7 +1325,10 @@ export function InboxPage({ autoCompose = false }: { autoCompose?: boolean }) {
 	const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
 		null,
 	);
-	const [readIds, setReadIds] = useState<Set<string>>(new Set());
+	/** Local optimistic overrides for read state, keyed by message id, until the next refetch. */
+	const [readOverrides, setReadOverrides] = useState<Map<string, boolean>>(
+		new Map(),
+	);
 	const [searchOpen, setSearchOpen] = useState(false);
 	const [searchInput, setSearchInput] = useState("");
 	// Debounce so we don't refetch on every keystroke.
@@ -1534,8 +1354,6 @@ export function InboxPage({ autoCompose = false }: { autoCompose?: boolean }) {
 		}
 	}, [searchable, searchOpen, searchInput]);
 
-	useEffect(() => setMounted(true), []);
-
 	useEffect(() => {
 		if (autoCompose) {
 			setComposing(true);
@@ -1545,17 +1363,35 @@ export function InboxPage({ autoCompose = false }: { autoCompose?: boolean }) {
 		}
 	}, [autoCompose, router, searchParams]);
 
+	// Deep-link: `?message=<id>` (e.g. from the AI assistant's email citations)
+	// opens that message, then drops the param so it doesn't re-trigger.
+	useEffect(() => {
+		const messageParam = searchParams.get("message");
+		if (messageParam) {
+			setSelectedMessageId(messageParam);
+			const params = new URLSearchParams(searchParams.toString());
+			params.delete("message");
+			router.replace(`?${params.toString()}`);
+		}
+	}, [searchParams, router]);
+
 	// Stable across renders so memoized rows don't re-render on every parent
 	// state change (selecting a message, marking read, etc.).
 	const openMessage = useCallback((id: string | null) => {
 		if (id) {
-			setReadIds((prev) => new Set(prev).add(id));
+			setReadOverrides((prev) => new Map(prev).set(id, false));
 		}
 		setSelectedMessageId(id);
 	}, []);
 	const selectMessage = useCallback(
 		(id: string) => openMessage(id),
 		[openMessage],
+	);
+	const handleReadStateChange = useCallback(
+		(id: string, isUnread: boolean) => {
+			setReadOverrides((prev) => new Map(prev).set(id, isUnread));
+		},
+		[],
 	);
 
 	const handleMailboxSwitch = (id: string) => {
@@ -1726,6 +1562,10 @@ export function InboxPage({ autoCompose = false }: { autoCompose?: boolean }) {
 		setEditingDraftId(null);
 	};
 
+	// Before mount, selectedMailboxId is always null (SSR can't read
+	// localStorage). Render nothing until mounted so the server HTML and the
+	// first client render match; only then decide whether to show the
+	// "no mailbox" state.
 	if (!mounted) {
 		return null;
 	}
@@ -1744,9 +1584,7 @@ export function InboxPage({ autoCompose = false }: { autoCompose?: boolean }) {
 			<div
 				className={cn(
 					"flex flex-col border-r border-border h-full overflow-hidden bg-card",
-					selectedMessageId
-						? "hidden md:flex md:w-80 lg:w-96 shrink-0"
-						: "flex-1",
+					selectedMessageId ? "hidden" : "flex-1",
 				)}
 			>
 				<div className="flex h-16 shrink-0 items-center justify-between gap-3 border-b border-border bg-card px-4">
@@ -1904,7 +1742,10 @@ export function InboxPage({ autoCompose = false }: { autoCompose?: boolean }) {
 											inTrash?: boolean;
 										}
 									}
-									markedRead={readIds.has(msg.id ?? "")}
+									readOverride={readOverrides.get(
+										msg.id ?? "",
+									)}
+									onReadStateChange={handleReadStateChange}
 									isSelected={
 										selectedMessageId === (msg.id ?? "")
 									}
@@ -1946,20 +1787,30 @@ export function InboxPage({ autoCompose = false }: { autoCompose?: boolean }) {
 			</div>
 
 			{selectedMessageId ? (
-				<MessageDetail
-					mailboxId={selectedMailboxId}
-					messageId={selectedMessageId}
-					onBack={() => openMessage(null)}
-					onReply={(to, subject) =>
-						openCompose({ to, subject: `Re: ${subject}` })
-					}
-					onForward={(source) =>
-						openCompose({
-							subject: `Fwd: ${source.subject}`,
-							bodyHtml: buildForwardHtml(source),
-						})
-					}
-				/>
+				<>
+					<MessageDetail
+						mailboxId={selectedMailboxId}
+						messageId={selectedMessageId}
+						onBack={() => openMessage(null)}
+						onReadStateChange={handleReadStateChange}
+						onReply={(to, subject) =>
+							openCompose({ to, subject: `Re: ${subject}` })
+						}
+						onForward={(source) =>
+							openCompose({
+								subject: `Fwd: ${source.subject}`,
+								bodyHtml: buildForwardHtml(source),
+							})
+						}
+					/>
+					<AiDraftPanel
+						mailboxId={selectedMailboxId}
+						messageId={selectedMessageId}
+						onUseDraft={({ to, subject, body }) =>
+							openCompose({ to, subject, body })
+						}
+					/>
+				</>
 			) : null}
 
 			{composing &&

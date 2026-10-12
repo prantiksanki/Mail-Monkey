@@ -132,6 +132,47 @@ export function sanitizeEmailHtml(html: string): string {
 	);
 }
 
+// Wraps raw email HTML in a self-contained, sandboxed document. Module-level
+// and pure so the output is referentially stable when memoized by the caller.
+// Shared by InboxPage's message detail view and the Payments card detail view
+// — both render a received email the same safe way: DOMPurify sanitization
+// (sanitizeEmailHtml) as the primary defense, plus srcDoc + a sandboxed
+// iframe (no allow-scripts) + CSP script-src 'none' as defense-in-depth.
+export function buildEmailSrcDoc(html: string): string {
+	// Strip cid: images (inline attachments not fetched) to avoid broken img icons
+	const sanitized = sanitizeEmailHtml(html).replace(
+		/src="cid:[^"]*"/gi,
+		'src=""',
+	);
+	return `<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline' https:; font-src https: data:; img-src https: data: blob:; script-src 'none';">
+<base target="_blank" rel="noopener noreferrer">
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: #ffffff;
+    color: #1a1a1a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    word-break: break-word;
+  }
+  img { max-width: 100%; height: auto; display: inline-block; }
+  a { color: #1a73e8; }
+  table { max-width: 100% !important; }
+  td, th { word-break: break-word; }
+  pre { white-space: pre-wrap; font-family: inherit; }
+</style>
+</head>
+<body>${sanitized}</body>
+</html>`;
+}
+
 /** Escapes plain text into HTML, preserving line breaks. */
 export function plainTextToHtml(text: string): string {
 	const escaped = text

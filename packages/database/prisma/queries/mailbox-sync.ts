@@ -59,3 +59,11 @@ export async function getMailboxesWithExpiringWatch(before: Date) {
 		include: { account: true },
 	});
 }
+
+/** Every connected custom-domain (IMAP/SMTP) mailbox, for imap-sync-poller.ts's poll loop. */
+export async function getImapMailboxes() {
+	return db.mailbox.findMany({
+		where: { provider: "IMAP" },
+		select: { id: true, accountId: true, email: true, userId: true },
+	});
+}

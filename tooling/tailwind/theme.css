@@ -18,12 +18,19 @@
 	--color-accent-foreground: var(--accent-foreground);
 	--color-success: var(--success);
 	--color-success-foreground: var(--success-foreground);
+	--color-success-soft: var(--success-soft);
 	--color-warning: var(--warning);
 	--color-warning-foreground: var(--warning-foreground);
 	--color-warning-soft: var(--warning-soft);
 	--color-destructive: var(--destructive);
 	--color-destructive-foreground: var(--destructive-foreground);
 	--color-destructive-soft: var(--destructive-soft);
+	--color-info: var(--info);
+	--color-info-foreground: var(--info-foreground);
+	--color-info-soft: var(--info-soft);
+	--color-stat-purple: var(--stat-purple);
+	--color-stat-purple-foreground: var(--stat-purple-foreground);
+	--color-stat-purple-soft: var(--stat-purple-soft);
 	--color-border: var(--border);
 	--color-border-strong: var(--border-strong);
 	--color-input: var(--input);
@@ -33,6 +40,10 @@
 	--color-chart-3: var(--chart-3);
 	--color-chart-4: var(--chart-4);
 	--color-chart-5: var(--chart-5);
+	--color-category-1: var(--category-1);
+	--color-category-2: var(--category-2);
+	--color-category-3: var(--category-3);
+	--color-category-4: var(--category-4);
 	--radius-lg: var(--radius);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-sm: calc(var(--radius) - 4px);
@@ -40,12 +51,19 @@
 	--radius-2xl: calc(var(--radius) + 4px);
 	--radius-3xl: calc(var(--radius) + 8px);
 
-	--font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+	/* SF Pro system stack: -apple-system/BlinkMacSystemFont resolve to real
+	   San Francisco on Mac/iOS/iPadOS — SF Pro can't be self-hosted for the
+	   web (Apple restricts it to Apple-platform apps), so this is the
+	   legitimate way to render it. Falls back to each OS's native UI font
+	   elsewhere. */
+	--font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, ui-sans-serif, system-ui, Helvetica, Arial, sans-serif;
 	--font-serif: var(--font-instrument), "Times New Roman", ui-serif, serif;
 	--font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
 	--animation-accordion-down: accordion-down 0.2s ease-out;
 	--animation-accordion-up: accordion-up 0.2s ease-out;
+	--animation-fade-in: fade-in 1s ease-out forwards;
+	--animation-fade-out: fade-out 1s ease-out forwards;
 
 	@keyframes accordion-down {
 		from {
@@ -63,6 +81,42 @@
 			height: 0;
 		}
 	}
+	@keyframes fade-in {
+		0% {
+			opacity: 0;
+			scale: 0.5;
+		}
+		20% {
+			opacity: 1;
+			scale: 1;
+		}
+		80% {
+			opacity: 1;
+			scale: 1;
+		}
+		100% {
+			opacity: 0;
+			scale: 0.5;
+		}
+	}
+	@keyframes fade-out {
+		0% {
+			opacity: 1;
+			scale: 1;
+		}
+		20% {
+			opacity: 0;
+			scale: 0.5;
+		}
+		80% {
+			opacity: 0;
+			scale: 0.5;
+		}
+		100% {
+			opacity: 1;
+			scale: 1;
+		}
+	}
 }
 
 @layer base {
@@ -76,11 +130,11 @@
 		--popover: #ffffff;
 		--popover-foreground: #1a1a1a;
 
-		/* ZerOEmail — black & white primary */
-		--primary: #000000;
+		/* Popsuites — blue primary (brand CTA/active color) */
+		--primary: var(--brand-blue);
 		--primary-foreground: #ffffff;
-		--primary-deep: #1a1a1a;
-		--primary-soft: rgba(0, 0, 0, 0.08);
+		--primary-deep: var(--brand-navy);
+		--primary-soft: rgba(6, 99, 218, 0.08);
 
 		/* secondary */
 		--secondary: #f3f4f6;
@@ -97,18 +151,43 @@
 		/* status */
 		--success: #1E8E3E;
 		--success-foreground: #FFFFFF;
+		--success-soft: #E6F4EA;
 		--warning: #E37400;
 		--warning-foreground: #FFFFFF;
 		--warning-soft: #FEF3E2;
 		--destructive: #C5221F;
 		--destructive-foreground: #FFFFFF;
 		--destructive-soft: #FCE8E6;
+		--info: #1A73E8;
+		--info-foreground: #FFFFFF;
+		--info-soft: #E8F0FE;
+		--stat-purple: #9334E6;
+		--stat-purple-foreground: #FFFFFF;
+		--stat-purple-soft: #F3E8FD;
 
 		/* strokes */
 		--border: #e5e7eb;
 		--border-strong: #d1d5db;
 		--input: #e5e7eb;
 		--ring: #000000;
+
+		/* Popsuite neobrutalism button tokens */
+		--main: #5632fb;
+		--overlay: rgba(0, 0, 0, 0.8);
+		--bg: #f1eeff;
+		--bw: #fff;
+		--blank: #000;
+		--neo-border: #16151c;
+		--text: #16151c;
+		--mtext: #fff;
+		--neo-ring: #5632fb;
+		--ring-offset: #fff;
+		--box-shadow-x: 4px;
+		--box-shadow-y: 4px;
+		--reverse-box-shadow-x: -4px;
+		--reverse-box-shadow-y: -4px;
+		--shadow: var(--box-shadow-x) var(--box-shadow-y) 0px 0px
+			var(--neo-border);
 
 		/* charts — blue-forward family */
 		--chart-1: 211 100% 44%;
@@ -117,9 +196,15 @@
 		--chart-4: 262 52% 55%;
 		--chart-5: 145 63% 35%;
 
+		/* categorical — distinct hues for identity charts (e.g. inbox category donut) */
+		--category-1: #2a78d6; /* blue */
+		--category-2: #1baf7a; /* aqua */
+		--category-3: #eb6834; /* orange */
+		--category-4: #4a3aa7; /* violet */
+
 		--radius: 0.5rem;
 		--sidebar-width: 256px;
-		--sidebar-width-collapsed: 256px;
+		--sidebar-width-collapsed: 72px;
 
 		/* sidebar */
 		--sidebar-bg: #ffffff;
@@ -128,11 +213,31 @@
 		--sidebar-item-active-text: #000000;
 		--sidebar-item-active-icon: #000000;
 		--sidebar-item-hover-bg: rgba(0, 0, 0, 0.05);
+		--sidebar-item-bg: #f4f4f5;
 		--sidebar-text: #374151;
 		--sidebar-text-muted: #9ca3af;
 		--sidebar-section-label: #9ca3af;
 		--sidebar-surface: #ffffff;
 		--sidebar-surface-border: #e5e7eb;
+
+		/* lime pill badges (unread counts, "New" tag) */
+		--sidebar-badge-bg: #d4f568;
+		--sidebar-badge-text: #33430c;
+
+		/* brand gradient stops — single source of truth, same in both themes */
+		--brand-violet: #5632fb;
+		--brand-purple: #3316b8;
+		--brand-blue: #0663da;
+		--brand-navy: #00388f;
+
+		/* active nav item background — fixed brand gradient, same in both themes */
+		--sidebar-item-active-gradient: linear-gradient(
+			90deg,
+			var(--brand-violet) 0%,
+			var(--brand-purple) 33%,
+			var(--brand-blue) 66%,
+			var(--brand-navy) 100%
+		);
 	}
 
 	.dark {
@@ -145,10 +250,14 @@
 		--popover: #2D2E30;
 		--popover-foreground: #E3E3E3;
 
-		--primary: #ffffff;
-		--primary-foreground: #000000;
-		--primary-deep: #e5e5e5;
-		--primary-soft: rgba(255, 255, 255, 0.10);
+		--primary: var(--brand-blue);
+		--primary-foreground: #ffffff;
+		/* On dark backgrounds "deep" must read as a light tint, not the
+		   light-theme dark-navy shade — that shade is illegible on
+		   near-black surfaces (e.g. rule tag icons, Active pill, AI draft
+		   accents that pair text-primary-deep with bg-primary-soft). */
+		--primary-deep: #8FC1FF;
+		--primary-soft: rgba(6, 99, 218, 0.18);
 
 		--secondary: #2D2E30;
 		--secondary-foreground: #E3E3E3;
@@ -162,23 +271,47 @@
 
 		--success: #81C995;
 		--success-foreground: #062E0F;
+		--success-soft: rgba(129, 201, 149, 0.12);
 		--warning: #FDD663;
 		--warning-foreground: #1F1F1F;
 		--warning-soft: rgba(253, 214, 99, 0.12);
 		--destructive: #F28B82;
 		--destructive-foreground: #1F1F1F;
 		--destructive-soft: rgba(242, 139, 130, 0.12);
+		--info: #8AB4F8;
+		--info-foreground: #062E6F;
+		--info-soft: rgba(138, 180, 248, 0.12);
+		--stat-purple: #D7AEFB;
+		--stat-purple-foreground: #2C0A4E;
+		--stat-purple-soft: rgba(215, 174, 251, 0.12);
 
 		--border: #3C4043;
 		--border-strong: #5F6368;
 		--input: #3C4043;
 		--ring: #ffffff;
 
+		/* Popsuite neobrutalism button tokens */
+		--bg: #16151c;
+		--bw: #1f1d29;
+		--blank: #fff;
+		--neo-border: #000;
+		--text: #e6e6e6;
+		--mtext: #fff;
+		--neo-ring: #7c5cff;
+		--ring-offset: #16151c;
+		--shadow: var(--box-shadow-x) var(--box-shadow-y) 0px 0px
+			var(--neo-border);
+
 		--chart-1: 211 100% 62%;
 		--chart-2: 199 89% 60%;
 		--chart-3: 217 40% 60%;
 		--chart-4: 262 60% 68%;
 		--chart-5: 145 55% 52%;
+
+		--category-1: #3987e5; /* blue */
+		--category-2: #199e70; /* aqua */
+		--category-3: #d95926; /* orange */
+		--category-4: #9085e9; /* violet */
 
 		/* sidebar */
 		--sidebar-bg: #111111;
@@ -187,11 +320,18 @@
 		--sidebar-item-active-text: #ffffff;
 		--sidebar-item-active-icon: #ffffff;
 		--sidebar-item-hover-bg: rgba(255, 255, 255, 0.06);
+		--sidebar-item-bg: rgba(255, 255, 255, 0.04);
 		--sidebar-text: #a0a0a0;
 		--sidebar-text-muted: #666666;
 		--sidebar-section-label: #555555;
 		--sidebar-surface: #1a1a1a;
 		--sidebar-surface-border: #2a2a2a;
+
+		/* lime pill badges (unread counts, "New" tag) */
+		--sidebar-badge-bg: #b7e02e;
+		--sidebar-badge-text: #1b2405;
+
+		/* brand gradient stops inherit from :root — identical in both themes */
 	}
 
 	.marketing-theme {

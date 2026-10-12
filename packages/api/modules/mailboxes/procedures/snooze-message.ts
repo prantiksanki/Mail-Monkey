@@ -37,13 +37,16 @@ export const snoozeMessage = protectedProcedure
 			});
 		}
 
-		// Remove from the Gmail inbox.
-		await modifyMessageLabels(
-			mailbox.accountId,
-			input.messageId,
-			[],
-			["INBOX"],
-		);
+		// Remove from the Gmail inbox. IMAP snooze is local-only: the message
+		// stays in the server's INBOX and the local copy is simply hidden.
+		if (mailbox.provider !== "IMAP") {
+			await modifyMessageLabels(
+				mailbox.accountId,
+				input.messageId,
+				[],
+				["INBOX"],
+			);
+		}
 
 		// Gather display fields + original labels. Prefer the local Email row
 		// (and update it so the message leaves the DB-served inbox at once);

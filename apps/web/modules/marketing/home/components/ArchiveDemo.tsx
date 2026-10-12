@@ -61,10 +61,10 @@ export function ArchiveDemo() {
 			id="features"
 			className="w-full scroll-mt-24 bg-background px-6 py-20 text-center sm:px-8 sm:py-24"
 		>
-			<span className="mb-4 inline-block rounded-full bg-foreground px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-background">
+			<span className="mb-4 inline-block rounded-full bg-primary px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-primary-foreground">
 				Smart archiving
 			</span>
-			<div className="mb-2 font-serif text-[34px] font-normal leading-[1.02] tracking-tight text-foreground sm:text-[40px] md:text-[52px]">
+			<div className="mb-2 font-sans text-[34px] font-normal leading-[1.02] tracking-tight text-foreground sm:text-[40px] md:text-[52px]">
 				Archives everything.
 				<br />
 				Misses nothing.
@@ -78,7 +78,7 @@ export function ArchiveDemo() {
 				<NextLink
 					href="/auth/signup"
 					prefetch
-					className="rounded-full border border-foreground bg-foreground px-6 py-3 text-[15px] text-background transition-colors hover:bg-foreground/90"
+					className="rounded-full border border-primary bg-primary px-6 py-3 text-[15px] text-primary-foreground transition-colors hover:bg-primary/90"
 				>
 					See how archiving works
 				</NextLink>
@@ -123,7 +123,7 @@ export function ArchiveDemo() {
 								"rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-[0.18em]",
 								row.badgeTone === "archived"
 									? "border-border bg-muted text-foreground"
-									: "border-foreground/15 bg-foreground text-background",
+									: "border-primary/15 bg-primary text-primary-foreground",
 							)}
 						>
 							{row.badge}

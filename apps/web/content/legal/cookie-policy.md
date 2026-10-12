@@ -1,8 +1,10 @@
 ---
 title: Cookie Policy
+description: How Popsuites uses cookies and similar technologies on our website and application.
+lastUpdated: "2026-07-14"
 ---
 
-This Cookie Policy explains how Zer0Email ("we", "us", or "our") uses cookies and similar technologies on our website and application. By using Zer0Email, you consent to the use of cookies as described in this policy.
+This Cookie Policy explains how Popsuites ("we", "us", or "our") uses cookies and similar technologies on our website and application. By using Popsuites, you consent to the use of cookies as described in this policy.
 
 ---
 
@@ -16,7 +18,7 @@ Cookies are small text files placed on your device when you visit a website. The
 
 ### Essential cookies
 
-These cookies are necessary for Zer0Email to function properly. They enable core functionality such as authentication, security, and session management. The service cannot operate without these cookies.
+These cookies are necessary for Popsuites to function properly. They enable core functionality such as authentication, security, and session management. The service cannot operate without these cookies.
 
 | Cookie | Purpose | Duration |
 |--------|---------|----------|
@@ -26,7 +28,7 @@ These cookies are necessary for Zer0Email to function properly. They enable core
 
 ### Functional cookies
 
-These cookies allow Zer0Email to remember choices you make and provide enhanced, more personalized features.
+These cookies allow Popsuites to remember choices you make and provide enhanced, more personalized features.
 
 | Cookie | Purpose | Duration |
 |--------|---------|----------|
@@ -35,7 +37,7 @@ These cookies allow Zer0Email to remember choices you make and provide enhanced,
 
 ### Analytics cookies
 
-These cookies help us understand how visitors interact with Zer0Email by collecting and reporting information anonymously. We use this data to improve the service.
+These cookies help us understand how visitors interact with Popsuites by collecting and reporting information anonymously. We use this data to improve the service.
 
 | Cookie | Purpose | Duration |
 |--------|---------|----------|
@@ -68,7 +70,7 @@ Most web browsers allow you to control cookies through their settings. You can:
 - Block all cookies from being set
 - Delete all cookies when you close your browser
 
-Please note that blocking essential cookies may prevent Zer0Email from functioning properly.
+Please note that blocking essential cookies may prevent Popsuites from functioning properly.
 
 ### Cookie management links by browser
 
@@ -81,7 +83,7 @@ Please note that blocking essential cookies may prevent Zer0Email from functioni
 
 ## 5. Changes to this policy
 
-We may update this Cookie Policy from time to time. When we make material changes, we will notify you by updating the "Last updated" date and, where appropriate, by displaying a notice within Zer0Email.
+We may update this Cookie Policy from time to time. When we make material changes, we will notify you by updating the "Last updated" date and, where appropriate, by displaying a notice within Popsuites.
 
 ---
 
@@ -90,4 +92,4 @@ We may update this Cookie Policy from time to time. When we make material change
 If you have questions about this Cookie Policy, please contact us at:
 
 **PopPush AI**
-Email: `founder@zer0email.com`
+Email: `support@popsuites.ai`

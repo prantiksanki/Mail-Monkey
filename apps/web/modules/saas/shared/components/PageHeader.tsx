@@ -9,8 +9,14 @@ export function PageHeader({
 }) {
 	return (
 		<div className="mb-8">
-			<h2 className="font-bold text-2xl lg:text-3xl">{title}</h2>
-			<p className="mt-1 opacity-60">{subtitle}</p>
+			<h2 className="text-balance font-serif font-normal text-4xl leading-[1.05] tracking-tight md:text-5xl">
+				{title}
+			</h2>
+			{subtitle && (
+				<p className="mt-3 max-w-xl text-foreground text-sm">
+					{subtitle}
+				</p>
+			)}
 		</div>
 	);
 }

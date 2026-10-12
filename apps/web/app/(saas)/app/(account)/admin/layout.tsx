@@ -20,6 +20,10 @@ export default async function AdminLayout({ children }: PropsWithChildren) {
 		redirect("/app");
 	}
 
+	if (!session.user?.twoFactorEnabled) {
+		redirect("/app/settings/security");
+	}
+
 	return (
 		<>
 			<PageHeader

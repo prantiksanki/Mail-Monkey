@@ -451,7 +451,7 @@ export function RuleFormDialog({
 								</h3>
 								<Button
 									type="button"
-									variant="outline"
+									variant="primary"
 									size="sm"
 									onClick={() => append({ type: "LABEL" })}
 								>

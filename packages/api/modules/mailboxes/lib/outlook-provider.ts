@@ -6,6 +6,7 @@ import type {
 import {
 	createOutlookCategory,
 	createOutlookDraft,
+	deleteOutlookCategory,
 	forwardOutlookMessage,
 	getOutlookMessage,
 	listOutlookCategories,
@@ -70,12 +71,32 @@ export const outlookProvider: MailProvider = {
 		}
 	},
 
+	async deleteLabel(accountId, label) {
+		const categories = await listOutlookCategories(accountId);
+		const existing = categories.find(
+			(c) => c.displayName.toLowerCase() === label.toLowerCase(),
+		);
+		// Already gone — nothing to delete.
+		if (!existing) {
+			return;
+		}
+		await deleteOutlookCategory(accountId, existing.id);
+	},
+
 	async archive(accountId, messageId) {
 		await moveOutlookMessage(accountId, messageId, "Archive");
 	},
 
 	async markRead(accountId, messageId) {
 		await updateOutlookMessage(accountId, messageId, { isRead: true });
+	},
+
+	async markUnread(accountId, messageId) {
+		await updateOutlookMessage(accountId, messageId, { isRead: false });
+	},
+
+	async trash(accountId, messageId) {
+		await moveOutlookMessage(accountId, messageId, "DeletedItems");
 	},
 
 	async markSpam(accountId, messageId) {

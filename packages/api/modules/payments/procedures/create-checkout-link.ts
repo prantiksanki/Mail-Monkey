@@ -1,4 +1,5 @@
 import { ORPCError } from "@orpc/client";
+import { parseGaCookies } from "@repo/analytics";
 import { getMailboxesByUserId, getOrganizationById } from "@repo/database";
 import { logger } from "@repo/logs";
 import {
@@ -31,8 +32,14 @@ export const createCheckoutLink = protectedProcedure
 	.handler(
 		async ({
 			input: { productId, redirectUrl, type, organizationId },
-			context: { user },
+			context: { user, headers },
 		}) => {
+			// Carry the buyer's GA4 client id into the checkout so the Polar
+			// webhook can report the `purchase` conversion against their
+			// original web session.
+			const { clientId: gaClientId } = parseGaCookies(
+				headers.get("cookie"),
+			);
 			const customerId = await getCustomerIdFromEntity(
 				organizationId
 					? {
@@ -109,6 +116,9 @@ export const createCheckoutLink = protectedProcedure
 					trialPeriodDays,
 					seats,
 					customerId: customerId ?? undefined,
+					...(gaClientId
+						? { metadata: { ga_client_id: gaClientId } }
+						: {}),
 				});
 
 				if (!checkoutLink) {

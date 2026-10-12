@@ -1,4 +1,6 @@
 import { sendMessage } from "./gmail-client";
+import { sendImapEmail } from "./imap-provider";
+import { sendOutlookMessage } from "./outlook-client";
 import { looksLikeHtml, sanitizeOutboundHtml } from "./sanitize-html";
 
 /** RFC 2045 base64 encoding for a body part (76-char lines). */
@@ -9,7 +11,7 @@ function base64Body(body: string): string {
 }
 
 /** Strips tags to produce a readable plain-text alternative from HTML. */
-function htmlToPlainText(html: string): string {
+export function htmlToPlainText(html: string): string {
 	return html
 		.replace(/<\s*br\s*\/?>/gi, "\n")
 		.replace(/<\/(p|div|tr|li|h[1-6])>/gi, "\n")
@@ -138,4 +140,46 @@ export async function sendEmailViaGmail(input: SendEmailInput) {
 
 	const result = await sendMessage(input.accountId, raw);
 	return { messageId: result.id ?? null };
+}
+
+export type SendProvider = "GOOGLE" | "OUTLOOK" | "IMAP";
+
+/**
+ * Sends through whichever provider backs the mailbox (Gmail API, Microsoft
+ * Graph, or the account's SMTP server). Gmail-only `sendEmailViaGmail` silently
+ * fails for Outlook/IMAP accounts, so mailbox-level callers use this instead.
+ */
+export async function sendEmailForMailbox(
+	provider: SendProvider,
+	input: SendEmailInput,
+): Promise<{ messageId: string | null }> {
+	if (provider === "GOOGLE") {
+		return sendEmailViaGmail(input);
+	}
+
+	const isHtml = looksLikeHtml(input.body);
+	const body = isHtml ? sanitizeOutboundHtml(input.body) : input.body;
+
+	if (provider === "OUTLOOK") {
+		await sendOutlookMessage(input.accountId, {
+			to: input.to,
+			cc: input.cc ?? undefined,
+			bcc: input.bcc ?? undefined,
+			subject: input.subject,
+			body,
+			isHtml,
+		});
+		// Graph's sendMail returns 202 with no message id.
+		return { messageId: null };
+	}
+
+	return sendImapEmail(input.accountId, {
+		from: input.from,
+		to: input.to,
+		cc: input.cc,
+		bcc: input.bcc,
+		subject: input.subject,
+		text: isHtml ? htmlToPlainText(body) || " " : body,
+		html: isHtml ? body : undefined,
+	});
 }

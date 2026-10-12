@@ -45,7 +45,7 @@ export const mdxComponents = {
 	h1: ({ children, ...rest }) => (
 		<h1
 			id={slugifyHeadline(children as string)}
-			className="mt-12 mb-4 font-bold text-3xl md:text-4xl leading-tight tracking-tight text-foreground"
+			className="mt-12 mb-4 font-[family-name:var(--font-bricolage)] font-bold text-3xl md:text-4xl leading-tight tracking-tight text-foreground"
 			{...rest}
 		>
 			{children}
@@ -54,7 +54,7 @@ export const mdxComponents = {
 	h2: ({ children, ...rest }) => (
 		<h2
 			id={slugifyHeadline(children as string)}
-			className="mt-10 mb-4 font-bold text-2xl md:text-3xl leading-tight tracking-tight text-foreground"
+			className="mt-10 mb-4 font-[family-name:var(--font-bricolage)] font-bold text-2xl md:text-3xl leading-tight tracking-tight text-foreground"
 			{...rest}
 		>
 			{children}
@@ -63,7 +63,7 @@ export const mdxComponents = {
 	h3: ({ children, ...rest }) => (
 		<h3
 			id={slugifyHeadline(children as string)}
-			className="mt-8 mb-3 font-semibold text-xl leading-snug text-foreground"
+			className="mt-8 mb-3 font-[family-name:var(--font-bricolage)] font-semibold text-xl leading-snug text-foreground"
 			{...rest}
 		>
 			{children}
@@ -72,7 +72,7 @@ export const mdxComponents = {
 	h4: ({ children, ...rest }) => (
 		<h4
 			id={slugifyHeadline(children as string)}
-			className="mt-6 mb-2 font-semibold text-lg leading-snug text-foreground"
+			className="mt-6 mb-2 font-[family-name:var(--font-bricolage)] font-semibold text-lg leading-snug text-foreground"
 			{...rest}
 		>
 			{children}
@@ -81,7 +81,7 @@ export const mdxComponents = {
 	h5: ({ children, ...rest }) => (
 		<h5
 			id={slugifyHeadline(children as string)}
-			className="mt-6 mb-2 font-semibold text-base text-foreground"
+			className="mt-6 mb-2 font-[family-name:var(--font-bricolage)] font-semibold text-base text-foreground"
 			{...rest}
 		>
 			{children}
@@ -90,7 +90,7 @@ export const mdxComponents = {
 	h6: ({ children, ...rest }) => (
 		<h6
 			id={slugifyHeadline(children as string)}
-			className="mt-4 mb-2 font-semibold text-sm uppercase tracking-wider text-muted-foreground"
+			className="mt-4 mb-2 font-[family-name:var(--font-bricolage)] font-semibold text-sm uppercase tracking-wider text-muted-foreground"
 			{...rest}
 		>
 			{children}

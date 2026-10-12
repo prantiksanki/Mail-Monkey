@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { ORPCError } from "@orpc/server";
 import {
 	getMailboxesWithExpiringWatch,
 	updateMailboxWatchState,
@@ -16,13 +17,52 @@ import {
 
 const PUBSUB_TOPIC = process.env.GOOGLE_PUBSUB_TOPIC as string;
 
+const PUBSUB_TOPIC_PATTERN = /^projects\/([^/]+)\/topics\/[^/]+$/;
+
+/**
+ * Validate the configured Pub/Sub topic before calling Gmail's `users.watch`.
+ *
+ * Gmail requires the topic to live in the SAME GCP project as the OAuth client.
+ * A mismatch (or a missing topic) makes Google return an opaque 400, so we
+ * fail loudly here with an actionable message. If `GOOGLE_PUBSUB_PROJECT` is
+ * set, we additionally assert the topic belongs to that project.
+ */
+function assertPubSubTopicConfigured() {
+	if (!PUBSUB_TOPIC) {
+		throw new ORPCError("INTERNAL_SERVER_ERROR", {
+			message:
+				"Email watch is not configured: GOOGLE_PUBSUB_TOPIC is missing.",
+		});
+	}
+
+	const match = PUBSUB_TOPIC.match(PUBSUB_TOPIC_PATTERN);
+	if (!match) {
+		throw new ORPCError("INTERNAL_SERVER_ERROR", {
+			message: `Email watch is misconfigured: GOOGLE_PUBSUB_TOPIC must look like "projects/<project>/topics/<topic>" (got "${PUBSUB_TOPIC}").`,
+		});
+	}
+
+	const expectedProject = process.env.GOOGLE_PUBSUB_PROJECT;
+	if (expectedProject && match[1] !== expectedProject) {
+		throw new ORPCError("INTERNAL_SERVER_ERROR", {
+			message: `Email watch is misconfigured: GOOGLE_PUBSUB_TOPIC points at project "${match[1]}" but GOOGLE_PUBSUB_PROJECT is "${expectedProject}". The Pub/Sub topic must be in the same GCP project as the OAuth client.`,
+		});
+	}
+}
+
 export async function enableWatchForMailbox(
 	mailboxId: string,
 	accountId: string,
-	provider: "GOOGLE" | "OUTLOOK" = "GOOGLE",
+	provider: "GOOGLE" | "OUTLOOK" | "IMAP" = "GOOGLE",
 ) {
 	if (provider === "OUTLOOK") {
 		return enableOutlookSubscription(mailboxId, accountId);
+	}
+	if (provider === "IMAP") {
+		// No push/webhook subscription exists for generic IMAP — new mail is
+		// already picked up by imap-sync-poller.ts regardless, so this is a
+		// deliberate no-op rather than an error.
+		return;
 	}
 	return enableGmailWatch(mailboxId, accountId);
 }
@@ -30,7 +70,7 @@ export async function enableWatchForMailbox(
 export async function disableWatchForMailbox(
 	mailboxId: string,
 	accountId: string,
-	provider: "GOOGLE" | "OUTLOOK" = "GOOGLE",
+	provider: "GOOGLE" | "OUTLOOK" | "IMAP" = "GOOGLE",
 	subscriptionId?: string | null,
 ) {
 	if (provider === "OUTLOOK") {
@@ -40,10 +80,15 @@ export async function disableWatchForMailbox(
 			subscriptionId ?? null,
 		);
 	}
+	if (provider === "IMAP") {
+		return;
+	}
 	return disableGmailWatch(mailboxId, accountId);
 }
 
 async function enableGmailWatch(mailboxId: string, accountId: string) {
+	assertPubSubTopicConfigured();
+
 	const auth = await getOAuth2Client(accountId);
 	const gmail = google.gmail({ version: "v1", auth });
 	const profile = await gmail.users.getProfile({ userId: "me" });

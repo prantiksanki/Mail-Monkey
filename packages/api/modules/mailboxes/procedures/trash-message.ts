@@ -1,7 +1,7 @@
 import { getEmailById, updateEmailLabels } from "@repo/database";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
-import { trashMessage as gmailTrashMessage } from "../lib/gmail-client";
+import { getMailProvider } from "../lib/mail-provider";
 import { verifyMailboxOwnership } from "../lib/ownership";
 
 export const trashMessage = protectedProcedure
@@ -23,7 +23,10 @@ export const trashMessage = protectedProcedure
 			context.user.id,
 		);
 
-		await gmailTrashMessage(mailbox.accountId, input.messageId);
+		await getMailProvider(mailbox.provider).trash(
+			mailbox.accountId,
+			input.messageId,
+		);
 
 		// Mirror the change in the local DB so the message leaves the
 		// DB-served inbox immediately (Gmail labels move to TRASH).

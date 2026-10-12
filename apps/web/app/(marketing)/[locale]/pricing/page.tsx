@@ -3,12 +3,14 @@ import { FinalCta } from "@marketing/home/components/FinalCta";
 import { PricingCompare } from "@marketing/home/components/PricingCompare";
 import { PricingSection } from "@marketing/home/components/PricingSection";
 import { getBaseUrl } from "@repo/utils";
+import { BreadcrumbJsonLd } from "@shared/components/BreadcrumbJsonLd";
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
 
 export function generateMetadata(): Metadata {
 	const url = `${getBaseUrl()}/pricing`;
-	const title = "Pricing — Zer0Email";
+	const title = "Pricing";
+	const socialTitle = "Pricing — Popsuites";
 	const description =
 		"Simple, transparent pricing for AI-powered email automation. Start free, upgrade when you're ready. No hidden fees.";
 
@@ -17,13 +19,19 @@ export function generateMetadata(): Metadata {
 		description,
 		alternates: { canonical: url },
 		openGraph: {
-			title,
+			title: socialTitle,
 			description,
 			url,
-			siteName: "Zer0Email",
+			siteName: "Popsuites",
 			type: "website",
+			images: ["/opengraph-image"],
 		},
-		twitter: { card: "summary_large_image", title, description },
+		twitter: {
+			card: "summary_large_image",
+			title: socialTitle,
+			description,
+			images: ["/opengraph-image"],
+		},
 	};
 }
 
@@ -35,8 +43,47 @@ export default async function PricingPage({
 	const { locale } = await params;
 	setRequestLocale(locale);
 
+	const baseUrl = getBaseUrl();
+	const webApplication = {
+		"@context": "https://schema.org",
+		"@type": "WebApplication",
+		name: "Popsuites",
+		applicationCategory: "BusinessApplication",
+		operatingSystem: "Web, Gmail, Outlook",
+		url: `${baseUrl}/pricing`,
+		offers: [
+			{
+				"@type": "Offer",
+				name: "Free",
+				price: "0",
+				priceCurrency: "USD",
+				url: `${baseUrl}/pricing`,
+			},
+			{
+				"@type": "Offer",
+				name: "Pro",
+				price: "5",
+				priceCurrency: "USD",
+				url: `${baseUrl}/pricing`,
+			},
+		],
+	};
+
 	return (
 		<>
+			<script
+				type="application/ld+json"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: structured data
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(webApplication),
+				}}
+			/>
+			<BreadcrumbJsonLd
+				items={[
+					{ name: "Home", url: baseUrl },
+					{ name: "Pricing", url: `${baseUrl}/pricing` },
+				]}
+			/>
 			<div className="bg-black">
 				<PricingSection />
 				<div className="px-6 pb-24 sm:px-8 sm:pb-32">

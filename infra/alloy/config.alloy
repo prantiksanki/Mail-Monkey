@@ -1,0 +1,43 @@
+// Grafana Alloy config for Popsuites (Option A: Grafana Cloud hosted,
+// self-hosted Alloy only — see /popsuites-observability-plan.html).
+//
+// Scrapes the prod app's authenticated /api/metrics endpoint and forwards to
+// Grafana Cloud's hosted Prometheus (Mimir) via remote_write. Log shipping
+// (Loki) is deliberately out of scope for this pass — see the plan doc.
+//
+// Nothing here is a secret: the target is prod's public hostname, and both
+// the scrape token and remote_write credentials are read from env vars
+// injected at deploy time (see infra/alloy/README.md), never committed.
+
+prometheus.scrape "popsuites_backend" {
+	targets = [
+		{
+			"__address__" = "zer0email-prod-web.azurewebsites.net",
+			"__scheme__"  = "https",
+			"environment" = "prod",
+			"service"     = "web",
+		},
+	]
+
+	metrics_path    = "/api/metrics"
+	scrape_interval = "30s"
+
+	// Matches the Authorization: Bearer <METRICS_SCRAPE_TOKEN> check in
+	// apps/web/app/api/metrics/route.ts. The route treats an unset token as
+	// a public no-op, so this MUST be set on the prod App Service or the
+	// endpoint is open to anyone.
+	bearer_token = env("METRICS_SCRAPE_TOKEN")
+
+	forward_to = [prometheus.remote_write.grafana_cloud.receiver]
+}
+
+prometheus.remote_write "grafana_cloud" {
+	endpoint {
+		url = "https://prometheus-prod-43-prod-ap-south-1.grafana.net/api/prom/push"
+
+		basic_auth {
+			username = env("GRAFANA_CLOUD_USERNAME")
+			password = env("GRAFANA_CLOUD_PASSWORD")
+		}
+	}
+}

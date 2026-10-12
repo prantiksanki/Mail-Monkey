@@ -1,12 +1,15 @@
 import {
 	createExecutionLog,
 	db,
+	getEmailById,
 	incrementEmailsProcessed,
+	updateEmailLabels,
 	updateMailboxHistoryId,
 	upsertEmail,
 	wasMessageAlreadyProcessed,
 } from "@repo/database";
 import { logger } from "@repo/logs";
+import { queueDepth } from "@repo/metrics";
 import {
 	canProcessEmail,
 	canUseRuleEngine,
@@ -19,8 +22,20 @@ import { getMailProvider } from "./mail-provider";
 import { evaluateRule } from "./rule-evaluator";
 import { disableWatchForMailbox } from "./watch-manager";
 
+const QUEUE_NAME = "rule-processing";
+
 // Per-mailbox lock to prevent concurrent processing
 const processingMailboxes = new Set<string>();
+
+function trackMailboxProcessing(mailboxId: string) {
+	processingMailboxes.add(mailboxId);
+	queueDepth.set({ queue_name: QUEUE_NAME }, processingMailboxes.size);
+}
+
+function untrackMailboxProcessing(mailboxId: string) {
+	processingMailboxes.delete(mailboxId);
+	queueDepth.set({ queue_name: QUEUE_NAME }, processingMailboxes.size);
+}
 
 export async function processMailboxNotification(mailbox: {
 	id: string;
@@ -41,7 +56,7 @@ export async function processMailboxNotification(mailbox: {
 		);
 		return;
 	}
-	processingMailboxes.add(mailbox.id);
+	trackMailboxProcessing(mailbox.id);
 
 	try {
 		await processMailboxMessages({
@@ -49,7 +64,7 @@ export async function processMailboxNotification(mailbox: {
 			lastHistoryId: mailbox.lastHistoryId,
 		});
 	} finally {
-		processingMailboxes.delete(mailbox.id);
+		untrackMailboxProcessing(mailbox.id);
 	}
 }
 
@@ -73,7 +88,7 @@ export async function processOutlookNotification(
 		);
 		return;
 	}
-	processingMailboxes.add(mailbox.id);
+	trackMailboxProcessing(mailbox.id);
 
 	try {
 		await processMessages({
@@ -82,7 +97,7 @@ export async function processOutlookNotification(
 			messageIds,
 		});
 	} finally {
-		processingMailboxes.delete(mailbox.id);
+		untrackMailboxProcessing(mailbox.id);
 	}
 }
 
@@ -115,11 +130,16 @@ async function processMailboxMessages(mailbox: {
 		lastHistoryId: mailbox.lastHistoryId,
 	});
 
+	// Latest known label state per message, from labelAdded/labelRemoved
+	// history records. Gmail reports the message's *full* current labelIds
+	// alongside each label-change record, so the last one wins.
+	const labelUpdates = new Map<string, string[]>();
+
 	try {
 		const history = await listHistory(
 			mailbox.accountId,
 			mailbox.lastHistoryId,
-			{ historyTypes: ["messageAdded"] },
+			{ historyTypes: ["messageAdded", "labelAdded", "labelRemoved"] },
 		);
 		latestHistoryId = history.historyId ?? mailbox.lastHistoryId;
 
@@ -144,6 +164,17 @@ async function processMailboxMessages(mailbox: {
 							continue;
 						}
 						newMessageIds.push(added.message.id);
+					}
+				}
+				for (const changed of [
+					...(record.labelsAdded ?? []),
+					...(record.labelsRemoved ?? []),
+				]) {
+					if (changed.message?.id && changed.message.labelIds) {
+						labelUpdates.set(
+							changed.message.id,
+							changed.message.labelIds,
+						);
 					}
 				}
 			}
@@ -184,6 +215,28 @@ async function processMailboxMessages(mailbox: {
 		mailboxId: mailbox.id,
 		count: newMessageIds.length,
 	});
+
+	// Mirror label changes (e.g. a label applied by hand in Gmail, or by a
+	// Gmail filter) onto already-synced messages. Messages that are also in
+	// newMessageIds are skipped here — processMessages below fetches them
+	// fresh from Gmail and writes their current labelIds already.
+	const newIdSet = new Set(newMessageIds);
+	for (const [messageId, labelIds] of labelUpdates) {
+		if (newIdSet.has(messageId)) {
+			continue;
+		}
+		const localEmail = await getEmailById(mailbox.id, messageId);
+		if (localEmail) {
+			await updateEmailLabels(messageId, labelIds);
+			logger.info(
+				"[rule-engine] Mirrored Gmail label change to local DB",
+				{
+					mailboxId: mailbox.id,
+					messageId,
+				},
+			);
+		}
+	}
 
 	if (newMessageIds.length === 0) {
 		await updateMailboxHistoryId(mailbox.id, latestHistoryId);

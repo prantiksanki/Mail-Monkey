@@ -8,6 +8,10 @@ export interface PlanLimits {
 	emailsProcessedPerMonth: number;
 	aiChat: boolean;
 	ruleEngine: boolean;
+	voiceAgentMinutes?: number; // undefined = not included in this plan
+	calendarScheduling?: boolean;
+	autoDrafts?: boolean;
+	meetingIntegrations?: boolean;
 }
 
 /**
@@ -150,4 +154,19 @@ export function canUseRuleEngine(planId: PlanId): boolean {
 	}
 
 	return limits.ruleEngine;
+}
+
+/**
+ * Check if more voice agent minutes can be used this month for a plan.
+ * @param planId - The plan ID
+ * @param minutesUsed - The number of voice minutes already used this month
+ * @returns True if more voice minutes can be used, false otherwise
+ */
+export function canUseVoiceAgent(planId: PlanId, minutesUsed: number): boolean {
+	const limits = getPlanLimits(planId);
+	if (!limits?.voiceAgentMinutes) {
+		return false;
+	}
+
+	return minutesUsed < limits.voiceAgentMinutes;
 }

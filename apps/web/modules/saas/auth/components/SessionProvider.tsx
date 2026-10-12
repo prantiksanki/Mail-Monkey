@@ -2,25 +2,22 @@
 import { authClient } from "@repo/auth/client";
 import { sessionQueryKey, useSessionQuery } from "@saas/auth/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
-import { type ReactNode, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { SessionContext } from "../lib/session-context";
 
 export function SessionProvider({ children }: { children: ReactNode }) {
 	const queryClient = useQueryClient();
 
-	const { data: session } = useSessionQuery();
-	const [loaded, setLoaded] = useState(!!session);
-
-	useEffect(() => {
-		if (session && !loaded) {
-			setLoaded(true);
-		}
-	}, [session]);
+	// `data: null` is a *successful* resolution meaning "no session" (e.g.
+	// every signed-out visitor) — `loaded` must key off the query having
+	// settled (`!isPending`), not off `session` being truthy, or anonymous
+	// visitors never see `loaded: true`.
+	const { data: session, isPending } = useSessionQuery();
 
 	return (
 		<SessionContext.Provider
 			value={{
-				loaded,
+				loaded: !isPending,
 				session: session?.session ?? null,
 				user: session?.user ?? null,
 				reloadSession: async () => {

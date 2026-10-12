@@ -1,10 +1,11 @@
-import { Brain, Instagram, Mail, Twitter } from "lucide-react";
-import Link from "next/link";
+import { Brain } from "lucide-react";
 import { LocaleLink } from "@/modules/i18n/routing";
 import { AiProviderButtons } from "./AiProviderButtons";
+import { FollowUsDock } from "./FollowUsDock";
+import { FooterEmailCopy } from "./FooterEmailCopy";
 
 const footerLinks = [
-	{ label: "Products", href: "/#pricing" },
+	{ label: "Zoom Integration", href: "/integrations/zoom" },
 	{ label: "About", href: "/about" },
 	{ label: "Blog", href: "/blog" },
 	{ label: "Contact Us", href: "/contact" },
@@ -13,29 +14,30 @@ const footerLinks = [
 const legalLinks = [
 	{ label: "Privacy", href: "/legal/privacy-policy" },
 	{ label: "Terms", href: "/legal/terms" },
+	{ label: "Cookies", href: "/legal/cookie-policy" },
 ] as const;
 
 export function Footer() {
 	return (
-		<footer className="border-white/10 border-t bg-black">
+		<footer className="rounded-t-[40px] bg-[#0663DA] text-white">
 			<div className="mx-auto grid w-full max-w-7xl gap-6 px-6 py-8 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
-				<div className="rounded-[28px] border border-white/10 bg-white/[0.03] px-8 py-8 text-white">
+				<div className="rounded-[28px] border border-white/10 bg-[#00388F] px-8 py-8">
 					<div className="flex items-start justify-between gap-4">
 						<div className="space-y-6">
-							<p className="font-semibold text-sm uppercase tracking-[0.2em] text-lime-300/80">
+							<p className="font-semibold text-sm uppercase tracking-[0.2em] text-lime-300">
 								Explore AI Summary
 							</p>
 							<h3 className="max-w-sm font-semibold text-3xl leading-tight tracking-tight text-white">
-								Ask AI about Zer0Email
+								Ask AI about Popsuites
 							</h3>
 							<AiProviderButtons />
 						</div>
 					</div>
 				</div>
 
-				<div className="rounded-[28px] border border-white/10 bg-white/[0.03] px-8 py-8 text-white">
+				<div className="rounded-[28px] border border-white/10 bg-[#00388F] px-8 py-8">
 					<div className="max-w-sm space-y-6">
-						<p className="font-medium text-sm uppercase tracking-[0.2em] text-white/45">
+						<p className="font-medium text-sm uppercase tracking-[0.2em] text-white/70">
 							Stay Updated
 						</p>
 						<p className="text-[30px] leading-tight tracking-tight text-white">
@@ -46,11 +48,11 @@ export function Footer() {
 							<input
 								type="email"
 								placeholder="Email address"
-								className="h-12 w-full border-0 border-b border-white/20 bg-transparent px-0 text-lg text-white outline-none placeholder:text-white/30 focus:border-white/50"
+								className="h-12 w-full border-0 border-white/30 border-b bg-transparent px-0 text-lg text-white outline-none placeholder:text-white/50 focus:border-white"
 							/>
 							<button
 								type="submit"
-								className="inline-flex items-center justify-center border-0 bg-transparent px-0 font-semibold text-sm uppercase tracking-[0.24em] text-white/70 transition hover:text-white"
+								className="inline-flex items-center justify-center border-0 bg-transparent px-0 font-semibold text-sm text-white/70 uppercase tracking-[0.24em] transition hover:text-white"
 							>
 								Subscribe
 							</button>
@@ -61,20 +63,20 @@ export function Footer() {
 
 			<div className="mx-auto grid w-full max-w-7xl gap-12 px-6 py-12 sm:px-8 lg:grid-cols-[1.2fr_0.9fr_0.8fr] lg:px-10">
 				<div className="space-y-5">
-					<h3 className="font-semibold text-white text-3xl tracking-tight">
-						Zer0Email
+					<h3 className="font-semibold text-3xl text-white tracking-tight">
+						Popsuites
 					</h3>
-					<p className="max-w-sm text-base leading-8 text-white/45">
+					<p className="max-w-sm text-base text-white/70 leading-8">
 						Empowering businesses with intelligent email solutions,
 						designed for the future of work.
 					</p>
 				</div>
 
 				<div className="space-y-5">
-					<h4 className="font-semibold text-white text-lg">
+					<h4 className="font-semibold text-lg text-white">
 						Useful Link
 					</h4>
-					<ul className="space-y-4 text-base text-white/45">
+					<ul className="space-y-4 text-base text-white/70">
 						{footerLinks.map((link) => (
 							<li key={link.label}>
 								<LocaleLink
@@ -89,29 +91,10 @@ export function Footer() {
 				</div>
 
 				<div className="space-y-5">
-					<h4 className="font-semibold text-white text-lg">
+					<h4 className="font-semibold text-lg text-white">
 						Follow Us
 					</h4>
-					<div className="flex flex-col gap-4 text-base text-white/45">
-						<Link
-							href="https://x.com"
-							target="_blank"
-							rel="noreferrer"
-							className="inline-flex items-center gap-3 transition hover:text-white"
-						>
-							<Twitter className="size-4" />
-							<span>Twitter (X)</span>
-						</Link>
-						<Link
-							href="https://instagram.com"
-							target="_blank"
-							rel="noreferrer"
-							className="inline-flex items-center gap-3 transition hover:text-white"
-						>
-							<Instagram className="size-4" />
-							<span>Instagram</span>
-						</Link>
-					</div>
+					<FollowUsDock />
 
 					<div className="pt-2">
 						<a
@@ -121,7 +104,7 @@ export function Footer() {
 						>
 							{/* biome-ignore lint/performance/noImgElement: external Product Hunt badge SVG */}
 							<img
-								src="https://api.producthunt.com/widgets/embed-image/v1/product_review.svg?product_id=1217697&theme=dark"
+								src="https://api.producthunt.com/widgets/embed-image/v1/product_review.svg?product_id=1217697&theme=light"
 								alt="Zer0 Email - AI inbox automation for Gmail and Outlook | Product Hunt"
 								width={250}
 								height={54}
@@ -132,13 +115,13 @@ export function Footer() {
 				</div>
 			</div>
 
-			<div className="border-white/10 border-t">
-				<div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-6 py-6 text-sm text-white/45 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
+			<div className="border-white/15 border-t">
+				<div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-6 py-6 text-sm text-white/70 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
 					<div className="flex items-center gap-3">
-						<div className="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/[0.05] text-white">
+						<div className="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white">
 							<Brain className="size-4" />
 						</div>
-						<p>Copyright © 2026 Zer0Email. All rights reserved.</p>
+						<p>Copyright © 2026 Popsuites. All rights reserved.</p>
 					</div>
 
 					<div className="flex flex-wrap items-center gap-5">
@@ -151,13 +134,16 @@ export function Footer() {
 								{link.label}
 							</LocaleLink>
 						))}
-						<Link
-							href="mailto:founder@zer0email.com"
-							className="inline-flex items-center gap-2 transition hover:text-white"
+						{/* Opens the Enzuzo preference center (the banner script in
+						    the root layout handles #manage_cookies). Also the CCPA
+						    opt-out entry point, so keep it visible. */}
+						<a
+							href="#manage_cookies"
+							className="transition hover:text-white"
 						>
-							<Mail className="size-4" />
-							<span>founder@zer0email.com</span>
-						</Link>
+							Cookie Preferences
+						</a>
+						<FooterEmailCopy email="support@popsuites.ai" />
 					</div>
 				</div>
 			</div>

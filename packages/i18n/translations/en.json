@@ -81,6 +81,7 @@
 			"intelligence": "Inbox Intelligence",
 			"mailboxes": "Mailboxes",
 			"organizationSettings": "Organization settings",
+			"payments": "Bills",
 			"rules": "Rules"
 		},
 		"userMenu": {
@@ -149,7 +150,7 @@
 					"title": "Link sent"
 				}
 			},
-			"loginWithPasskey": "Login with passkey",
+			"loginWithProvider": "Login with {provider}",
 			"modes": {
 				"magicLink": "Magic link",
 				"password": "Password"
@@ -173,12 +174,13 @@
 		},
 		"signup": {
 			"alreadyHaveAccount": "Already have an account?",
+			"connectWithProvider": "Connect with {provider}",
 			"email": "Email",
 			"hints": {
 				"signupFailed": "We are sorry, but we were unable to create your account. Please try again later.",
 				"verifyEmail": "We have sent you a link to verify your email. Please check your inbox."
 			},
-			"message": "Connect a mailbox, describe a rule, and let Zer0Email handle the rest.",
+			"message": "Connect a mailbox, describe a rule, and let Popsuites handle the rest.",
 			"name": "Name",
 			"password": "Password",
 			"signIn": "Sign in",
@@ -207,7 +209,7 @@
 	},
 	"blog": {
 		"description": "Practical inbox strategies, product updates, and AI automation tips.",
-		"title": "Zer0Email Blog",
+		"title": "Popsuites Blog",
 		"back": "Back to blog"
 	},
 	"changelog": {
@@ -257,6 +259,13 @@
 		},
 		"title": "Contact us"
 	},
+	"directory": {
+		"allTags": "All",
+		"description": "Browse creators and freelancers who've made their public page discoverable.",
+		"empty": "No profiles here yet.",
+		"loadMore": "Load more",
+		"title": "Creator & Freelancer Directory"
+	},
 	"documentation": {
 		"title": "Documentation"
 	},
@@ -273,7 +282,7 @@
 				"answer": "Any incoming email that matches an active rule and triggers an action. Emails that don't match a rule don't count against your monthly quota."
 			},
 			"providers": {
-				"question": "Which email providers does Zer0Email support?",
+				"question": "Which email providers does Popsuites support?",
 				"answer": "Gmail and Outlook (personal and Microsoft 365). You can connect multiple accounts across both providers and manage them from one dashboard."
 			},
 			"rules": {
@@ -290,7 +299,7 @@
 		"hero": {
 			"eyebrow": "AI email rules · now in public beta",
 			"title": "inbox, but <accent>quieter</accent>.",
-			"subtitle": "Zer0Email reads your mail the way you do, and files it the way you would. Describe a rule in one sentence and it runs forever.",
+			"subtitle": "Popsuites reads your mail the way you do, and files it the way you would. Describe a rule in one sentence and it runs forever.",
 			"connectGmail": "Connect Gmail",
 			"seeHow": "See how it works",
 			"freeTier": "free for 100 emails / mo"
@@ -317,7 +326,7 @@
 				"ai": {
 					"number": "01 / ai",
 					"title": "Describe the rule",
-					"description": "\"Archive anything from Substack.\" Done. Zer0Email turns plain English into a running rule, with a confirmation card you approve before anything executes."
+					"description": "\"Archive anything from Substack.\" Done. Popsuites turns plain English into a running rule, with a confirmation card you approve before anything executes."
 				},
 				"templates": {
 					"number": "02 / templates",
@@ -348,6 +357,11 @@
 			"otp": "One-time password",
 			"useLink": "or use the following link:"
 		},
+		"deleteAccountVerification": {
+			"body": "Hey,\nwe received a request to permanently delete your Popsuites account.\n\nClick the button below to confirm. If you didn't request this, ignore this email and your account will stay active.",
+			"confirmDeletion": "Confirm account deletion",
+			"subject": "Confirm your account deletion"
+		},
 		"emailVerification": {
 			"body": "Hey,\nplease click the link below to verify this new email address.",
 			"confirmEmail": "Verify email",
@@ -359,17 +373,17 @@
 			"subject": "Reset your password"
 		},
 		"magicLink": {
-			"body": "Hey,\nyou requested a login email from Zer0Email.\n\nClick the link below to login.",
+			"body": "Hey,\nyou requested a login email from Popsuites.\n\nClick the link below to login.",
 			"login": "Login",
-			"subject": "Login to Zer0Email"
+			"subject": "Login to Popsuites"
 		},
 		"newUser": {
-			"body": "Hey,\nthanks for signing up for Zer0Email.\n\nTo start using our app, please confirm your email address by clicking the link below.",
+			"body": "Hey,\nthanks for signing up for Popsuites.\n\nTo start using our app, please confirm your email address by clicking the link below.",
 			"confirmEmail": "Confirm email",
 			"subject": "Confirm your email"
 		},
 		"newsletterSignup": {
-			"body": "Thank you for signing up for the Zer0Email newsletter. We will keep you updated with the latest news and updates.",
+			"body": "Thank you for signing up for the Popsuites newsletter. We will keep you updated with the latest news and updates.",
 			"subject": "Welcome to our newsletter"
 		},
 		"organizationInvitation": {
@@ -378,8 +392,11 @@
 			"join": "Join organization",
 			"subject": "You have been invited to join an organization"
 		},
+		"welcome": {
+			"subject": "Welcome to Popsuites"
+		},
 		"telegramOtp": {
-			"subject": "Your Zeromail Telegram login code"
+			"subject": "Your Popsuites Telegram login code"
 		}
 	},
 	"newsletter": {
@@ -396,6 +413,10 @@
 		"submit": "Subscribe",
 		"subtitle": "Get product updates, tips for inbox automation, and early access to new features.",
 		"title": "Get early access"
+	},
+	"forcePasswordChange": {
+		"title": "Set a new password",
+		"message": "For your security, please set a new password before continuing."
 	},
 	"onboarding": {
 		"account": {
@@ -446,10 +467,19 @@
 		"mailboxes": {
 			"eyebrow": "Connected inbox",
 			"heading": "your inbox is <accent>connected</accent>.",
-			"description": "Zer0Email runs on top of Gmail. Your rules evaluate email server-side — we never store contents.",
+			"description": "Popsuites runs on top of Gmail. Your rules evaluate email server-side — we never store contents.",
 			"connected": "Connected",
 			"provider": {
-				"google": "Gmail"
+				"google": "Gmail",
+				"outlook": "Outlook",
+				"imap": "Custom email (IMAP)"
+			},
+			"empty": {
+				"heading": "let's connect <accent>your inbox</accent>.",
+				"description": "We couldn't find a connected mailbox yet. Add your email below — Gmail, Outlook, or any custom domain over IMAP.",
+				"title": "No mailbox connected yet",
+				"cardDescription": "Enter your IMAP and SMTP details to connect a custom-domain email such as Zoho Mail.",
+				"connect": "Connect your email"
 			},
 			"addMore": {
 				"title": "Need to connect another account?",
@@ -460,7 +490,7 @@
 		"rules": {
 			"eyebrow": "Starter rules",
 			"heading": "pick a few to <accent>start</accent>.",
-			"description": "We picked the ones Zer0Email is best at. Deselect anything you don't want — you can always change these later.",
+			"description": "We picked the ones Popsuites is best at. Deselect anything you don't want — you can always change these later.",
 			"suggestionsHeading": "we found <accent>{count} cleanup opportunities</accent>.",
 			"suggestionsDescription": "We analyzed your inbox and picked the automations most likely to save time right away. Leave the ones you want enabled and we’ll create them for you.",
 			"suggestionImpact": "{count, plural, =1 {Would likely clean up 1 older inbox email} other {Would likely clean up # older inbox emails}}",
@@ -492,7 +522,7 @@
 		"apply": {
 			"eyebrow": "Watch it work",
 			"heading": "watching your <accent>last 10</accent>.",
-			"description": "Zer0Email is applying your rules now. Open Gmail in another tab and watch it happen.",
+			"description": "Popsuites is applying your rules now. Open Gmail in another tab and watch it happen.",
 			"processing": "Processing last 10 emails…",
 			"progress": "{done} / {total}",
 			"done": "Dry run complete",
@@ -672,44 +702,81 @@
 			"subtitle": "Welcome to the start page of this organization!"
 		}
 	},
+	"profile": {
+		"booking": {
+			"cancelHint": "Changed your mind?",
+			"cancelLink": "Cancel this booking",
+			"cancelPage": {
+				"confirm": "Cancel booking",
+				"description": "This will free up the time slot for someone else to book.",
+				"error": "We couldn't cancel this booking. It may already be canceled.",
+				"missingToken": "This cancellation link is invalid.",
+				"success": "Your booking has been canceled.",
+				"title": "Cancel your booking"
+			},
+			"changeTime": "Change time",
+			"confirm": "Confirm booking",
+			"confirmAndPay": "Confirm and pay {amount}",
+			"email": "Your email",
+			"loading": "Loading available times…",
+			"name": "Your name",
+			"noSlots": "No open times in the next two weeks.",
+			"note": "Anything they should know? (optional)",
+			"notifications": {
+				"error": "We couldn't book that time. Please try another.",
+				"success": "Request sent! You'll get an email once it's confirmed."
+			},
+			"title": "Book a time"
+		},
+		"contactForm": {
+			"email": "Your email",
+			"message": "Message",
+			"name": "Your name",
+			"notifications": {
+				"error": "We couldn't send your message. Please try again later.",
+				"success": "Your message has been sent."
+			},
+			"submit": "Send message",
+			"title": "Get in touch"
+		},
+		"mediaKit": {
+			"collaborations": "Past collaborations",
+			"rateCard": "Rate card",
+			"title": "Media kit"
+		},
+		"similarCreators": {
+			"title": "More like this"
+		}
+	},
 	"pricing": {
 		"choosePlan": "Choose plan",
 		"contactSales": "Contact sales",
-		"description": "Start free. Upgrade when you need more mailboxes, more rules, or your team comes along for the ride.",
+		"description": "Start your 7-day free trial. Upgrade when you need more mailboxes, calendar & meeting scheduling, or voice.",
 		"getStarted": "Get started",
 		"month": "{count, plural, one {month} other {{count} months}}",
 		"monthly": "Monthly",
 		"products": {
-			"basic": {
-				"description": "Perfect for small teams.",
-				"features": {
-					"anotherFeature": "Another amazing feature",
-					"limitedSupport": "Limited support"
-				},
-				"title": "Basic"
-			},
-			"free": {
-				"description": "For trying it out",
-				"features": {
-					"mailboxes": "1 mailbox (Gmail or Outlook)",
-					"rulesPerMailbox": "5 rules per mailbox",
-					"emailsPerMonth": "100 emails / mo",
-					"templates": "Rule templates library",
-					"activityLogs": "Activity logs",
-					"community": "Community support"
-				},
-				"title": "Free"
-			},
-			"pro": {
+			"starter": {
 				"description": "For a quieter inbox",
 				"features": {
-					"mailboxes": "Unlimited mailboxes",
-					"rulesPerMailbox": "Unlimited rules per mailbox",
-					"emailsPerMonth": "10,000 emails processed per month",
-					"inboxIntelligence": "Inbox intelligence",
-					"aiRulesAssistant": "AI rule assistant",
-					"automationAnalytics": "Automation analytics",
-					"ruleEngine": "Full rule engine with all actions",
+					"mailboxes": "Up to 3 mailboxes (Gmail or Outlook)",
+					"rulesPerMailbox": "Unlimited rules",
+					"emailsPerMonth": "3,000 emails processed / mo",
+					"aiChat": "AI Assistant (chat)",
+					"autoDrafts": "Auto Drafts",
+					"noCalendar": "No calendar, meetings, or voice"
+				},
+				"title": "Starter"
+			},
+			"pro": {
+				"description": "For calendars, meetings, and voice",
+				"features": {
+					"mailboxes": "Unlimited Gmail + Outlook accounts",
+					"everythingInStarter": "Everything in Starter",
+					"calendarScheduling": "Calendar & scheduling — cross-account",
+					"meetingIntegrations": "Google Meet · Zoom · Teams · Zoho",
+					"voice": "Voice — 300 min / mo, then $15 / 500 min",
+					"emailsPerMonth": "15,000 emails processed / mo",
 					"prioritySupport": "Priority support"
 				},
 				"title": "Pro"
@@ -718,13 +785,15 @@
 		"compare": {
 			"title": "Compare, <accent>at a glance</accent>.",
 			"feature": "Feature",
-			"planFree": "Free",
+			"planStarter": "Starter",
 			"planPro": "Pro",
 			"mailboxes": "Mailboxes",
 			"rulesPerMailbox": "Rules per mailbox",
 			"emailsProcessed": "Emails processed / mo",
 			"ruleEngine": "Rule engine",
 			"aiAssistant": "AI rule assistant",
+			"calendarScheduling": "Calendar & scheduling",
+			"voice": "Voice",
 			"support": "Support",
 			"supportCommunity": "Community",
 			"supportPriority": "Priority",
@@ -743,6 +812,13 @@
 	},
 	"settings": {
 		"account": {
+			"analytics": {
+				"bookings": "Bookings",
+				"contacts": "Messages",
+				"description": "How people are finding and reaching your public page.",
+				"title": "Profile insights",
+				"views": "Views"
+			},
 			"avatar": {
 				"description": "To change your avatar, click the picture in this block and select a file from your computer to upload.",
 				"notifications": {
@@ -750,6 +826,44 @@
 					"success": "Avatar was updated successfully."
 				},
 				"title": "Your avatar"
+			},
+			"booking": {
+				"description": "Let people book time with you from your public page.",
+				"days": {
+					"friday": "Friday",
+					"monday": "Monday",
+					"saturday": "Saturday",
+					"sunday": "Sunday",
+					"thursday": "Thursday",
+					"tuesday": "Tuesday",
+					"wednesday": "Wednesday"
+				},
+				"enable": "Allow bookings",
+				"meetingLength": "Meeting length",
+				"notifications": {
+					"error": "Could not save your changes",
+					"success": "Saved."
+				},
+				"requirePayment": "Require payment",
+				"requirePaymentDescription": "Visitors pay {amount} before a booking is confirmed.",
+				"timezone": "Timezone",
+				"title": "Bookable calendar",
+				"unavailable": "Unavailable",
+				"weeklyHours": "Weekly hours"
+			},
+			"branding": {
+				"accentColor": "Accent color",
+				"description": "Match your public page to your own colors and style.",
+				"layout": "Layout",
+				"layouts": {
+					"compact": "Compact",
+					"standard": "Standard"
+				},
+				"notifications": {
+					"error": "Could not save your changes",
+					"success": "Saved."
+				},
+				"title": "Branding"
 			},
 			"changeEmail": {
 				"description": "To change your email, enter the new email and hit save. You will have to confirm the new email before it will become active.",
@@ -765,6 +879,34 @@
 					"success": "Name was updated successfully."
 				},
 				"title": "Your name"
+			},
+			"creatorMode": {
+				"bio": "Bio",
+				"description": "Turn on a public page for your account so people can find and message you outside your inbox.",
+				"enable": "Show my public page",
+				"notifications": {
+					"error": "Could not save your changes",
+					"success": "Saved."
+				},
+				"publicUrl": "Your page:",
+				"title": "Creator & freelancer mode",
+				"types": {
+					"creator": "Creator",
+					"freelancer": "Freelancer",
+					"standard": "Standard"
+				}
+			},
+			"directory": {
+				"addTag": "Add",
+				"description": "Get listed in the public directory so people can discover your page by browsing, not just by a shared link.",
+				"enable": "List me in the directory",
+				"notifications": {
+					"error": "Could not save your changes",
+					"success": "Saved."
+				},
+				"tagPlaceholder": "e.g. photography",
+				"tags": "Tags",
+				"title": "Directory listing"
 			},
 			"deleteAccount": {
 				"confirmation": "Are you sure you want to delete your account?",
@@ -783,6 +925,21 @@
 					"success": "Language was updated successfully."
 				},
 				"title": "Your language"
+			},
+			"mediaKit": {
+				"addCollaboration": "Add collaboration",
+				"addRate": "Add rate",
+				"addStat": "Add stat",
+				"collaborations": "Past collaborations",
+				"description": "A stats and rate card block for brand deals, shown on your public page.",
+				"enable": "Show media kit on my page",
+				"notifications": {
+					"error": "Could not save your changes",
+					"success": "Saved."
+				},
+				"rateCard": "Rate card",
+				"stats": "Stats",
+				"title": "Media kit"
 			},
 			"security": {
 				"activeSessions": {
@@ -917,6 +1074,7 @@
 				"billing": "Billing",
 				"dangerZone": "Danger zone",
 				"general": "General",
+				"integrations": "Integrations",
 				"security": "Security",
 				"title": "Account"
 			},
@@ -955,12 +1113,6 @@
 				"trendDown": "↓ {percent}% vs yesterday",
 				"trendFlat": "No change vs yesterday"
 			},
-			"rulesFired": {
-				"title": "Rules fired",
-				"trendUp": "↑ {delta} vs yesterday",
-				"trendDown": "↓ {delta} vs yesterday",
-				"trendFlat": "Steady vs yesterday"
-			},
 			"timeSaved": {
 				"title": "Time saved (est.)",
 				"value": "{hours}h {minutes}m",
@@ -968,10 +1120,15 @@
 				"valueSeconds": "{seconds}s",
 				"trend": "≈ 20s saved per rule fire"
 			},
-			"rulesActive": {
-				"title": "Rules active",
-				"value": "{active} / {total}",
-				"trend": "{disabled, plural, =0 {All rules enabled} =1 {1 rule disabled} other {# rules disabled}}"
+			"inboxZero": {
+				"title": "Inbox Zero",
+				"caption": "cleared",
+				"onTrack": "On track"
+			},
+			"priority": {
+				"title": "Priority",
+				"needsAttention": "Needs attention",
+				"subtitle": "Unread & marked important"
 			}
 		},
 		"drawer": {
@@ -981,54 +1138,40 @@
 				"subtitle": "By rule",
 				"empty": "No emails processed in the last 24 hours."
 			},
-			"rulesFired": {
-				"title": "{count} rule fires (last 24h)",
-				"subtitle": "By rule",
-				"empty": "No rules fired in the last 24 hours."
-			},
 			"timeSaved": {
 				"title": "~{minutes} min saved today",
 				"subtitle": "Est. 20s per rule action",
 				"empty": "Nothing applied yet today."
 			},
-			"rulesActive": {
-				"title": "{active} of {total} rules active",
-				"subtitle": "Your rules and their fires in the last 7 days",
-				"empty": "No rules yet. Create one to get started.",
-				"disabledLabel": "{name} (disabled)"
+			"inboxZero": {
+				"title": "{percent}% of your inbox is cleared",
+				"subtitle": "Unread vs total in your inbox",
+				"empty": "Your inbox is empty."
+			},
+			"priority": {
+				"title": "{count} emails need attention",
+				"subtitle": "Unread mail marked important",
+				"empty": "Nothing marked important right now."
+			},
+			"topSenders": {
+				"title": "Top senders",
+				"subtitle": "By email count in your inbox",
+				"empty": "No senders yet."
 			},
 			"close": "Close"
 		},
-		"activity": {
-			"heading": "Recent activity",
+		"inboxOverview": {
+			"title": "Inbox Overview",
+			"empty": "Once your inbox is classified, its breakdown will show up here.",
+			"stillClassifying": "{count, plural, =1 {1 email} other {# emails}} still being classified"
+		},
+		"topSenders": {
+			"title": "Top Senders",
 			"viewAll": "View all",
-			"empty": "Nothing to show yet. Once mail arrives, it'll stream in here.",
-			"columns": {
-				"time": "Time",
-				"rule": "Rule",
-				"email": "Email",
-				"action": "Action"
-			},
-			"statusNotMatched": "skipped",
-			"statusError": "error"
+			"empty": "No senders yet — once mail arrives, your most frequent senders will show up here."
 		},
-		"topRules": {
-			"heading": "Top rules",
-			"subheading": "Last 7 days",
-			"viewAll": "All rules",
-			"fires": "{count, plural, =1 {1 fire} other {# fires}}",
-			"empty": "No rule activity in the last 7 days."
-		},
-		"calendar": {
-			"heading": "Upcoming events",
-			"subheading": "Next 7 days",
-			"empty": "No events in the next 7 days.",
-			"noTitle": "Untitled event",
-			"reconnect": {
-				"title": "Calendar access needed",
-				"description": "Reconnect your Google account to enable Calendar on your dashboard.",
-				"cta": "Reconnect Google"
-			}
+		"aiInsight": {
+			"title": "AI Insight"
 		}
 	},
 	"zod": {
@@ -1148,7 +1291,8 @@
 	},
 	"choosePlan": {
 		"title": "Choose your plan",
-		"description": "To continue, please select a plan."
+		"description": "To continue, please select a plan.",
+		"continueFree": "Not ready to buy? Continue with the free plan"
 	},
 	"notFound": {
 		"code": "404",
@@ -1168,7 +1312,7 @@
 		},
 		"disconnectDialog": {
 			"title": "Disconnect {email}?",
-			"description": "All rules and execution history for this mailbox will be permanently deleted. Zer0Email's access to your Gmail inbox will be revoked. You can reconnect at any time.",
+			"description": "All rules and execution history for this mailbox will be permanently deleted. Popsuites's access to your Gmail inbox will be revoked. You can reconnect at any time.",
 			"confirm": "Disconnect",
 			"disconnecting": "Disconnecting...",
 			"cancel": "Cancel",
@@ -1197,7 +1341,7 @@
 				},
 				"imap": {
 					"name": "IMAP / other",
-					"description": "Fastmail, iCloud, self-hosted · coming soon"
+					"description": "Fastmail, iCloud, self-hosted, custom domains"
 				}
 			},
 			"scopes": {
@@ -1211,6 +1355,28 @@
 				"success": "Mailbox connected successfully",
 				"error": "Failed to connect mailbox"
 			}
+		},
+		"connectImapDialog": {
+			"title": "Connect a custom email",
+			"description": "Enter your mailbox's IMAP/SMTP details — most hosts show these under \"email settings\" or \"other mail app\" setup. An app-specific password is recommended over your account's main password where your host supports one.",
+			"email": "Email address",
+			"password": "Password",
+			"imapHost": "IMAP host",
+			"smtpHost": "SMTP host",
+			"port": "Port",
+			"imapSecure": "IMAP uses SSL/TLS",
+			"smtpSecure": "SMTP uses SSL/TLS",
+			"cancel": "Cancel",
+			"connect": "Connect",
+			"success": "{email} has been connected",
+			"error": "Couldn't connect that mailbox. Check the details and try again."
+		},
+		"connectStandalone": {
+			"submit": "Verify & continue",
+			"checkEmailTitle": "Check your email",
+			"preferOtherProvider": "Prefer Gmail or Outlook instead?",
+			"useGmailOutlook": "Sign up with Gmail or Outlook",
+			"resendLink": "Resend link"
 		},
 		"page": {
 			"eyebrow": "Connected inboxes",
@@ -1331,7 +1497,7 @@
 		},
 		"backfill": {
 			"eyebrow": "Historical run",
-			"title": "Apply to your last 6 months of inbox",
+			"title": "Apply to your last 1 month of inbox",
 			"description": "Run this rule across older inbox mail in chunks, then keep future mail covered with the live watcher.",
 			"start": "Apply now",
 			"rerun": "Run again",
@@ -1398,7 +1564,7 @@
 			"title": "Describe what you want,\nin plain English.",
 			"panelTitle": "New rule · draft",
 			"you": "You",
-			"assistantName": "Zer0Email",
+			"assistantName": "Popsuites",
 			"greeting": "Hi {name} — tell me what you'd like to automate. I'll translate it into a rule you can turn on.",
 			"seedHeading": "Try one of these",
 			"seeds": {
@@ -1455,7 +1621,7 @@
 			"upsell": {
 				"eyebrow": "Pro feature",
 				"title": "Unlock the AI rule assistant",
-				"description": "Describe rules in plain English and let Zer0Email wire them up. Available on Pro.",
+				"description": "Describe rules in plain English and let Popsuites wire them up. Available on Pro.",
 				"cta": "See plans"
 			}
 		},
@@ -1590,6 +1756,24 @@
 		"warning": {
 			"past_due": "Your subscription payment is past due. Please update your payment method to avoid losing access.",
 			"paused": "Your subscription is paused. Resume it to continue using all features."
+		}
+	},
+	"trial": {
+		"banner": {
+			"start": "Start your 7-day free trial",
+			"daysLeft": "{days} {days, plural, one {day} other {days}} left of free trial",
+			"started": "Your 7-day Pro trial has started. Enjoy!"
+		},
+		"dialog": {
+			"title": "Start your 7-day Pro trial",
+			"description": "Get full access to all Pro features for 7 days. No card required — we won't charge you. When the trial ends, your account returns to the Free plan.",
+			"cancel": "Not now",
+			"confirm": "Start free trial"
+		},
+		"ended": {
+			"toast": "Your Pro trial has ended",
+			"action": "Upgrade",
+			"dismiss": "Dismiss"
 		}
 	},
 	"activity": {

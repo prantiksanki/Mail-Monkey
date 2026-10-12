@@ -59,7 +59,7 @@ export const config = {
 
 		// Providers that support mailbox creation
 		// Only these providers will appear in the "Add Mailbox" dialog
-		supportedProviders: ["google", "microsoft"] as const,
+		supportedProviders: ["google", "microsoft", "imap"] as const,
 
 		// Default callback path after OAuth connection
 		defaultCallbackPath: "/app",

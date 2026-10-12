@@ -1,6 +1,5 @@
 packages:
   - config
   - apps/*
-  - "!apps/mobile" # Expo app: isolated, manages its own deps via npm (avoids pnpm+Metro monorepo issues)
   - packages/*
   - tooling/*

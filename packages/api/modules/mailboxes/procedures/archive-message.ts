@@ -1,7 +1,7 @@
 import { getEmailById, updateEmailLabels } from "@repo/database";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
-import { modifyMessageLabels } from "../lib/gmail-client";
+import { getMailProvider } from "../lib/mail-provider";
 import { verifyMailboxOwnership } from "../lib/ownership";
 
 export const archiveMessage = protectedProcedure
@@ -23,11 +23,9 @@ export const archiveMessage = protectedProcedure
 			context.user.id,
 		);
 
-		await modifyMessageLabels(
+		await getMailProvider(mailbox.provider).archive(
 			mailbox.accountId,
 			input.messageId,
-			[],
-			["INBOX"],
 		);
 
 		// Mirror the change in the local DB so the message leaves the

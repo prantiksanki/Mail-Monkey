@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.4.xsd">
+
+    <!--
+    CVE-2026-53514 (better-auth organization-invitation email-ownership bypass)
+
+    NVD's CPE match for this CVE is versionStartIncluding=1.6.14 with NO
+    upper bound, so every better-auth release from 1.6.14 onward is flagged
+    forever, even though the upstream fix shipped well before our version:
+
+      - PR #9577 (merged for the 1.6.11 release, then needed a follow-up
+        because 1.6.14 reintroduced the gap for non-default configs):
+        https://github.com/better-auth/better-auth/pull/9577
+      - PR #9877 "fix(organization): split invitation verification gates"
+        (merged 2026-06-02, included in 1.7.0 and all later 1.7.x):
+        https://github.com/better-auth/better-auth/pull/9877
+
+    We are on better-auth 1.7.6, which contains both fixes, and our own
+    config in packages/auth/auth.ts additionally sets
+    `requireEmailVerificationOnInvitation: true` on the organization plugin
+    as defense in depth. This is a stale/incomplete NVD record, not an
+    unpatched dependency — remove this suppression once NVD adds a
+    versionEndExcluding bound and dependency-check stops matching 1.7.x.
+    -->
+    <suppress>
+        <notes><![CDATA[
+        False positive: NVD CPE match has no upper version bound for
+        CVE-2026-53514, so it matches every better-auth >=1.6.14 including
+        our current 1.7.6, which already contains the fix (better-auth
+        PR #9577 and PR #9877). See comment above for detail.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:npm/better\-auth@.*$</packageUrl>
+        <cve>CVE-2026-53514</cve>
+    </suppress>
+
+</suppressions>

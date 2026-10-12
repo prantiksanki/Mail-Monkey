@@ -1,4 +1,4 @@
-Contact: mailto:founder@zer0email.com
+Contact: mailto:founder@popsuites.ai
 Expires: 2027-06-19T00:00:00.000Z
 Preferred-Languages: en
 Policy: https://zer0email.com/security

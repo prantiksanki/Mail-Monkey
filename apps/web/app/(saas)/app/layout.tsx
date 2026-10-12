@@ -3,6 +3,7 @@ import { config as paymentsConfig } from "@repo/payments/config";
 import { createPurchasesHelper } from "@repo/payments/lib/helper";
 import { getOrganizationList, getSession } from "@saas/auth/lib/server";
 import { SubscriptionWarningBanner } from "@saas/payments/components/SubscriptionWarningBanner";
+import { TrialEndedBanner } from "@saas/payments/components/TrialEndedBanner";
 import { orpcClient } from "@shared/lib/orpc-client";
 import { attemptAsync } from "es-toolkit";
 import { redirect } from "next/navigation";
@@ -22,6 +23,13 @@ export default async function Layout({ children }: PropsWithChildren) {
 		redirect("/onboarding");
 	}
 
+	// CASA 1.1.2: a system-generated initial password (see
+	// tooling/scripts/src/create-user.ts) must be replaced before the account
+	// can be used.
+	if (session.user.mustChangePassword) {
+		redirect("/force-password-change");
+	}
+
 	const organizations = await getOrganizationList();
 
 	if (
@@ -38,15 +46,15 @@ export default async function Layout({ children }: PropsWithChildren) {
 		}
 	}
 
-	const hasFreePlan = Object.values(paymentsConfig.plans).some(
-		(plan) => "isFree" in plan,
-	);
-
+	// This app's `free` plan (packages/payments/config.ts) is a locked
+	// fallback state, not a usable tier — an expired trial with no payment
+	// falls back to it, but a user should never be able to enter /app on it.
+	// So unlike the supastarter template default, the presence of a `free`
+	// plan does NOT exempt a user from the active-plan check below.
 	if (
-		((authConfig.organizations.enable &&
+		(authConfig.organizations.enable &&
 			paymentsConfig.billingAttachedTo === "organization") ||
-			paymentsConfig.billingAttachedTo === "user") &&
-		!hasFreePlan
+		paymentsConfig.billingAttachedTo === "user"
 	) {
 		const organizationId = authConfig.organizations.enable
 			? session?.session.activeOrganizationId || organizations?.at(0)?.id
@@ -66,7 +74,10 @@ export default async function Layout({ children }: PropsWithChildren) {
 
 		const { activePlan } = createPurchasesHelper(purchases);
 
-		if (!activePlan) {
+		// createPurchasesHelper falls back to the locked `free` plan when
+		// there's no real purchase, so `activePlan` alone isn't enough here —
+		// exclude that fallback explicitly or it silently defeats the gate.
+		if (!activePlan || activePlan.id === "free") {
 			redirect("/choose-plan");
 		}
 	}
@@ -74,6 +85,7 @@ export default async function Layout({ children }: PropsWithChildren) {
 	return (
 		<>
 			<SubscriptionWarningBanner />
+			<TrialEndedBanner />
 			{children}
 		</>
 	);

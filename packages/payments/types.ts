@@ -9,6 +9,10 @@ export type CreateCheckoutLink = (params: {
 	userId?: string;
 	trialPeriodDays?: number;
 	seats?: number;
+	// Arbitrary key-value pairs carried through to the provider's webhook
+	// payload (e.g. order.created.metadata), for correlating a checkout back
+	// to app-side state that isn't a subscription/organization.
+	metadata?: Record<string, string>;
 }) => Promise<string | null>;
 
 export type CreateCustomerPortalLink = (params: {

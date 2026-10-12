@@ -1,5 +1,6 @@
 "use client";
 
+import { UNDO_SEND_WINDOW_MS } from "@repo/api/modules/mailboxes/lib/send-with-undo-constants";
 import { cn } from "@repo/ui";
 import { Button } from "@repo/ui/components/button";
 import {
@@ -214,7 +215,7 @@ export function ComposeDialog({
 				});
 				return sendDraftMutation.mutateAsync(v.draftId);
 			}
-			return orpcClient.mailboxes.inbox.send({
+			return orpcClient.mailboxes.inbox.sendWithUndo({
 				mailboxId,
 				to: v.to,
 				cc: v.cc || undefined,
@@ -223,8 +224,33 @@ export function ComposeDialog({
 				body: v.body,
 			});
 		},
-		onSuccess: () => {
-			toast.success("Email sent");
+		onSuccess: (result) => {
+			if (result && "scheduledEmailId" in result) {
+				const { scheduledEmailId } = result;
+				toast.success("Email sent", {
+					duration: UNDO_SEND_WINDOW_MS,
+					action: {
+						label: "Undo",
+						onClick: () => {
+							orpcClient.mailboxes.inbox
+								.cancelScheduled({
+									mailboxId,
+									id: scheduledEmailId,
+								})
+								.then(() => {
+									toast.success("Send undone");
+								})
+								.catch(() => {
+									toast.error(
+										"Too late to undo — it already sent.",
+									);
+								});
+						},
+					},
+				});
+			} else {
+				toast.success("Email sent");
+			}
 			onClose();
 		},
 		onError: (err) => {

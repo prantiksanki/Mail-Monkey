@@ -16,12 +16,20 @@ export function usePlanData() {
 		}
 	> = {
 		free: {
-			title: t("pricing.products.free.title"),
-			description: t("pricing.products.free.description"),
+			title: t("pricing.products.starter.title"),
+			description: t("pricing.products.starter.description"),
+			features: [],
+		},
+		starter: {
+			title: t("pricing.products.starter.title"),
+			description: t("pricing.products.starter.description"),
 			features: [
-				t("pricing.products.free.features.mailboxes"),
-				t("pricing.products.free.features.templates"),
-				t("pricing.products.free.features.community"),
+				t("pricing.products.starter.features.mailboxes"),
+				t("pricing.products.starter.features.rulesPerMailbox"),
+				t("pricing.products.starter.features.emailsPerMonth"),
+				t("pricing.products.starter.features.aiChat"),
+				t("pricing.products.starter.features.autoDrafts"),
+				t("pricing.products.starter.features.noCalendar"),
 			],
 		},
 		pro: {
@@ -29,12 +37,11 @@ export function usePlanData() {
 			description: t("pricing.products.pro.description"),
 			features: [
 				t("pricing.products.pro.features.mailboxes"),
-				t("pricing.products.pro.features.rulesPerMailbox"),
+				t("pricing.products.pro.features.everythingInStarter"),
+				t("pricing.products.pro.features.calendarScheduling"),
+				t("pricing.products.pro.features.meetingIntegrations"),
+				t("pricing.products.pro.features.voice"),
 				t("pricing.products.pro.features.emailsPerMonth"),
-				t("pricing.products.pro.features.inboxIntelligence"),
-				t("pricing.products.pro.features.aiRulesAssistant"),
-				t("pricing.products.pro.features.automationAnalytics"),
-				t("pricing.products.pro.features.ruleEngine"),
 				t("pricing.products.pro.features.prioritySupport"),
 			],
 		},

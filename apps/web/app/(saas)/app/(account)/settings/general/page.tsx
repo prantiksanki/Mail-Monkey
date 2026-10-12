@@ -2,7 +2,9 @@ import { config } from "@repo/i18n/config";
 import { getSession } from "@saas/auth/lib/server";
 import { ChangeEmailForm } from "@saas/settings/components/ChangeEmailForm";
 import { ChangeNameForm } from "@saas/settings/components/ChangeNameForm";
-import { TelegramConnectBlock } from "@saas/settings/components/TelegramConnectBlock";
+import { CreatorModeForm } from "@saas/settings/components/CreatorModeForm";
+import { MediaKitForm } from "@saas/settings/components/MediaKitForm";
+import { ProfileAnalytics } from "@saas/settings/components/ProfileAnalytics";
 import { UserAvatarForm } from "@saas/settings/components/UserAvatarForm";
 import { UserLanguageForm } from "@saas/settings/components/UserLanguageForm";
 import { SettingsList } from "@saas/shared/components/SettingsList";
@@ -30,7 +32,9 @@ export default async function AccountSettingsPage() {
 			{Object.keys(config.locales).length > 1 && <UserLanguageForm />}
 			<ChangeNameForm />
 			<ChangeEmailForm />
-			<TelegramConnectBlock />
+			<CreatorModeForm />
+			<MediaKitForm />
+			<ProfileAnalytics />
 		</SettingsList>
 	);
 }

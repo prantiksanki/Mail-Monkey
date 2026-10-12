@@ -7,11 +7,18 @@ import nextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = nextIntlPlugin("./modules/i18n/request.ts");
 const strictTransportSecurity = "max-age=63072000; includeSubDomains";
+// Lock down powerful features the app never uses. `microphone` is deliberately
+// omitted (the marketing voice demo calls getUserMedia) so it keeps the
+// browser default of `self`.
+const permissionsPolicy = "camera=(), geolocation=(), browsing-topics=()";
 const repoRoot = path.resolve(__dirname, "../..");
 
 const nextConfig: NextConfig = {
 	output: "standalone",
 	outputFileTracingRoot: repoRoot,
+	// Don't advertise the framework in an `X-Powered-By` response header.
+	poweredByHeader: false,
+	serverExternalPackages: ["sharp"],
 	// Allow ngrok URLs during local development
 	allowedDevOrigins: ["*.ngrok-free.app", "*.ngrok-free.dev", "*.ngrok.io"],
 	turbopack: {
@@ -50,14 +57,25 @@ const nextConfig: NextConfig = {
 				protocol: "https",
 				hostname: "randomuser.me",
 			},
+			{
+				// Medium's image CDN, for blog posts cross-published from Medium
+				protocol: "https",
+				hostname: "miro.medium.com",
+			},
 		],
 	},
 	async redirects() {
 		return [
 			{
 				source: "/:path*",
+				has: [{ type: "host", value: "zer0email.com" }],
+				destination: "https://popsuites.ai/:path*",
+				permanent: true,
+			},
+			{
+				source: "/:path*",
 				has: [{ type: "host", value: "www.zer0email.com" }],
-				destination: "https://zer0email.com/:path*",
+				destination: "https://popsuites.ai/:path*",
 				permanent: true,
 			},
 			{
@@ -107,6 +125,19 @@ const nextConfig: NextConfig = {
 					{
 						key: "X-Frame-Options",
 						value: "DENY",
+					},
+					{
+						key: "Permissions-Policy",
+						value: permissionsPolicy,
+					},
+					{
+						// Every asset here is same-origin (self-hosted static
+						// files, the /_next/image proxy, Azure Blob URLs
+						// referenced only from our own pages) — nothing else
+						// should be able to `<img>`/`<script>` these responses
+						// cross-origin.
+						key: "Cross-Origin-Resource-Policy",
+						value: "same-origin",
 					},
 				],
 			},

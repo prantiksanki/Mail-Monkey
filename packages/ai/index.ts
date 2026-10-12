@@ -1,39 +1,22 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 
+// Silences the AI SDK's per-call "specificationVersion ... compatibility
+// mode" notice — expected/harmless with @ai-sdk/google's current version,
+// but it fires on every single Gemini call and floods production logs.
+globalThis.AI_SDK_LOG_WARNINGS = false;
+
 const google = createGoogleGenerativeAI({
 	apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? "",
 });
 
-export const textModel = google("gemini-3.5-flash");
+// Single source of truth for the text model. `gemini-flash-latest` is the moving
+// alias for the newest stable Flash; pinned ids like gemini-2.5-flash are refused
+// for API keys created after that version's retirement ("no longer available to
+// new users"). Override with GEMINI_MODEL (e.g. gemini-flash-lite-latest) if a
+// different or cheaper model is wanted.
+export const TEXT_MODEL_ID = process.env.GEMINI_MODEL ?? "gemini-flash-latest";
 
-// Embeddings for RAG via the Gemini REST API (the SDK path mis-handles
-// gemini-embedding-001). 768-dim to match the Supabase `vector(768)` column.
-export async function embedText(text: string): Promise<number[]> {
-	const key = process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? "";
-	const res = await fetch(
-		`https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key=${key}`,
-		{
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				model: "models/gemini-embedding-001",
-				content: { parts: [{ text: text.slice(0, 8000) }] },
-				outputDimensionality: 768,
-			}),
-		},
-	);
-	if (!res.ok) {
-		throw new Error(
-			`embed ${res.status}: ${(await res.text()).slice(0, 200)}`,
-		);
-	}
-	const data = (await res.json()) as { embedding?: { values?: number[] } };
-	const values = data?.embedding?.values;
-	if (!Array.isArray(values)) {
-		throw new Error("embed: no values in response");
-	}
-	return values;
-}
+export const textModel = google(TEXT_MODEL_ID);
 
 export * from "ai";
 export * from "./lib";

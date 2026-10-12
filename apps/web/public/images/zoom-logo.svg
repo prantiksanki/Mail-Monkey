@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 214 214">
+	<defs>
+		<clipPath id="zoomOuter"><circle cx="107" cy="106" r="102"/></clipPath>
+		<clipPath id="zoomRing"><circle cx="107" cy="106" r="100"/></clipPath>
+		<clipPath id="zoomFace"><circle cx="107" cy="106" r="92"/></clipPath>
+		<clipPath id="zoomGlyph"><path d="M135 94.06l26-19c2.27-1.85 4-1.42 4 2V135c0 3.84-2.16 3.4-4 2l-26-19zM47 77.2v43.2A17.69 17.69 0 0 0 64.77 138h63a3.22 3.22 0 0 0 3.23-3.2V91.6A17.69 17.69 0 0 0 113.23 74h-63A3.22 3.22 0 0 0 47 77.2z"/></clipPath>
+	</defs>
+	<g clip-path="url(#zoomOuter)"><path d="M0-1h214v214H0z" fill="#e5e5e4"/></g>
+	<g clip-path="url(#zoomRing)"><path d="M2 1h210v210H2z" fill="#fff"/></g>
+	<g clip-path="url(#zoomFace)"><path d="M10 9h194v194H10z" fill="#4A8CFF"/></g>
+	<g clip-path="url(#zoomGlyph)"><path d="M42 69h128v74H42z" fill="#fff"/></g>
+</svg>

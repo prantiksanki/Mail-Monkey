@@ -2,45 +2,41 @@
 
 import { authClient } from "@repo/auth/client";
 import { config as authConfig } from "@repo/auth/config";
-import { Alert, AlertDescription } from "@repo/ui/components/alert";
 import { Button } from "@repo/ui/components/button";
-import { useAuthErrorMessages } from "@saas/auth/hooks/errors-messages";
+import { Input } from "@repo/ui/components/input";
 import { OrganizationInvitationAlert } from "@saas/organizations/components/OrganizationInvitationAlert";
 import { FloatingPaths } from "@saas/shared/components/FloatingPaths";
+import { PopsuiteInboxDemo } from "@saas/shared/components/PopsuiteInboxDemo";
 import { useRouter } from "@shared/hooks/router";
-import {
-	AlertTriangleIcon,
-	ArrowRightIcon,
-	ChevronLeftIcon,
-	KeyIcon,
-} from "lucide-react";
+import { getSafeRedirectPath } from "@shared/lib/safe-redirect";
+import { CheckCircle2Icon, ChevronLeftIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import { withQuery } from "ufo";
 import { config } from "@/config";
 import {
 	type OAuthProvider,
 	oAuthProviders,
 } from "../constants/oauth-providers";
+import { useAuthErrorMessages } from "../hooks/errors-messages";
 import { useSession } from "../hooks/use-session";
 import { SocialSigninButton } from "./SocialSigninButton";
 
 export function LoginForm() {
 	const t = useTranslations();
-	const { getAuthErrorMessage } = useAuthErrorMessages();
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const { user, loaded: sessionLoaded } = useSession();
+	const { getAuthErrorMessage } = useAuthErrorMessages();
 
-	const [errorMessage, setErrorMessage] = useState<string | null>(null);
 	const invitationId = searchParams.get("invitationId");
 	const redirectTo = searchParams.get("redirectTo");
 
 	const redirectPath = invitationId
 		? `/organization-invitation/${invitationId}`
-		: (redirectTo ?? config.saas.redirectAfterSignIn);
+		: getSafeRedirectPath(redirectTo, config.saas.redirectAfterSignIn);
 
 	useEffect(() => {
 		if (sessionLoaded && user) {
@@ -48,20 +44,33 @@ export function LoginForm() {
 		}
 	}, [user, sessionLoaded]);
 
-	const signInWithPasskey = async () => {
-		try {
-			await authClient.signIn.passkey();
+	const [magicLinkEmail, setMagicLinkEmail] = useState("");
+	const [magicLinkSentTo, setMagicLinkSentTo] = useState<string | null>(null);
+	const [magicLinkError, setMagicLinkError] = useState<string | null>(null);
+	const [magicLinkPending, setMagicLinkPending] = useState(false);
 
-			router.replace(redirectPath);
-		} catch (e) {
-			setErrorMessage(
+	const onMagicLinkSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		setMagicLinkError(null);
+		setMagicLinkPending(true);
+
+		const { error } = await authClient.signIn.magicLink({
+			email: magicLinkEmail,
+			callbackURL: redirectPath,
+		});
+
+		setMagicLinkPending(false);
+
+		if (error) {
+			setMagicLinkError(
 				getAuthErrorMessage(
-					e && typeof e === "object" && "code" in e
-						? (e.code as string)
-						: undefined,
+					"code" in error ? (error.code as string) : undefined,
 				),
 			);
+			return;
 		}
+
+		setMagicLinkSentTo(magicLinkEmail);
 	};
 
 	return (
@@ -70,25 +79,22 @@ export function LoginForm() {
 			<div className="bg-muted/60 relative hidden h-full flex-col border-r p-10 lg:flex">
 				<div className="from-background absolute inset-0 z-10 bg-gradient-to-t to-transparent" />
 				<div className="z-10 flex items-center gap-2">
-					<Link href="/" className="block">
+					<Link href="/" className="flex items-center gap-2">
+						<Image
+							src="/images/popsuites-icon.png"
+							alt=""
+							width={221}
+							height={160}
+							className="h-7 w-auto"
+							priority
+						/>
 						<span className="font-semibold text-xl">
 							{config.appName}
 						</span>
 					</Link>
 				</div>
-				<div className="z-10 mt-auto">
-					<blockquote className="space-y-2">
-						<p className="text-xl">
-							&ldquo;
-							{t.rich("auth.aside.quote", {
-								accent: (chunks) => <span>{chunks}</span>,
-							})}
-							&rdquo;
-						</p>
-						<footer className="font-mono text-sm font-semibold">
-							~ {t("auth.aside.author")}
-						</footer>
-					</blockquote>
+				<div className="z-10 flex flex-1 items-center justify-center">
+					<PopsuiteInboxDemo />
 				</div>
 				<div className="absolute inset-0">
 					<FloatingPaths position={1} />
@@ -104,9 +110,9 @@ export function LoginForm() {
 				/>
 
 				<Button
-					variant="ghost"
+					variant="neoPrimary"
 					size="sm"
-					className="absolute top-7 left-5"
+					className="absolute top-10 left-5 bg-[#0663DA] text-white shadow-[4px_4px_0px_0px_#00388F] hover:bg-[#0663DA]/90 hover:shadow-[2px_2px_0px_0px_#00388F]"
 					asChild
 				>
 					<Link href="/">
@@ -117,6 +123,13 @@ export function LoginForm() {
 
 				<div className="mx-auto w-full max-w-sm space-y-4">
 					<div className="flex items-center gap-2 lg:hidden">
+						<Image
+							src="/images/popsuites-icon.png"
+							alt=""
+							width={221}
+							height={160}
+							className="h-7 w-auto"
+						/>
 						<span className="font-semibold text-xl">
 							{config.appName}
 						</span>
@@ -139,13 +152,6 @@ export function LoginForm() {
 						<OrganizationInvitationAlert className="mb-6" />
 					)}
 
-					{errorMessage && (
-						<Alert variant="error">
-							<AlertTriangleIcon />
-							<AlertDescription>{errorMessage}</AlertDescription>
-						</Alert>
-					)}
-
 					{authConfig.enableSignup &&
 						authConfig.enableSocialLogin && (
 							<div className="space-y-2">
@@ -163,38 +169,74 @@ export function LoginForm() {
 							</div>
 						)}
 
-					{authConfig.enablePasskeys && (
-						<Button
-							variant="glass"
-							className="h-12 w-full font-semibold uppercase"
-							onClick={() => signInWithPasskey()}
+					<div className="flex items-center gap-3">
+						<div className="h-px flex-1 bg-border" />
+						<span className="text-muted-foreground text-xs uppercase tracking-wider">
+							{t("auth.login.continueWith")}
+						</span>
+						<div className="h-px flex-1 bg-border" />
+					</div>
+
+					{magicLinkSentTo ? (
+						<div className="flex flex-col items-center space-y-2 text-center">
+							<CheckCircle2Icon className="size-8 text-primary" />
+							<p className="text-muted-foreground text-sm">
+								{t("auth.login.hints.linkSent.message")}
+							</p>
+							<p className="text-muted-foreground text-sm">
+								{magicLinkSentTo}
+							</p>
+						</div>
+					) : (
+						<form
+							onSubmit={onMagicLinkSubmit}
+							className="space-y-2"
 						>
-							<KeyIcon className="mr-1.5 size-4 text-primary" />
-							{t("auth.login.loginWithPasskey")}
-						</Button>
+							{magicLinkError && (
+								<p className="text-destructive text-sm">
+									{magicLinkError}
+								</p>
+							)}
+							<Input
+								type="email"
+								required
+								autoComplete="email"
+								placeholder="you@yourdomain.com"
+								value={magicLinkEmail}
+								onChange={(e) =>
+									setMagicLinkEmail(e.target.value)
+								}
+							/>
+							<Button
+								type="submit"
+								variant="secondary"
+								className="w-full"
+								loading={magicLinkPending}
+							>
+								{t("auth.login.sendMagicLink")}
+							</Button>
+						</form>
 					)}
 
-					<p className="text-muted-foreground text-sm text-center">
-						<Link
-							href="/auth/forgot-password"
-							className="font-medium underline underline-offset-4 hover:text-foreground/70"
-						>
-							{t("auth.login.forgotPassword")}
-						</Link>
-					</p>
+					{authConfig.enablePasswordLogin && (
+						<p className="text-muted-foreground text-sm text-center">
+							<Link
+								href="/auth/forgot-password"
+								className="font-medium underline underline-offset-4 hover:text-foreground/70"
+							>
+								{t("auth.login.forgotPassword")}
+							</Link>
+						</p>
+					)}
 
 					{authConfig.enableSignup && (
 						<p className="text-muted-foreground text-sm text-center">
-							<span>{t("auth.login.dontHaveAnAccount")} </span>
+							{t("auth.login.dontHaveAnAccount")}{" "}
 							<Link
-								href={withQuery(
-									"/auth/signup",
-									Object.fromEntries(searchParams.entries()),
-								)}
+								href="/auth/signup"
 								className="font-medium underline underline-offset-4 hover:text-foreground/70"
 							>
 								{t("auth.login.createAnAccount")}
-								<ArrowRightIcon className="ml-1 inline size-4 align-middle" />
 							</Link>
 						</p>
 					)}

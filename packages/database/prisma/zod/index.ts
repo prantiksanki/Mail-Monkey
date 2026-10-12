@@ -12,9 +12,33 @@ export type TransactionIsolationLevel = z.infer<typeof TransactionIsolationLevel
 
 // File: UserScalarFieldEnum.schema.ts
 
-export const UserScalarFieldEnumSchema = z.enum(['id', 'name', 'email', 'emailVerified', 'image', 'createdAt', 'updatedAt', 'username', 'role', 'banned', 'banReason', 'banExpires', 'onboardingComplete', 'paymentsCustomerId', 'locale', 'displayUsername', 'twoFactorEnabled'])
+export const UserScalarFieldEnumSchema = z.enum(['id', 'name', 'email', 'emailVerified', 'image', 'createdAt', 'updatedAt', 'username', 'role', 'banned', 'banReason', 'banExpires', 'onboardingComplete', 'paymentsCustomerId', 'locale', 'displayUsername', 'twoFactorEnabled', 'accountType', 'firstSummaryViewedAt', 'failedLoginAttempts', 'lockedUntil', 'mustChangePassword'])
 
 export type UserScalarFieldEnum = z.infer<typeof UserScalarFieldEnumSchema>;
+
+// File: CreatorProfileScalarFieldEnum.schema.ts
+
+export const CreatorProfileScalarFieldEnumSchema = z.enum(['id', 'userId', 'displayName', 'avatarUrl', 'bio', 'links', 'enabled', 'bookingEnabled', 'bookingTimezone', 'meetingLengthMinutes', 'accentColor', 'layout', 'design', 'mediaKitEnabled', 'mediaKit', 'tags', 'directoryListed', 'paidBookingEnabled', 'createdAt', 'updatedAt'])
+
+export type CreatorProfileScalarFieldEnum = z.infer<typeof CreatorProfileScalarFieldEnumSchema>;
+
+// File: ProfileEventScalarFieldEnum.schema.ts
+
+export const ProfileEventScalarFieldEnumSchema = z.enum(['id', 'creatorProfileId', 'type', 'createdAt'])
+
+export type ProfileEventScalarFieldEnum = z.infer<typeof ProfileEventScalarFieldEnumSchema>;
+
+// File: WeeklyAvailabilityScalarFieldEnum.schema.ts
+
+export const WeeklyAvailabilityScalarFieldEnumSchema = z.enum(['id', 'creatorProfileId', 'dayOfWeek', 'startTime', 'endTime', 'createdAt', 'updatedAt'])
+
+export type WeeklyAvailabilityScalarFieldEnum = z.infer<typeof WeeklyAvailabilityScalarFieldEnumSchema>;
+
+// File: BookingScalarFieldEnum.schema.ts
+
+export const BookingScalarFieldEnumSchema = z.enum(['id', 'creatorProfileId', 'visitorName', 'visitorEmail', 'note', 'startsAt', 'endsAt', 'status', 'cancelToken', 'paid', 'checkoutId', 'meetLink', 'calendarEventId', 'acceptedAt', 'confirmationEmailStatus', 'confirmationEmailSentAt', 'acceptError', 'declinedAt', 'createdAt', 'updatedAt'])
+
+export type BookingScalarFieldEnum = z.infer<typeof BookingScalarFieldEnumSchema>;
 
 // File: SessionScalarFieldEnum.schema.ts
 
@@ -24,7 +48,7 @@ export type SessionScalarFieldEnum = z.infer<typeof SessionScalarFieldEnumSchema
 
 // File: AccountScalarFieldEnum.schema.ts
 
-export const AccountScalarFieldEnumSchema = z.enum(['id', 'accountId', 'providerId', 'userId', 'accessToken', 'refreshToken', 'idToken', 'expiresAt', 'password', 'accessTokenExpiresAt', 'refreshTokenExpiresAt', 'scope', 'createdAt', 'updatedAt'])
+export const AccountScalarFieldEnumSchema = z.enum(['id', 'accountId', 'providerId', 'userId', 'accessToken', 'refreshToken', 'idToken', 'expiresAt', 'password', 'imapHost', 'imapPort', 'imapSecure', 'smtpHost', 'smtpPort', 'smtpSecure', 'imapPasswordEncrypted', 'accessTokenExpiresAt', 'refreshTokenExpiresAt', 'scope', 'createdAt', 'updatedAt'])
 
 export type AccountScalarFieldEnum = z.infer<typeof AccountScalarFieldEnumSchema>;
 
@@ -34,11 +58,23 @@ export const MailboxScalarFieldEnumSchema = z.enum(['id', 'userId', 'accountId',
 
 export type MailboxScalarFieldEnum = z.infer<typeof MailboxScalarFieldEnumSchema>;
 
+// File: PendingImapMailboxScalarFieldEnum.schema.ts
+
+export const PendingImapMailboxScalarFieldEnumSchema = z.enum(['id', 'email', 'imapHost', 'imapPort', 'imapSecure', 'smtpHost', 'smtpPort', 'smtpSecure', 'passwordEncrypted', 'expiresAt', 'createdAt'])
+
+export type PendingImapMailboxScalarFieldEnum = z.infer<typeof PendingImapMailboxScalarFieldEnumSchema>;
+
 // File: MailboxUsageTrackingScalarFieldEnum.schema.ts
 
 export const MailboxUsageTrackingScalarFieldEnumSchema = z.enum(['id', 'mailboxId', 'periodStart', 'periodEnd', 'emailsProcessed', 'createdAt', 'updatedAt'])
 
 export type MailboxUsageTrackingScalarFieldEnum = z.infer<typeof MailboxUsageTrackingScalarFieldEnumSchema>;
+
+// File: VoiceUsageTrackingScalarFieldEnum.schema.ts
+
+export const VoiceUsageTrackingScalarFieldEnumSchema = z.enum(['id', 'userId', 'periodStart', 'periodEnd', 'secondsUsed', 'createdAt', 'updatedAt'])
+
+export type VoiceUsageTrackingScalarFieldEnum = z.infer<typeof VoiceUsageTrackingScalarFieldEnumSchema>;
 
 // File: ScheduledEmailScalarFieldEnum.schema.ts
 
@@ -51,6 +87,12 @@ export type ScheduledEmailScalarFieldEnum = z.infer<typeof ScheduledEmailScalarF
 export const SnoozedEmailScalarFieldEnumSchema = z.enum(['id', 'mailboxId', 'messageId', 'threadId', 'from', 'subject', 'snippet', 'internalDate', 'isUnread', 'originalLabelIds', 'snoozeUntil', 'status', 'returnedAt', 'error', 'attempts', 'createdAt', 'updatedAt'])
 
 export type SnoozedEmailScalarFieldEnum = z.infer<typeof SnoozedEmailScalarFieldEnumSchema>;
+
+// File: ReminderScalarFieldEnum.schema.ts
+
+export const ReminderScalarFieldEnumSchema = z.enum(['id', 'mailboxId', 'userId', 'text', 'remindAt', 'status', 'firedAt', 'error', 'attempts', 'createdAt', 'updatedAt'])
+
+export type ReminderScalarFieldEnum = z.infer<typeof ReminderScalarFieldEnumSchema>;
 
 // File: RuleScalarFieldEnum.schema.ts
 
@@ -84,7 +126,7 @@ export type PasskeyScalarFieldEnum = z.infer<typeof PasskeyScalarFieldEnumSchema
 
 // File: TwoFactorScalarFieldEnum.schema.ts
 
-export const TwoFactorScalarFieldEnumSchema = z.enum(['id', 'secret', 'backupCodes', 'userId'])
+export const TwoFactorScalarFieldEnumSchema = z.enum(['id', 'secret', 'backupCodes', 'userId', 'verified', 'failedVerificationCount', 'lockedUntil'])
 
 export type TwoFactorScalarFieldEnum = z.infer<typeof TwoFactorScalarFieldEnumSchema>;
 
@@ -108,15 +150,45 @@ export type InvitationScalarFieldEnum = z.infer<typeof InvitationScalarFieldEnum
 
 // File: PurchaseScalarFieldEnum.schema.ts
 
-export const PurchaseScalarFieldEnumSchema = z.enum(['id', 'organizationId', 'userId', 'type', 'customerId', 'subscriptionId', 'productId', 'status', 'createdAt', 'updatedAt'])
+export const PurchaseScalarFieldEnumSchema = z.enum(['id', 'organizationId', 'userId', 'type', 'customerId', 'subscriptionId', 'productId', 'status', 'trialEndsAt', 'createdAt', 'updatedAt'])
 
 export type PurchaseScalarFieldEnum = z.infer<typeof PurchaseScalarFieldEnumSchema>;
 
+// File: NotificationScalarFieldEnum.schema.ts
+
+export const NotificationScalarFieldEnumSchema = z.enum(['id', 'userId', 'type', 'title', 'body', 'emailId', 'readAt', 'createdAt'])
+
+export type NotificationScalarFieldEnum = z.infer<typeof NotificationScalarFieldEnumSchema>;
+
 // File: EmailScalarFieldEnum.schema.ts
 
-export const EmailScalarFieldEnumSchema = z.enum(['id', 'mailboxId', 'threadId', 'from', 'fromEmail', 'to', 'subject', 'snippet', 'bodyText', 'bodyHtml', 'labelIds', 'isUnread', 'internalDate', 'syncedAt'])
+export const EmailScalarFieldEnumSchema = z.enum(['id', 'mailboxId', 'threadId', 'from', 'fromEmail', 'to', 'subject', 'snippet', 'bodyText', 'bodyHtml', 'labelIds', 'isUnread', 'internalDate', 'category', 'categorizedAt', 'paymentScanCategory', 'syncedAt'])
 
 export type EmailScalarFieldEnum = z.infer<typeof EmailScalarFieldEnumSchema>;
+
+// File: AiConversationScalarFieldEnum.schema.ts
+
+export const AiConversationScalarFieldEnumSchema = z.enum(['id', 'userId', 'mailboxId', 'title', 'createdAt', 'updatedAt'])
+
+export type AiConversationScalarFieldEnum = z.infer<typeof AiConversationScalarFieldEnumSchema>;
+
+// File: AiChatMessageScalarFieldEnum.schema.ts
+
+export const AiChatMessageScalarFieldEnumSchema = z.enum(['id', 'conversationId', 'role', 'parts', 'createdAt'])
+
+export type AiChatMessageScalarFieldEnum = z.infer<typeof AiChatMessageScalarFieldEnumSchema>;
+
+// File: EmailClassificationRunScalarFieldEnum.schema.ts
+
+export const EmailClassificationRunScalarFieldEnumSchema = z.enum(['id', 'mailboxId', 'status', 'cursor', 'totalAtStart', 'processedCount', 'classifiedCount', 'errorCount', 'lastError', 'completedAt', 'createdAt', 'updatedAt'])
+
+export type EmailClassificationRunScalarFieldEnum = z.infer<typeof EmailClassificationRunScalarFieldEnumSchema>;
+
+// File: PaymentCardScalarFieldEnum.schema.ts
+
+export const PaymentCardScalarFieldEnumSchema = z.enum(['id', 'userId', 'mailboxId', 'emailId', 'threadId', 'paymentType', 'merchant', 'amount', 'currency', 'dueDate', 'paymentStatus', 'confidence', 'kanbanStatus', 'statusSource', 'manuallyOverriddenAt', 'createdAt', 'updatedAt'])
+
+export type PaymentCardScalarFieldEnum = z.infer<typeof PaymentCardScalarFieldEnumSchema>;
 
 // File: TelegramConnectionScalarFieldEnum.schema.ts
 
@@ -172,9 +244,39 @@ export const JsonNullValueFilterSchema = z.enum(['DbNull', 'JsonNull', 'AnyNull'
 
 export type JsonNullValueFilter = z.infer<typeof JsonNullValueFilterSchema>;
 
+// File: AccountType.schema.ts
+
+export const AccountTypeSchema = z.enum(['STANDARD', 'FREELANCER', 'CREATOR'])
+
+export type AccountType = z.infer<typeof AccountTypeSchema>;
+
+// File: ProfileLayout.schema.ts
+
+export const ProfileLayoutSchema = z.enum(['STANDARD', 'COMPACT'])
+
+export type ProfileLayout = z.infer<typeof ProfileLayoutSchema>;
+
+// File: ProfileEventType.schema.ts
+
+export const ProfileEventTypeSchema = z.enum(['VIEW', 'CONTACT', 'BOOKING'])
+
+export type ProfileEventType = z.infer<typeof ProfileEventTypeSchema>;
+
+// File: BookingStatus.schema.ts
+
+export const BookingStatusSchema = z.enum(['PENDING', 'ACCEPTING', 'CONFIRMED', 'DECLINED', 'CANCELED'])
+
+export type BookingStatus = z.infer<typeof BookingStatusSchema>;
+
+// File: EmailDeliveryStatus.schema.ts
+
+export const EmailDeliveryStatusSchema = z.enum(['PENDING', 'SENT', 'FAILED'])
+
+export type EmailDeliveryStatus = z.infer<typeof EmailDeliveryStatusSchema>;
+
 // File: MailboxProvider.schema.ts
 
-export const MailboxProviderSchema = z.enum(['GOOGLE', 'OUTLOOK'])
+export const MailboxProviderSchema = z.enum(['GOOGLE', 'OUTLOOK', 'IMAP'])
 
 export type MailboxProvider = z.infer<typeof MailboxProviderSchema>;
 
@@ -190,11 +292,35 @@ export const SnoozeStatusSchema = z.enum(['SNOOZED', 'RETURNED', 'CANCELED'])
 
 export type SnoozeStatus = z.infer<typeof SnoozeStatusSchema>;
 
+// File: ReminderStatus.schema.ts
+
+export const ReminderStatusSchema = z.enum(['PENDING', 'FIRED', 'CANCELED'])
+
+export type ReminderStatus = z.infer<typeof ReminderStatusSchema>;
+
 // File: PurchaseType.schema.ts
 
 export const PurchaseTypeSchema = z.enum(['SUBSCRIPTION', 'ONE_TIME'])
 
 export type PurchaseType = z.infer<typeof PurchaseTypeSchema>;
+
+// File: CategoryLabel.schema.ts
+
+export const CategoryLabelSchema = z.enum(['PRIMARY', 'NEWSLETTER', 'PROMOTION', 'SOCIAL'])
+
+export type CategoryLabel = z.infer<typeof CategoryLabelSchema>;
+
+// File: PaymentKanbanStatus.schema.ts
+
+export const PaymentKanbanStatusSchema = z.enum(['UPCOMING', 'DUE_SOON', 'OVERDUE', 'PAID'])
+
+export type PaymentKanbanStatus = z.infer<typeof PaymentKanbanStatusSchema>;
+
+// File: PaymentStatusSource.schema.ts
+
+export const PaymentStatusSourceSchema = z.enum(['AUTOMATIC', 'MANUAL'])
+
+export type PaymentStatusSource = z.infer<typeof PaymentStatusSourceSchema>;
 
 // File: TelegramActionType.schema.ts
 
@@ -222,9 +348,96 @@ export const UserSchema = z.object({
   locale: z.string().nullish(),
   displayUsername: z.string().nullish(),
   twoFactorEnabled: z.boolean().nullish(),
+  accountType: AccountTypeSchema.default("STANDARD"),
+  firstSummaryViewedAt: z.date().nullish(),
+  failedLoginAttempts: z.number().int(),
+  lockedUntil: z.date().nullish(),
+  mustChangePassword: z.boolean(),
 });
 
 export type UserType = z.infer<typeof UserSchema>;
+
+
+// File: CreatorProfile.schema.ts
+
+export const CreatorProfileSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  displayName: z.string().nullish(),
+  avatarUrl: z.string().nullish(),
+  bio: z.string().nullish(),
+  links: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").default("[]"),
+  enabled: z.boolean(),
+  bookingEnabled: z.boolean(),
+  bookingTimezone: z.string().default("Asia/Calcutta"),
+  meetingLengthMinutes: z.number().int().default(30),
+  accentColor: z.string().default("#6E3BFF"),
+  layout: ProfileLayoutSchema.default("STANDARD"),
+  design: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").default("{}"),
+  mediaKitEnabled: z.boolean(),
+  mediaKit: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10").default("{}"),
+  tags: z.array(z.string()),
+  directoryListed: z.boolean(),
+  paidBookingEnabled: z.boolean(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type CreatorProfileType = z.infer<typeof CreatorProfileSchema>;
+
+
+// File: ProfileEvent.schema.ts
+
+export const ProfileEventSchema = z.object({
+  id: z.string(),
+  creatorProfileId: z.string(),
+  type: ProfileEventTypeSchema,
+  createdAt: z.date(),
+});
+
+export type ProfileEventModel = z.infer<typeof ProfileEventSchema>;
+
+// File: WeeklyAvailability.schema.ts
+
+export const WeeklyAvailabilitySchema = z.object({
+  id: z.string(),
+  creatorProfileId: z.string(),
+  dayOfWeek: z.number().int(),
+  startTime: z.string(),
+  endTime: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type WeeklyAvailabilityType = z.infer<typeof WeeklyAvailabilitySchema>;
+
+
+// File: Booking.schema.ts
+
+export const BookingSchema = z.object({
+  id: z.string(),
+  creatorProfileId: z.string(),
+  visitorName: z.string(),
+  visitorEmail: z.string(),
+  note: z.string().nullish(),
+  startsAt: z.date(),
+  endsAt: z.date(),
+  status: BookingStatusSchema.default("PENDING"),
+  cancelToken: z.string(),
+  paid: z.boolean(),
+  checkoutId: z.string().nullish(),
+  meetLink: z.string().nullish(),
+  calendarEventId: z.string().nullish(),
+  acceptedAt: z.date().nullish(),
+  confirmationEmailStatus: EmailDeliveryStatusSchema.nullish(),
+  confirmationEmailSentAt: z.date().nullish(),
+  acceptError: z.string().nullish(),
+  declinedAt: z.date().nullish(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type BookingType = z.infer<typeof BookingSchema>;
 
 
 // File: Session.schema.ts
@@ -257,6 +470,13 @@ export const AccountSchema = z.object({
   idToken: z.string().nullish(),
   expiresAt: z.date().nullish(),
   password: z.string().nullish(),
+  imapHost: z.string().nullish(),
+  imapPort: z.number().int().nullish(),
+  imapSecure: z.boolean().nullish(),
+  smtpHost: z.string().nullish(),
+  smtpPort: z.number().int().nullish(),
+  smtpSecure: z.boolean().nullish(),
+  imapPasswordEncrypted: z.string().nullish(),
   accessTokenExpiresAt: z.date().nullish(),
   refreshTokenExpiresAt: z.date().nullish(),
   scope: z.string().nullish(),
@@ -264,8 +484,7 @@ export const AccountSchema = z.object({
   updatedAt: z.date(),
 });
 
-export type AccountType = z.infer<typeof AccountSchema>;
-
+export type AccountModel = z.infer<typeof AccountSchema>;
 
 // File: Mailbox.schema.ts
 
@@ -291,6 +510,25 @@ export const MailboxSchema = z.object({
 export type MailboxType = z.infer<typeof MailboxSchema>;
 
 
+// File: PendingImapMailbox.schema.ts
+
+export const PendingImapMailboxSchema = z.object({
+  id: z.string(),
+  email: z.string(),
+  imapHost: z.string(),
+  imapPort: z.number().int(),
+  imapSecure: z.boolean(),
+  smtpHost: z.string(),
+  smtpPort: z.number().int(),
+  smtpSecure: z.boolean(),
+  passwordEncrypted: z.string(),
+  expiresAt: z.date(),
+  createdAt: z.date(),
+});
+
+export type PendingImapMailboxType = z.infer<typeof PendingImapMailboxSchema>;
+
+
 // File: MailboxUsageTracking.schema.ts
 
 export const MailboxUsageTrackingSchema = z.object({
@@ -304,6 +542,21 @@ export const MailboxUsageTrackingSchema = z.object({
 });
 
 export type MailboxUsageTrackingType = z.infer<typeof MailboxUsageTrackingSchema>;
+
+
+// File: VoiceUsageTracking.schema.ts
+
+export const VoiceUsageTrackingSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  periodStart: z.date(),
+  periodEnd: z.date(),
+  secondsUsed: z.number().int(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type VoiceUsageTrackingType = z.infer<typeof VoiceUsageTrackingSchema>;
 
 
 // File: ScheduledEmail.schema.ts
@@ -352,6 +605,25 @@ export const SnoozedEmailSchema = z.object({
 });
 
 export type SnoozedEmailType = z.infer<typeof SnoozedEmailSchema>;
+
+
+// File: Reminder.schema.ts
+
+export const ReminderSchema = z.object({
+  id: z.string(),
+  mailboxId: z.string(),
+  userId: z.string(),
+  text: z.string(),
+  remindAt: z.date(),
+  status: ReminderStatusSchema.default("PENDING"),
+  firedAt: z.date().nullish(),
+  error: z.string().nullish(),
+  attempts: z.number().int(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type ReminderType = z.infer<typeof ReminderSchema>;
 
 
 // File: Rule.schema.ts
@@ -456,6 +728,9 @@ export const TwoFactorSchema = z.object({
   secret: z.string(),
   backupCodes: z.string(),
   userId: z.string(),
+  verified: z.boolean().default(true).nullish(),
+  failedVerificationCount: z.number().int().nullish(),
+  lockedUntil: z.date().nullish(),
 });
 
 export type TwoFactorType = z.infer<typeof TwoFactorSchema>;
@@ -516,11 +791,28 @@ export const PurchaseSchema = z.object({
   subscriptionId: z.string().nullish(),
   productId: z.string(),
   status: z.string().nullish(),
+  trialEndsAt: z.date().nullish(),
   createdAt: z.date(),
   updatedAt: z.date(),
 });
 
 export type PurchaseModel = z.infer<typeof PurchaseSchema>;
+
+// File: Notification.schema.ts
+
+export const NotificationSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  type: z.string(),
+  title: z.string(),
+  body: z.string(),
+  emailId: z.string().nullish(),
+  readAt: z.date().nullish(),
+  createdAt: z.date(),
+});
+
+export type NotificationType = z.infer<typeof NotificationSchema>;
+
 
 // File: Email.schema.ts
 
@@ -538,10 +830,85 @@ export const EmailSchema = z.object({
   labelIds: z.array(z.string()),
   isUnread: z.boolean().default(true),
   internalDate: z.date(),
+  category: CategoryLabelSchema.nullish(),
+  categorizedAt: z.date().nullish(),
+  paymentScanCategory: z.string().nullish(),
   syncedAt: z.date(),
 });
 
 export type EmailType = z.infer<typeof EmailSchema>;
+
+
+// File: AiConversation.schema.ts
+
+export const AiConversationSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  mailboxId: z.string(),
+  title: z.string().default("New chat"),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type AiConversationType = z.infer<typeof AiConversationSchema>;
+
+
+// File: AiChatMessage.schema.ts
+
+export const AiChatMessageSchema = z.object({
+  id: z.string(),
+  conversationId: z.string(),
+  role: z.string(),
+  parts: z.unknown().refine((val) => { const getDepth = (obj: unknown, depth: number = 0): number => { if (depth > 10) return depth; if (obj === null || typeof obj !== 'object') return depth; const values = Object.values(obj as Record<string, unknown>); if (values.length === 0) return depth; return Math.max(...values.map(v => getDepth(v, depth + 1))); }; return getDepth(val) <= 10; }, "JSON nesting depth exceeds maximum of 10"),
+  createdAt: z.date(),
+});
+
+export type AiChatMessageType = z.infer<typeof AiChatMessageSchema>;
+
+
+// File: EmailClassificationRun.schema.ts
+
+export const EmailClassificationRunSchema = z.object({
+  id: z.string(),
+  mailboxId: z.string(),
+  status: z.string(),
+  cursor: z.string().nullish(),
+  totalAtStart: z.number().int().nullish(),
+  processedCount: z.number().int(),
+  classifiedCount: z.number().int(),
+  errorCount: z.number().int(),
+  lastError: z.string().nullish(),
+  completedAt: z.date().nullish(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type EmailClassificationRunType = z.infer<typeof EmailClassificationRunSchema>;
+
+
+// File: PaymentCard.schema.ts
+
+export const PaymentCardSchema = z.object({
+  id: z.string(),
+  userId: z.string(),
+  mailboxId: z.string(),
+  emailId: z.string(),
+  threadId: z.string(),
+  paymentType: z.string(),
+  merchant: z.string(),
+  amount: z.number().nullish(),
+  currency: z.string().nullish(),
+  dueDate: z.date().nullish(),
+  paymentStatus: z.string(),
+  confidence: z.number(),
+  kanbanStatus: PaymentKanbanStatusSchema.default("UPCOMING"),
+  statusSource: PaymentStatusSourceSchema.default("AUTOMATIC"),
+  manuallyOverriddenAt: z.date().nullish(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+});
+
+export type PaymentCardType = z.infer<typeof PaymentCardSchema>;
 
 
 // File: TelegramConnection.schema.ts

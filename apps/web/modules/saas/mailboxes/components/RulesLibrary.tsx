@@ -10,17 +10,24 @@ import { Skeleton } from "@repo/ui/components/skeleton";
 import { Switch } from "@repo/ui/components/switch";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+	BellIcon,
+	BellOffIcon,
 	BellRingIcon,
+	BriefcaseIcon,
 	CalendarClockIcon,
 	CalendarIcon,
 	CreditCardIcon,
+	DollarSignIcon,
 	FileTextIcon,
+	HandshakeIcon,
+	InboxIcon,
 	KeyRoundIcon,
 	LandmarkIcon,
 	LinkedinIcon,
 	ListChecksIcon,
 	type LucideIcon,
 	MailOpenIcon,
+	MicIcon,
 	NewspaperIcon,
 	PackageIcon,
 	ReceiptIcon,
@@ -77,49 +84,59 @@ const TEMPLATE_ICONS: Record<string, LucideIcon> = {
 	ShieldCheck: ShieldCheckIcon,
 	Linkedin: LinkedinIcon,
 	Twitter: TwitterIcon,
+	Handshake: HandshakeIcon,
+	Briefcase: BriefcaseIcon,
+	DollarSign: DollarSignIcon,
+	Mic: MicIcon,
+	BellOff: BellOffIcon,
 };
 
 type CategoryConfig = {
-	emoji: string;
+	icon: LucideIcon;
 	tagClass: string;
 	dotClass: string;
 };
 
 const CATEGORY_CONFIG: Record<string, CategoryConfig> = {
 	"Inbox Zero": {
-		emoji: "📥",
+		icon: InboxIcon,
 		dotClass: "bg-emerald-500",
 		tagClass: "text-emerald-700 dark:text-emerald-400",
 	},
 	"Stay Informed": {
-		emoji: "🔔",
+		icon: BellIcon,
 		dotClass: "bg-amber-500",
 		tagClass: "text-amber-700 dark:text-amber-400",
 	},
 	Finance: {
-		emoji: "💰",
+		icon: LandmarkIcon,
 		dotClass: "bg-blue-500",
 		tagClass: "text-blue-700 dark:text-blue-400",
 	},
 	Meetings: {
-		emoji: "📅",
+		icon: CalendarIcon,
 		dotClass: "bg-purple-500",
 		tagClass: "text-purple-700 dark:text-purple-400",
 	},
 	Shopping: {
-		emoji: "🛒",
+		icon: ShoppingCartIcon,
 		dotClass: "bg-orange-500",
 		tagClass: "text-orange-700 dark:text-orange-400",
 	},
 	Security: {
-		emoji: "🔐",
+		icon: ShieldCheckIcon,
 		dotClass: "bg-red-500",
 		tagClass: "text-red-700 dark:text-red-400",
 	},
 	Social: {
-		emoji: "📱",
+		icon: UsersIcon,
 		dotClass: "bg-pink-500",
 		tagClass: "text-pink-700 dark:text-pink-400",
+	},
+	Community: {
+		icon: MicIcon,
+		dotClass: "bg-cyan-500",
+		tagClass: "text-cyan-700 dark:text-cyan-400",
 	},
 };
 
@@ -131,6 +148,7 @@ const CATEGORY_ORDER = [
 	"Shopping",
 	"Security",
 	"Social",
+	"Community",
 ] as const;
 
 interface RuleSuggestion {
@@ -380,12 +398,14 @@ export function RulesLibrary({
 			{/* Category sections */}
 			{categoryGroups.map(({ category, templates }) => {
 				const config = CATEGORY_CONFIG[category];
+				const CategoryIcon = config?.icon ?? TagIcon;
 				return (
 					<section key={category}>
 						<div className="mb-4 flex items-center gap-3">
-							<span className="text-xl" aria-hidden>
-								{config?.emoji}
-							</span>
+							<CategoryIcon
+								className="size-5 text-foreground"
+								aria-hidden
+							/>
 							<h2 className="font-serif font-bold text-2xl tracking-normal text-foreground">
 								{category}
 							</h2>
@@ -451,7 +471,7 @@ function TemplateCard({
 				<Icon className="size-5 shrink-0 text-foreground" />
 				<div className="min-w-0 flex-1">
 					<div className="flex flex-wrap items-center justify-between gap-1.5">
-						<p className="font-semibold text-sm text-foreground">
+						<p className="font-semibold text-lg text-foreground">
 							{template.name}
 						</p>
 						{config && (
@@ -600,7 +620,7 @@ function SuggestionsSection({
 									</Button>
 									<Button
 										size="sm"
-										variant="secondary"
+										variant="primary"
 										disabled={disabled || adding}
 										onClick={() => onEdit(suggestion.rule)}
 									>

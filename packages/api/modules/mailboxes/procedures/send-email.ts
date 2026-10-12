@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
-import { sendEmailViaGmail } from "../lib/email-sender";
+import { sendEmailForMailbox } from "../lib/email-sender";
 import { verifyMailboxOwnership } from "../lib/ownership";
 
 export const sendEmail = protectedProcedure
@@ -26,7 +26,7 @@ export const sendEmail = protectedProcedure
 			context.user.id,
 		);
 
-		const { messageId } = await sendEmailViaGmail({
+		const { messageId } = await sendEmailForMailbox(mailbox.provider, {
 			accountId: mailbox.accountId,
 			from: mailbox.email,
 			to: input.to,

@@ -344,7 +344,7 @@ export function RuleDrawer({
 					</Button>
 					<div className="flex items-center gap-2">
 						<Button
-							variant="secondary"
+							variant="primary"
 							size="sm"
 							onClick={handleDuplicate}
 							disabled={createMutation.isPending}

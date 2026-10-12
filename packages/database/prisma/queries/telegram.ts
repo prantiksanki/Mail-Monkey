@@ -26,10 +26,21 @@ export async function consumeTelegramLinkToken(token: string) {
 		return null;
 	}
 
-	await db.telegramLinkToken.update({
-		where: { id: linkToken.id },
+	// Atomic claim, mirroring claimTelegramAction below: the `usedAt: null`
+	// guard means a concurrent second call for the same token loses the race
+	// (count !== 1) instead of both calls succeeding.
+	const result = await db.telegramLinkToken.updateMany({
+		where: {
+			id: linkToken.id,
+			usedAt: null,
+			expiresAt: { gt: new Date() },
+		},
 		data: { usedAt: new Date() },
 	});
+
+	if (result.count !== 1) {
+		return null;
+	}
 
 	return linkToken;
 }

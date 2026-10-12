@@ -19,7 +19,7 @@ export const disableWatch = protectedProcedure
 		await disableWatchForMailbox(
 			mailbox.id,
 			mailbox.accountId,
-			mailbox.provider as "GOOGLE" | "OUTLOOK",
+			mailbox.provider as "GOOGLE" | "OUTLOOK" | "IMAP",
 			mailbox.subscriptionId,
 		);
 		return { success: true };

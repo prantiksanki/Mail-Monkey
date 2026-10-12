@@ -45,7 +45,7 @@ export function SettingsMenu({
 								"relative rounded-full px-4 py-2.5 text-sm transition-colors",
 								isActive
 									? "bg-foreground text-background shadow-sm"
-									: "font-medium text-foreground/60 hover:bg-muted hover:text-foreground",
+									: "font-medium text-foreground hover:bg-muted",
 							)}
 						>
 							{item.title}

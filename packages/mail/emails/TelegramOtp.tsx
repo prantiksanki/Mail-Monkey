@@ -12,7 +12,7 @@ export function TelegramOtp({
 	return (
 		<Wrapper>
 			<Text className="text-foreground">
-				Your Zeromail Telegram login code is:
+				Your Popsuites Telegram login code is:
 			</Text>
 
 			<Text className="text-center font-mono text-4xl font-bold tracking-widest text-primary">

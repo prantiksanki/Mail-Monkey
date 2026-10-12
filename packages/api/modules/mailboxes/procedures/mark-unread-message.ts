@@ -1,7 +1,7 @@
 import { markEmailUnread } from "@repo/database";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
-import { modifyMessageLabels } from "../lib/gmail-client";
+import { getMailProvider } from "../lib/mail-provider";
 import { verifyMailboxOwnership } from "../lib/ownership";
 
 export const markUnreadMessage = protectedProcedure
@@ -23,11 +23,9 @@ export const markUnreadMessage = protectedProcedure
 			context.user.id,
 		);
 
-		await modifyMessageLabels(
+		await getMailProvider(mailbox.provider).markUnread(
 			mailbox.accountId,
 			input.messageId,
-			["UNREAD"],
-			[],
 		);
 
 		// Mirror in the local DB so the unread state survives an inbox refetch.

@@ -40,9 +40,12 @@ export default defineConfig({
 		globals: true,
 		include: ["**/*.integration.test.ts"],
 		setupFiles: ["./test-helpers/integration-setup.ts"],
-		// Real DB — run serially to avoid connection pool exhaustion
+		// Real DB — run serially to avoid connection pool exhaustion.
+		// Vitest 4 removed the nested `forks: { singleFork }` pool-options
+		// object; `fileParallelism: false` is the replacement (it forces
+		// maxWorkers to 1), still under the default `forks` pool.
 		pool: "forks",
-		forks: { singleFork: true },
+		fileParallelism: false,
 		env: loadRootEnv(),
 	},
 });

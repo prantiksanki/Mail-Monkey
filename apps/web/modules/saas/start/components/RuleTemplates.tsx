@@ -12,17 +12,22 @@ import { Tabs, TabsList, TabsTrigger } from "@repo/ui/components/tabs";
 import { useCreateRuleMutation } from "@saas/mailboxes/lib/rules-api";
 import { useSelectedMailbox } from "@saas/mailboxes/lib/selected-mailbox-context";
 import {
+	BellOff,
 	BellRing,
+	Briefcase,
 	Calendar,
 	CalendarClock,
 	CreditCard,
+	DollarSign,
 	FileText,
+	Handshake,
 	KeyRound,
 	Landmark,
 	Linkedin,
 	ListChecks,
 	type LucideIcon,
 	MailOpen,
+	Mic,
 	Newspaper,
 	Package,
 	PlusIcon,
@@ -65,6 +70,11 @@ const TEMPLATE_ICONS: Record<string, LucideIcon> = {
 	ShieldCheck,
 	Linkedin,
 	Twitter,
+	Handshake,
+	Briefcase,
+	DollarSign,
+	Mic,
+	BellOff,
 };
 
 import { useState } from "react";

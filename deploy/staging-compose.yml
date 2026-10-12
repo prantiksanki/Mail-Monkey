@@ -1,0 +1,15 @@
+services:
+  app:
+    image: popsuites:staging
+    env_file: .env
+    ports:
+      - "127.0.0.1:3001:3000"
+    networks:
+      - popsuites
+    mem_limit: 900m
+    restart: unless-stopped
+    tmpfs:
+      - /app/apps/web/.next/cache:uid=1000,gid=1000
+networks:
+  popsuites:
+    external: true

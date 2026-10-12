@@ -218,7 +218,7 @@ export function RuleSuggestionsPanel({
 									</Button>
 									<Button
 										size="sm"
-										variant="secondary"
+										variant="primary"
 										disabled={isPending}
 										onClick={() =>
 											onEditSuggestion(suggestion.rule)

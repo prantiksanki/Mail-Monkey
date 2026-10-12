@@ -24,7 +24,7 @@ export const startRuleBackfill = protectedProcedure
 		z.object({
 			mailboxId: z.string(),
 			ruleId: z.string(),
-			windowMonths: RuleBackfillWindowMonthsSchema.default("6"),
+			windowMonths: RuleBackfillWindowMonthsSchema.default("1"),
 		}),
 	)
 	.handler(async ({ input, context }) => {

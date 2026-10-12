@@ -1,7 +1,9 @@
+import { ORPCError } from "@orpc/client";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { encodeRfc2822 } from "../lib/email-encoder";
 import { createDraft, updateDraft } from "../lib/gmail-client";
+import { saveImapDraft } from "../lib/imap-drafts";
 import { verifyMailboxOwnership } from "../lib/ownership";
 
 /**
@@ -32,6 +34,28 @@ export const saveDraft = protectedProcedure
 			input.mailboxId,
 			context.user.id,
 		);
+
+		if (mailbox.provider === "OUTLOOK") {
+			throw new ORPCError("BAD_REQUEST", {
+				message: "Drafts aren't supported for Outlook mailboxes yet.",
+			});
+		}
+
+		if (mailbox.provider === "IMAP") {
+			const saved = await saveImapDraft(
+				mailbox.accountId,
+				{
+					from: mailbox.email,
+					to: input.to,
+					cc: input.cc,
+					bcc: input.bcc,
+					subject: input.subject,
+					body: input.body,
+				},
+				input.draftId,
+			);
+			return { draftId: saved.draftId, messageId: saved.draftId };
+		}
 
 		const raw = encodeRfc2822({
 			from: mailbox.email,

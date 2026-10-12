@@ -9,10 +9,12 @@ interface GmailHeader {
 interface GmailBody {
 	data?: string;
 	size: number;
+	attachmentId?: string;
 }
 
 interface GmailMessagePart {
 	mimeType: string;
+	filename?: string;
 	body?: GmailBody;
 	parts?: GmailMessagePart[];
 	headers?: GmailHeader[];
@@ -32,6 +34,13 @@ export interface GmailMessage {
 	};
 }
 
+export interface ParsedAttachment {
+	attachmentId: string;
+	filename: string;
+	mimeType: string;
+	size: number;
+}
+
 export interface ParsedEmail {
 	id: string;
 	threadId: string;
@@ -46,6 +55,7 @@ export interface ParsedEmail {
 	date: Date;
 	labelIds: string[];
 	headers: Record<string, string>;
+	attachments: ParsedAttachment[];
 }
 
 function getHeader(headers: GmailHeader[], name: string): string {
@@ -82,6 +92,29 @@ function decodeBase64Url(data: string): string {
 	).toString("utf-8");
 }
 
+// A part is an attachment when it carries a filename and either has its own
+// attachmentId (large attachment, fetched separately) or inline body data
+// (small attachment, e.g. under ~a few KB, embedded directly). Body parts
+// (text/plain, text/html) never have a filename, so this doesn't conflict
+// with findBodyPart above.
+function findAttachments(parts: GmailMessagePart[]): ParsedAttachment[] {
+	const attachments: ParsedAttachment[] = [];
+	for (const part of parts) {
+		if (part.filename && part.body?.attachmentId) {
+			attachments.push({
+				attachmentId: part.body.attachmentId,
+				filename: part.filename,
+				mimeType: part.mimeType,
+				size: part.body.size ?? 0,
+			});
+		}
+		if (part.parts) {
+			attachments.push(...findAttachments(part.parts));
+		}
+	}
+	return attachments;
+}
+
 function findBodyPart(parts: GmailMessagePart[], mimeType: string): string {
 	for (const part of parts) {
 		if (part.mimeType === mimeType && part.body?.data) {
@@ -104,9 +137,11 @@ export function parseGmailMessage(message: GmailMessage): ParsedEmail {
 
 	let bodyText = "";
 	let bodyHtml = "";
+	let attachments: ParsedAttachment[] = [];
 	if (message.payload.parts) {
 		bodyText = findBodyPart(message.payload.parts, "text/plain");
 		bodyHtml = findBodyPart(message.payload.parts, "text/html");
+		attachments = findAttachments(message.payload.parts);
 	} else if (message.payload.body?.data) {
 		const decoded = decodeBase64Url(message.payload.body.data);
 		if (message.payload.mimeType === "text/html") {
@@ -135,5 +170,6 @@ export function parseGmailMessage(message: GmailMessage): ParsedEmail {
 		date: new Date(Number(message.internalDate)),
 		labelIds: message.labelIds,
 		headers: headersMap,
+		attachments,
 	};
 }

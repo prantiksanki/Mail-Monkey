@@ -22,9 +22,6 @@ for (const line of envLines) {
 	}
 }
 
-// Set GOOGLE_GENERATIVE_AI_API_KEY — what @ai-sdk/google reads
-process.env.GOOGLE_GENERATIVE_AI_API_KEY = process.env.GEMINI_API_KEY;
-
 const { google } = await import("@ai-sdk/google");
 const { generateText, Output } = await import("ai");
 const { z } = await import("zod");

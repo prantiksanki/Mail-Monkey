@@ -11,7 +11,8 @@ export interface RuleTemplate {
 		| "Meetings"
 		| "Shopping"
 		| "Security"
-		| "Social";
+		| "Social"
+		| "Community";
 	icon: string;
 	rule: CreateRuleInput & { enabled: true };
 	starter?: boolean;
@@ -27,6 +28,7 @@ export const RULE_TEMPLATE_CATEGORIES = [
 	"Shopping",
 	"Security",
 	"Social",
+	"Community",
 ] as const;
 
 export type RuleTemplateCategory = (typeof RULE_TEMPLATE_CATEGORIES)[number];
@@ -94,6 +96,23 @@ export const RULE_TEMPLATES: RuleTemplate[] = [
 			enabled: true,
 		},
 	},
+	{
+		id: "platform-notification-noise",
+		name: "Archive Platform Notification Noise",
+		description:
+			"Archives routine, non-actionable platform notifications like new subscriber alerts, comment notifications, and algorithm updates so they don't compete with real opportunities for attention.",
+		category: "Inbox Zero",
+		icon: "BellOff",
+		rule: {
+			name: "Archive Platform Notification Noise",
+			condition: {
+				aiInstructions:
+					"This is a routine, automated notification from a content platform such as YouTube, Instagram, or TikTok about a new comment, new subscriber, new follower, or a liked post. It is not a direct message, and it is not a comment or interaction the platform itself has flagged as high-engagement or from a VIP.",
+			},
+			actions: [{ type: "ARCHIVE" }],
+			enabled: true,
+		},
+	},
 
 	// ── Stay Informed ─────────────────────────────────────────────────────────────
 	{
@@ -107,7 +126,7 @@ export const RULE_TEMPLATES: RuleTemplate[] = [
 			name: "Flag Emails from VIPs",
 			condition: {
 				aiInstructions:
-					"This email is from a CEO, executive, board member, investor, or important client that requires my prompt attention and should not be missed.",
+					"This email is from a real, named individual who is a CEO, executive, board member, investor, or a known important client personally emailing me about a business matter. It is not an automated system notification, no-reply address, billing/payment alert, security alert, newsletter, or any email sent by a platform rather than a person, even if that email uses urgent language like 'action needed' or 'urgent'.",
 			},
 			actions: [{ type: "LABEL", fields: { label: "VIP" } }],
 			enabled: true,
@@ -125,7 +144,7 @@ export const RULE_TEMPLATES: RuleTemplate[] = [
 			name: "Label Urgent Emails",
 			condition: {
 				aiInstructions:
-					"This email contains urgent language such as 'urgent', 'ASAP', 'immediately', 'deadline today', or clearly requires my immediate attention or decision.",
+					"This email contains urgent language such as 'urgent', 'ASAP', 'immediately', 'deadline today', or clearly requires my immediate attention or decision. It is not an automated security alert, sign-in notification, account-access confirmation, password reset, payment retry, or account-deletion/verification warning from a no-reply, notifications, or accounts sender, even if it mentions a deadline or says action is needed.",
 			},
 			actions: [{ type: "LABEL", fields: { label: "Urgent" } }],
 			enabled: true,
@@ -162,6 +181,57 @@ export const RULE_TEMPLATES: RuleTemplate[] = [
 					"This email is from a business client, customer, or external business partner asking about a project, contract, proposal, or business matter.",
 			},
 			actions: [{ type: "LABEL", fields: { label: "Clients" } }],
+			enabled: true,
+		},
+	},
+	{
+		id: "brand-deals",
+		name: "Label Brand Deal & Sponsorship Emails",
+		description:
+			"Labels sponsorship inquiries, brand deal offers, and partnership proposals from companies and agencies so they surface above routine notifications.",
+		category: "Stay Informed",
+		icon: "Handshake",
+		rule: {
+			name: "Label Brand Deal & Sponsorship Emails",
+			condition: {
+				aiInstructions:
+					"This email is a sponsorship inquiry, brand deal offer, paid partnership proposal, collaboration campaign, or rate card / media kit request from a company, brand, or marketing agency wanting to work with me. It is not a bulk marketing blast, an automated newsletter template, or an email with an unsubscribe footer and no direct personal ask.",
+			},
+			actions: [{ type: "LABEL", fields: { label: "Brand Deals" } }],
+			enabled: true,
+		},
+	},
+	{
+		id: "investor-funding",
+		name: "Label Investor & Funding Emails",
+		description:
+			"Labels investor replies, funding updates, and pitch responses so a critical fundraising conversation never gets lost in the noise.",
+		category: "Stay Informed",
+		icon: "Briefcase",
+		rule: {
+			name: "Label Investor & Funding Emails",
+			condition: {
+				aiInstructions:
+					"This email is from a venture capital firm, angel investor, or startup accelerator/fund and is about a term sheet, cap table, pitch deck, funding round, due diligence, letter of intent, investment, or a follow-up call related to fundraising. It is not an investor-relations marketing blast or a newsletter-style fund update.",
+			},
+			actions: [{ type: "LABEL", fields: { label: "Investors" } }],
+			enabled: true,
+		},
+	},
+	{
+		id: "press-media",
+		name: "Label Press & Media Inquiries",
+		description:
+			"Labels interview requests, press inquiries, and media coverage opportunities from journalists and publications.",
+		category: "Stay Informed",
+		icon: "Newspaper",
+		rule: {
+			name: "Label Press & Media Inquiries",
+			condition: {
+				aiInstructions:
+					"This email is a press inquiry, interview request, feature article request, or a request for a quote for a story, sent by a journalist, news outlet, or publication. It is not a mass PR agency pitch with no direct, personal ask.",
+			},
+			actions: [{ type: "LABEL", fields: { label: "Press & Media" } }],
 			enabled: true,
 		},
 	},
@@ -251,6 +321,23 @@ export const RULE_TEMPLATES: RuleTemplate[] = [
 					"This is a tax document, W-2, 1099, tax form, year-end statement, or tax-related notice from a financial institution or government agency.",
 			},
 			actions: [{ type: "LABEL", fields: { label: "Tax Documents" } }],
+			enabled: true,
+		},
+	},
+	{
+		id: "platform-payouts",
+		name: "Label Platform Payout & Earnings Notifications",
+		description:
+			"Labels payout confirmations and earnings statements from creator monetization platforms, so income tracking stays separate from general finance mail.",
+		category: "Finance",
+		icon: "DollarSign",
+		rule: {
+			name: "Label Platform Payout & Earnings Notifications",
+			condition: {
+				aiInstructions:
+					"This email is a payout confirmation, earnings summary, revenue report, monthly payment notice, or creator fund statement from a creator monetization platform such as YouTube/AdSense, Patreon, Stripe, TikTok, Gumroad, or Substack. It is not a generic Stripe receipt for an unrelated SaaS subscription charge.",
+			},
+			actions: [{ type: "LABEL", fields: { label: "Payouts" } }],
 			enabled: true,
 		},
 	},
@@ -490,8 +577,110 @@ export const RULE_TEMPLATES: RuleTemplate[] = [
 			enabled: true,
 		},
 	},
+
+	// ── Community ─────────────────────────────────────────────────────────────────
+	{
+		id: "collab-requests",
+		name: "Label Collaboration & Guest Requests",
+		description:
+			"Labels podcast guest invites, collab requests, and joint content proposals from other creators.",
+		category: "Community",
+		icon: "Mic",
+		rule: {
+			name: "Label Collaboration & Guest Requests",
+			condition: {
+				aiInstructions:
+					"This email is a podcast guest invite, collaboration request, feature request, joint video proposal, or other request from a fellow creator to collaborate on content together. It is not an automated digest or notification from a 'creator community' platform.",
+			},
+			actions: [{ type: "LABEL", fields: { label: "Collabs" } }],
+			enabled: true,
+		},
+	},
 ];
 
 export const STARTER_RULE_TEMPLATES: RuleTemplate[] = RULE_TEMPLATES.filter(
 	(t) => t.starter,
 );
+
+/**
+ * Category → color, kept in sync with the `bg-*-500` dot classes used by the
+ * Rules "Discover" page (CATEGORY_CONFIG in RulesLibrary.tsx). Uses Tailwind v4
+ * palette CSS variables so consumers render the exact same shade as the tags.
+ */
+export const CATEGORY_COLORS: Record<RuleTemplate["category"], string> = {
+	"Inbox Zero": "var(--color-emerald-500)",
+	"Stay Informed": "var(--color-amber-500)",
+	Finance: "var(--color-blue-500)",
+	Meetings: "var(--color-purple-500)",
+	Shopping: "var(--color-orange-500)",
+	Security: "var(--color-red-500)",
+	Social: "var(--color-pink-500)",
+	Community: "var(--color-cyan-500)",
+};
+
+const TEMPLATE_CATEGORY_BY_NAME = new Map(
+	RULE_TEMPLATES.map((t) => [t.rule.name.toLowerCase(), t.category]),
+);
+
+/**
+ * Resolve the category of a rule created from a template by matching its name.
+ * Returns undefined for custom rules that don't originate from a template.
+ */
+export function categoryForRuleName(
+	name: string,
+): RuleTemplate["category"] | undefined {
+	return TEMPLATE_CATEGORY_BY_NAME.get(name.trim().toLowerCase());
+}
+
+/**
+ * Map from the label name a template's LABEL action produces → its category.
+ * Lets us color a Gmail label (created by name) to match the rule's category.
+ */
+const TEMPLATE_CATEGORY_BY_LABEL = new Map<string, RuleTemplate["category"]>();
+for (const t of RULE_TEMPLATES) {
+	for (const action of t.rule.actions) {
+		if (action.type === "LABEL" && action.fields?.label) {
+			const key = action.fields.label.trim().toLowerCase();
+			if (!TEMPLATE_CATEGORY_BY_LABEL.has(key)) {
+				TEMPLATE_CATEGORY_BY_LABEL.set(key, t.category);
+			}
+		}
+	}
+}
+
+/**
+ * Resolve the category for a label name produced by a template's LABEL action.
+ * Returns undefined for custom labels that don't originate from a template.
+ */
+export function categoryForLabelName(
+	label: string,
+): RuleTemplate["category"] | undefined {
+	return TEMPLATE_CATEGORY_BY_LABEL.get(label.trim().toLowerCase());
+}
+
+/**
+ * Gmail label color for each category, using values from Gmail's fixed allowed
+ * label-color palette (arbitrary hex is rejected by the API). Chosen to visually
+ * match the app's category dot colors (CATEGORY_COLORS / the Rules-page tags):
+ *   Inbox Zero → green, Stay Informed → amber, Finance → blue, Meetings → purple,
+ *   Shopping → orange, Security → red, Social → pink, Community → cyan.
+ * `textColor` is Gmail's standard high-contrast pairing for each background.
+ */
+// Category → colour, using ONLY verified Gmail-palette background/text pairings
+// from LABEL_COLORS (label-colors.ts). Gmail rejects any backgroundColor/textColor
+// pair that isn't an exact palette entry, so these must stay in sync with that
+// list. Hues are chosen to match the Rules-page category tags; each background is
+// distinct so categories stay visually separable in the sidebar.
+export const CATEGORY_GMAIL_COLORS: Record<
+	RuleTemplate["category"],
+	{ backgroundColor: string; textColor: string }
+> = {
+	"Inbox Zero": { backgroundColor: "#16a766", textColor: "#ffffff" }, // green
+	"Stay Informed": { backgroundColor: "#ffad47", textColor: "#ffffff" }, // orange
+	Finance: { backgroundColor: "#4a86e8", textColor: "#ffffff" }, // blue
+	Meetings: { backgroundColor: "#a479e2", textColor: "#ffffff" }, // purple
+	Shopping: { backgroundColor: "#2da2bb", textColor: "#ffffff" }, // teal
+	Security: { backgroundColor: "#fb4c2f", textColor: "#ffffff" }, // red
+	Social: { backgroundColor: "#f691b3", textColor: "#000000" }, // pink
+	Community: { backgroundColor: "#b99aff", textColor: "#000000" }, // lavender
+};

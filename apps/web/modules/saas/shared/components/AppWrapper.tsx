@@ -1,21 +1,26 @@
 "use client";
 
 import { cn } from "@repo/ui";
+import { AiAssistantWidget } from "@saas/ai-assistant/components/AiAssistantWidget";
 import { SelectedMailboxProvider } from "@saas/mailboxes/lib/selected-mailbox-context";
 import { NavBar } from "@saas/shared/components/NavBar";
 import type { PropsWithChildren } from "react";
 import { config } from "@/config";
-import { SidebarProvider } from "../lib/sidebar-context";
+import { SidebarProvider, useSidebar } from "../lib/sidebar-context";
 
 function AppContent({ children }: PropsWithChildren) {
 	const { useSidebarLayout } = config.saas;
+	const { isCollapsed } = useSidebar();
 
 	return (
 		<div className="bg-background h-screen overflow-hidden">
 			<NavBar />
 			<div
 				className={cn("flex h-screen", {
-					"md:ml-[var(--sidebar-width)]": useSidebarLayout,
+					"md:ml-[var(--sidebar-width-collapsed)]":
+						useSidebarLayout && isCollapsed,
+					"md:ml-[var(--sidebar-width)]":
+						useSidebarLayout && !isCollapsed,
 				})}
 			>
 				{/* Mobile top-bar offset */}
@@ -25,6 +30,8 @@ function AppContent({ children }: PropsWithChildren) {
 					</div>
 				</main>
 			</div>
+			{/* Global inbox assistant — available on every authenticated screen. */}
+			<AiAssistantWidget />
 		</div>
 	);
 }

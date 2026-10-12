@@ -17,6 +17,7 @@
 	"scripts": {
 		"clean": "git clean -xdf .cache .turbo dist node_modules",
 		"create:user": "dotenv -c -e ../../.env -- tsx ./src/create-user.ts",
+		"encrypt:oauth-tokens": "dotenv -c -e ../../.env -- tsx ./src/encrypt-existing-oauth-tokens.ts",
 		"type-check": "tsc --noEmit"
 	},
 	"version": "0.0.0"

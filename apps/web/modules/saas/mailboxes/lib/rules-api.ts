@@ -1,5 +1,12 @@
 import { orpcClient } from "@shared/lib/orpc-client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+	useMutation,
+	useQueries,
+	useQuery,
+	useQueryClient,
+} from "@tanstack/react-query";
+import { mergeMailboxStats } from "./aggregate";
+import { labelCountsQueryKey } from "./inbox-api";
 
 interface RuleMutationConditionInput {
 	conditionalOperator?: string | null;
@@ -70,6 +77,46 @@ export const useRulesQuery = (mailboxId: string | null) => {
 		},
 		enabled: !!mailboxId,
 	});
+};
+
+export interface TaggedRule {
+	rule: NonNullable<
+		Awaited<ReturnType<typeof orpcClient.mailboxes.rules.list>>["rules"]
+	>[number];
+	mailboxId: string;
+	mailboxEmail: string;
+	mailboxProvider: string;
+}
+
+/**
+ * Fetches rules for every mailbox in `mailboxIds` in parallel and returns
+ * them as one flat, mailbox-tagged list — backs the "All mailboxes" rules
+ * view. A rule always belongs to exactly one mailbox (it watches that one
+ * inbox via that provider's API), so unlike the dashboard summary this is a
+ * concatenation, not a numeric merge.
+ */
+export const useAllMailboxesRulesQuery = (
+	mailboxes: Array<{ id: string; email: string; provider: string }>,
+) => {
+	const results = useQueries({
+		queries: mailboxes.map((m) => ({
+			queryKey: rulesQueryKey(m.id),
+			queryFn: () => orpcClient.mailboxes.rules.list({ mailboxId: m.id }),
+		})),
+	});
+
+	const isLoading = mailboxes.length > 0 && results.some((r) => r.isLoading);
+	const rules: TaggedRule[] = results.flatMap((r, i) => {
+		const mailbox = mailboxes[i];
+		return (r.data?.rules ?? []).map((rule) => ({
+			rule,
+			mailboxId: mailbox.id,
+			mailboxEmail: mailbox.email,
+			mailboxProvider: mailbox.provider,
+		}));
+	});
+
+	return { rules, isLoading };
 };
 
 export const ruleSuggestionsQueryKey = (mailboxId: string) =>
@@ -169,9 +216,16 @@ export const useTestRuleMutation = () => {
 };
 
 export const useApplyRulesToRecentMutation = () => {
+	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: async (input: { mailboxId: string }) => {
 			return orpcClient.mailboxes.rules.applyRecent(input);
+		},
+		onSuccess: (_data, variables) => {
+			// Rules just labelled recent emails — refresh the sidebar counts.
+			queryClient.invalidateQueries({
+				queryKey: labelCountsQueryKey(variables.mailboxId),
+			});
 		},
 	});
 };
@@ -249,6 +303,10 @@ export const useAdvanceRuleBackfillMutation = () => {
 					data.run.ruleId,
 				),
 			});
+			// Backfill labels historical emails — keep sidebar counts fresh.
+			queryClient.invalidateQueries({
+				queryKey: labelCountsQueryKey(data.run.mailboxId),
+			});
 		},
 	});
 };
@@ -306,6 +364,38 @@ export const useMailboxStatsQuery = (mailboxId: string | null) => {
 		enabled: !!mailboxId,
 		refetchInterval: 30000,
 	});
+};
+
+export const useAllMailboxesStatsQuery = (mailboxIds: string[]) => {
+	const results = useQueries({
+		queries: mailboxIds.map((mailboxId) => ({
+			queryKey: ["mailbox-stats", mailboxId],
+			queryFn: () => orpcClient.mailboxes.stats({ mailboxId }),
+			refetchInterval: 30000,
+		})),
+	});
+
+	const isLoading = mailboxIds.length > 0 && results.some((r) => r.isLoading);
+	const loaded = results
+		.map((r) => r.data)
+		.filter((d): d is NonNullable<typeof d> => !!d);
+
+	return { data: mergeMailboxStats(loaded), isLoading };
+};
+
+/** True if any connected mailbox currently has live watch enabled. */
+export const useAllMailboxesWatchStatusQuery = (mailboxIds: string[]) => {
+	const results = useQueries({
+		queries: mailboxIds.map((mailboxId) => ({
+			queryKey: ["watch-status", mailboxId],
+			queryFn: () => orpcClient.mailboxes.watch.status({ mailboxId }),
+		})),
+	});
+
+	return {
+		isWatching: results.some((r) => r.data?.watchEnabled),
+		isLoading: mailboxIds.length > 0 && results.some((r) => r.isLoading),
+	};
 };
 
 export const useCalendarEventsQuery = (

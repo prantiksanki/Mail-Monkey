@@ -53,7 +53,7 @@ export async function findRuleByNameInMailbox({
 type LabelAction = { type?: string; fields?: { label?: string | null } };
 
 /** Extracts the label name from a rule's LABEL action, if any. */
-function getRuleLabelName(actions: unknown): string | undefined {
+export function getRuleLabelName(actions: unknown): string | undefined {
 	if (!Array.isArray(actions)) {
 		return undefined;
 	}

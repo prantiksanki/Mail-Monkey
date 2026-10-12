@@ -1,7 +1,9 @@
+import { ORPCError } from "@orpc/client";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { parseGmailMessage } from "../lib/email-parser";
 import { getDraft, listDrafts } from "../lib/gmail-client";
+import { listImapDrafts } from "../lib/imap-drafts";
 import { verifyMailboxOwnership } from "../lib/ownership";
 
 /** Strips HTML tags/entities so a rich draft's snippet reads as plain text. */
@@ -31,6 +33,26 @@ export const listDraftsProcedure = protectedProcedure
 			input.mailboxId,
 			context.user.id,
 		);
+
+		if (mailbox.provider === "OUTLOOK") {
+			throw new ORPCError("BAD_REQUEST", {
+				message: "Drafts aren't supported for Outlook mailboxes yet.",
+			});
+		}
+
+		if (mailbox.provider === "IMAP") {
+			const rows = await listImapDrafts(mailbox.accountId);
+			return {
+				drafts: rows.map((r) => ({
+					draftId: r.draftId,
+					messageId: r.draftId,
+					to: r.to,
+					subject: r.subject,
+					snippet: r.snippet,
+					date: r.date,
+				})),
+			};
+		}
 
 		const list = await listDrafts(mailbox.accountId, { maxResults: 50 });
 		const draftRefs = list.drafts ?? [];

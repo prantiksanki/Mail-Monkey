@@ -2,6 +2,7 @@ import { LocaleLink, localeRedirect } from "@i18n/routing";
 import { PostContent } from "@marketing/blog/components/PostContent";
 import { getPostBySlug } from "@marketing/blog/utils/lib/posts";
 import { getBaseUrl } from "@repo/utils";
+import { BreadcrumbJsonLd } from "@shared/components/BreadcrumbJsonLd";
 import { getActivePathFromUrlParam } from "@shared/lib/content";
 import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
@@ -22,16 +23,17 @@ export async function generateMetadata(props: { params: Promise<Params> }) {
 	return {
 		title: post?.title,
 		description: post?.excerpt,
+		alternates: { canonical: `${getBaseUrl()}/blog/${slug}` },
 		openGraph: {
 			title: post?.title,
 			description: post?.excerpt,
-			images: post?.image
-				? [
-						post.image.startsWith("http")
-							? post.image
-							: new URL(post.image, getBaseUrl()).toString(),
-					]
-				: [],
+			images: [
+				post?.image
+					? post.image.startsWith("http")
+						? post.image
+						: new URL(post.image, getBaseUrl()).toString()
+					: "/opengraph-image",
+			],
 		},
 	};
 }
@@ -66,8 +68,52 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 		year: "numeric",
 	}).format(new Date(date));
 
+	const baseUrl = getBaseUrl();
+	const postUrl = `${baseUrl}/blog/${slug}`;
+	const blogPosting = {
+		"@context": "https://schema.org",
+		"@type": "BlogPosting",
+		headline: title,
+		description: excerpt,
+		datePublished: date,
+		mainEntityOfPage: postUrl,
+		url: postUrl,
+		image: image
+			? image.startsWith("http")
+				? image
+				: new URL(image, baseUrl).toString()
+			: undefined,
+		author: {
+			"@type": "Person",
+			name: authorName,
+			...(authorLink ? { url: authorLink } : {}),
+		},
+		publisher: {
+			"@type": "Organization",
+			name: "Popsuites",
+			logo: {
+				"@type": "ImageObject",
+				url: `${baseUrl}/images/popsuites-icon.png`,
+			},
+		},
+	};
+
 	return (
 		<article className="pt-28 pb-24">
+			<script
+				type="application/ld+json"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: structured data
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify(blogPosting),
+				}}
+			/>
+			<BreadcrumbJsonLd
+				items={[
+					{ name: "Home", url: baseUrl },
+					{ name: "Blog", url: `${baseUrl}/blog` },
+					{ name: title, url: postUrl },
+				]}
+			/>
 			{/* Back link */}
 			<div className="container max-w-3xl mb-10">
 				<LocaleLink
@@ -94,7 +140,7 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 					</div>
 				)}
 
-				<h1 className="font-bold text-4xl md:text-5xl leading-tight tracking-tight text-foreground">
+				<h1 className="font-[family-name:var(--font-bricolage)] font-bold text-4xl md:text-5xl leading-tight tracking-tight text-foreground">
 					{title}
 				</h1>
 
@@ -164,7 +210,7 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 			<div className="container max-w-3xl mt-16">
 				<div className="rounded-3xl border border-border bg-card p-8 text-center">
 					<p className="font-semibold text-lg text-foreground mb-2">
-						Try Zer0Email free
+						Try Popsuites free
 					</p>
 					<p className="text-muted-foreground text-sm mb-6">
 						Connect Gmail or Outlook and let AI handle the noise.

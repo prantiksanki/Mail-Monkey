@@ -1,4 +1,5 @@
 import { createPurchasesHelper } from "@repo/payments/lib/helper";
+import { isStagingEnvironment } from "@repo/utils";
 import { getActiveOrganization } from "@saas/auth/lib/server";
 import { ActivePlan } from "@saas/payments/components/ActivePlan";
 import { ChangePlan } from "@saas/payments/components/ChangePlan";
@@ -7,7 +8,7 @@ import { orpcClient } from "@shared/lib/orpc-client";
 import { orpc } from "@shared/lib/orpc-query-utils";
 import { getServerQueryClient } from "@shared/lib/server";
 import { attemptAsync } from "es-toolkit";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata() {
@@ -24,6 +25,12 @@ export default async function BillingSettingsPage({
 	params: Promise<{ organizationSlug: string }>;
 }) {
 	const { organizationSlug } = await params;
+
+	// No billing on staging — every user already has full paid access.
+	if (isStagingEnvironment()) {
+		redirect(`/app/${organizationSlug}/settings`);
+	}
+
 	const organization = await getActiveOrganization(organizationSlug);
 
 	if (!organization) {

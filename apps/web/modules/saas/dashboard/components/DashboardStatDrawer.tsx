@@ -9,9 +9,11 @@ import {
 } from "@repo/ui/components/sheet";
 import {
 	Clock3Icon,
+	InboxIcon,
 	MailOpenIcon,
 	ShieldCheckIcon,
 	SparklesIcon,
+	UsersIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 
@@ -19,7 +21,10 @@ export type StatDrawerKind =
 	| "processed"
 	| "rulesFired"
 	| "timeSaved"
-	| "rulesActive";
+	| "rulesActive"
+	| "inboxZero"
+	| "priority"
+	| "topSenders";
 
 interface BreakdownRow {
 	id: string;
@@ -56,7 +61,11 @@ export function DashboardStatDrawer({
 				? SparklesIcon
 				: kind === "timeSaved"
 					? Clock3Icon
-					: ShieldCheckIcon;
+					: kind === "inboxZero"
+						? InboxIcon
+						: kind === "topSenders"
+							? UsersIcon
+							: ShieldCheckIcon;
 
 	return (
 		<Sheet open={open} onOpenChange={onOpenChange}>

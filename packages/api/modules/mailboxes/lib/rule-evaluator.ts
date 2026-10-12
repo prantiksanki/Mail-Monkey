@@ -17,7 +17,7 @@
  */
 
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateObject } from "@repo/ai";
+import { generateObject, TEXT_MODEL_ID } from "@repo/ai";
 import { logger } from "@repo/logs";
 import { z } from "zod";
 import type { RuleCondition } from "../types";
@@ -34,7 +34,8 @@ const MATCH_ZOD_SCHEMA = z.object({
 // ─── System prompt (static) ───────────────────────────────────────────────────
 
 function buildEvaluatorSystem(): string {
-	const { newsletter, githubPRComment, deploySuccess } = CANONICAL_EXAMPLES;
+	const { newsletter, githubPRComment, deploySuccess, urgentAttention } =
+		CANONICAL_EXAMPLES;
 
 	return `<role>
 You are a precise email classifier. Your job is to determine whether a given email matches a classification rule. You analyze observable email properties to make a binary match/no-match decision.
@@ -59,6 +60,7 @@ This AI classification may run alongside static sender/recipient/subject filters
 3. Do not infer intent beyond what is observable in the email fields.
 4. Evaluate the rule as-is — do not add conditions or relax criteria.
 5. If the rule excludes a specific sub-category (e.g., "not a review request"), verify the email does not belong to that excluded category.
+6. Do not match on isolated keywords. An automated, transactional, or system-generated message (e.g., a security alert, sign-in notification, OTP, receipt, or any message from a no-reply / notifications / accounts sender) does NOT satisfy a rule about human intent (such as urgency or a request for action) just because it contains alarming or action-sounding words. Judge what the email actually IS and who sent it, not which words appear in it.
 </constraints>
 
 <examples>
@@ -117,6 +119,34 @@ Labels: ${deploySuccess.evaluatorExamples.noMatch.labels}
 <explanation>${deploySuccess.evaluatorExamples.noMatch.reasoning}</explanation>
 <result>{"match": false}</result>
 </example>
+
+<example>
+<rule>${urgentAttention.aiInstructions}</rule>
+<email>
+From: ${urgentAttention.evaluatorExamples.match.from}
+To: ${urgentAttention.evaluatorExamples.match.to}
+Subject: ${urgentAttention.evaluatorExamples.match.subject}
+Snippet: ${urgentAttention.evaluatorExamples.match.snippet}
+Body: ${urgentAttention.evaluatorExamples.match.body}
+Labels: ${urgentAttention.evaluatorExamples.match.labels}
+</email>
+<explanation>${urgentAttention.evaluatorExamples.match.reasoning}</explanation>
+<result>{"match": true}</result>
+</example>
+
+<example>
+<rule>${urgentAttention.aiInstructions}</rule>
+<email>
+From: ${urgentAttention.evaluatorExamples.noMatch.from}
+To: ${urgentAttention.evaluatorExamples.noMatch.to}
+Subject: ${urgentAttention.evaluatorExamples.noMatch.subject}
+Snippet: ${urgentAttention.evaluatorExamples.noMatch.snippet}
+Body: ${urgentAttention.evaluatorExamples.noMatch.body}
+Labels: ${urgentAttention.evaluatorExamples.noMatch.labels}
+</email>
+<explanation>${urgentAttention.evaluatorExamples.noMatch.reasoning}</explanation>
+<result>{"match": false}</result>
+</example>
 </examples>`;
 }
 
@@ -169,11 +199,11 @@ async function evaluateAiCondition(
 			logger.info("[rule-evaluator] Calling Google Gemini", {
 				messageId: email.id,
 				attempt: attempt + 1,
-				model: "gemini-3.5-flash",
+				model: TEXT_MODEL_ID,
 			});
 
 			const { object } = await generateObject({
-				model: google("gemini-3.5-flash"),
+				model: google(TEXT_MODEL_ID),
 				schema: MATCH_ZOD_SCHEMA,
 				temperature: 0,
 				system: buildEvaluatorSystem(),
@@ -288,6 +318,35 @@ export async function evaluateRule(
 	// "sender is <name>" / "sent by <name>".  This avoids an expensive LLM call
 	// when the instruction is a simple sender rule, and prevents silent misses
 	// when the LLM model is unavailable or returns a wrong answer.
+	//
+	// Guard: instructions are often full prose (e.g. "This email is from a
+	// real, named individual... not sent by a platform"), where the word
+	// immediately after "from"/"sent by" is a grammatical article or pronoun
+	// ("a", "an", "any", "me") rather than a sender name/domain. Since almost
+	// every email address contains such short substrings, matching on them
+	// forces a false match and silently bypasses the AI check (and any
+	// exclusion clause in the instructions) for most emails. Only allow the
+	// short-circuit when the captured keyword is long enough and isn't a
+	// common function word to still look like an actual name/domain token.
+	const SHORT_CIRCUIT_STOPWORDS = new Set([
+		"this",
+		"that",
+		"they",
+		"them",
+		"their",
+		"your",
+		"someone",
+		"somebody",
+		"anyone",
+		"anybody",
+		"another",
+		"platform",
+		"system",
+		"service",
+		"company",
+	]);
+	const MIN_SHORT_CIRCUIT_KEYWORD_LENGTH = 4;
+
 	if (hasAi && condition.aiInstructions) {
 		const instruction = condition.aiInstructions.toLowerCase();
 		const fromPatterns = [
@@ -301,6 +360,12 @@ export async function evaluateRule(
 			const m = instruction.match(re);
 			if (m?.[1]) {
 				const keyword = m[1];
+				if (
+					keyword.length < MIN_SHORT_CIRCUIT_KEYWORD_LENGTH ||
+					SHORT_CIRCUIT_STOPWORDS.has(keyword)
+				) {
+					continue;
+				}
 				if (
 					email.fromEmail.includes(keyword) ||
 					email.from.toLowerCase().includes(keyword)

@@ -65,3 +65,17 @@ export type RuleBackfillStatus = z.infer<typeof RuleBackfillStatusSchema>;
 export type RuleBackfillWindowMonths = z.infer<
 	typeof RuleBackfillWindowMonthsSchema
 >;
+
+export const ConnectImapMailboxSchema = z.object({
+	email: z.string().email(),
+	// The IMAP/SMTP login password — ideally an app-specific password, not
+	// the account's main login. Never logged or echoed back.
+	password: z.string().min(1).max(500),
+	imapHost: z.string().min(1).max(255),
+	imapPort: z.number().int().min(1).max(65535).default(993),
+	imapSecure: z.boolean().default(true),
+	smtpHost: z.string().min(1).max(255),
+	smtpPort: z.number().int().min(1).max(65535).default(465),
+	smtpSecure: z.boolean().default(true),
+});
+export type ConnectImapMailboxInput = z.infer<typeof ConnectImapMailboxSchema>;

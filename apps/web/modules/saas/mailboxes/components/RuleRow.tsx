@@ -31,9 +31,20 @@ interface RuleRowProps {
 	rule: RuleRowRule;
 	firesCount: number;
 	onOpen: () => void;
+	/**
+	 * Set only in the "All mailboxes" combined view, where rows from
+	 * different inboxes are mixed together and need a tag to say which
+	 * mailbox each rule actually runs on.
+	 */
+	mailboxTag?: { email: string; provider: string };
 }
 
-export function RuleRow({ rule, firesCount, onOpen }: RuleRowProps) {
+export function RuleRow({
+	rule,
+	firesCount,
+	onOpen,
+	mailboxTag,
+}: RuleRowProps) {
 	const t = useTranslations();
 	const toggleMutation = useToggleRuleMutation();
 	const primaryAction = rule.actions[0];
@@ -64,7 +75,10 @@ export function RuleRow({ rule, firesCount, onOpen }: RuleRowProps) {
 	return (
 		<div
 			className={cn(
-				"grid grid-cols-[1fr_auto_auto] items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/40",
+				"grid items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/40",
+				mailboxTag
+					? "grid-cols-[1fr_auto_auto_auto]"
+					: "grid-cols-[1fr_auto_auto]",
 				!rule.enabled && "opacity-60",
 			)}
 		>
@@ -99,6 +113,22 @@ export function RuleRow({ rule, firesCount, onOpen }: RuleRowProps) {
 					</span>
 				</span>
 			</button>
+
+			{mailboxTag && (
+				<span className="hidden items-center gap-1.5 truncate rounded-full border border-border bg-muted px-2.5 py-1 text-foreground text-xs sm:inline-flex">
+					<span
+						className={cn(
+							"size-1.5 shrink-0 rounded-full",
+							mailboxTag.provider === "GOOGLE"
+								? "bg-[#ea4335]"
+								: "bg-[#0a63d1]",
+						)}
+					/>
+					<span className="max-w-[160px] truncate">
+						{mailboxTag.email}
+					</span>
+				</span>
+			)}
 
 			<span className="hidden font-mono text-foreground text-xs md:inline">
 				{rule.enabled

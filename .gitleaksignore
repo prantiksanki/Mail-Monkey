@@ -1,0 +1,23 @@
+# Secrets historically committed in .env.local.bak.supabase (May 2026).
+# The file has since been deleted and gitignored (.env*.bak*). All secrets
+# below were rotated/revoked after discovery — see incident notes.
+# Kept as an allowlist instead of rewriting published git history.
+08eab347b20132191781bb6c6e4ca9b4e2b27234:.env.local.bak.supabase:gcp-api-key:43
+08eab347b20132191781bb6c6e4ca9b4e2b27234:.env.local.bak.supabase:generic-api-key:14
+08eab347b20132191781bb6c6e4ca9b4e2b27234:.env.local.bak.supabase:generic-api-key:17
+08eab347b20132191781bb6c6e4ca9b4e2b27234:.env.local.bak.supabase:generic-api-key:21
+08eab347b20132191781bb6c6e4ca9b4e2b27234:.env.local.bak.supabase:generic-api-key:25
+08eab347b20132191781bb6c6e4ca9b4e2b27234:.env.local.bak.supabase:generic-api-key:29
+08eab347b20132191781bb6c6e4ca9b4e2b27234:.env.local.bak.supabase:jwt:31
+fe74b12c1fd9b446f7d15c7d5a1d0359b18af966:.env.local.bak.supabase:gcp-api-key:43
+fe74b12c1fd9b446f7d15c7d5a1d0359b18af966:.env.local.bak.supabase:generic-api-key:14
+fe74b12c1fd9b446f7d15c7d5a1d0359b18af966:.env.local.bak.supabase:generic-api-key:17
+fe74b12c1fd9b446f7d15c7d5a1d0359b18af966:.env.local.bak.supabase:generic-api-key:21
+fe74b12c1fd9b446f7d15c7d5a1d0359b18af966:.env.local.bak.supabase:generic-api-key:25
+fe74b12c1fd9b446f7d15c7d5a1d0359b18af966:.env.local.bak.supabase:generic-api-key:29
+fe74b12c1fd9b446f7d15c7d5a1d0359b18af966:.env.local.bak.supabase:jwt:31
+
+# Zoom webhook unit-test fixture (Sep 2026): dummy plainToken for the
+# endpoint.url_validation challenge, not a credential.
+cc3c3da71f65f1a6a317dd44c618231e1941fe7d:packages/api/modules/mailboxes/webhooks/zoom.test.ts:generic-api-key:146
+cc3c3da71f65f1a6a317dd44c618231e1941fe7d:packages/api/modules/mailboxes/webhooks/zoom.test.ts:generic-api-key:152

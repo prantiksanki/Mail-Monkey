@@ -110,7 +110,7 @@ export function RulesTemplates({ onAddTemplate }: RulesTemplatesProps) {
 							</Button>
 						) : (
 							<Button
-								variant="secondary"
+								variant="primary"
 								size="sm"
 								onClick={() => {
 									if (template.rule) {

@@ -11,11 +11,12 @@ import {
 } from "@repo/ui/components/dropdown-menu";
 import { orpcClient } from "@shared/lib/orpc-client";
 import { useQuery } from "@tanstack/react-query";
-import { CheckIcon, ChevronDownIcon } from "lucide-react";
+import { CheckIcon, ChevronDownIcon, PlusIcon } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import { useMailboxesQuery } from "../lib/api";
 import { useSelectedMailbox } from "../lib/selected-mailbox-context";
+import { AddMailboxDialog } from "./AddMailboxDialog";
 
 function ProviderBadge({
 	provider,
@@ -94,6 +95,9 @@ function MailboxMenuRow({
 			<ProviderBadge provider={mailbox.provider} size="md" />
 			<div className="min-w-0 flex-1">
 				<p className="truncate text-sm">{mailbox.email}</p>
+				<p className="text-xs text-muted-foreground">
+					{mailbox.provider === "GOOGLE" ? "Gmail" : "Outlook"}
+				</p>
 			</div>
 			<UnreadBadge count={unreadCount} />
 			{isActive && (
@@ -111,8 +115,9 @@ export function MailboxSwitcher({
 	const { data: mailboxes = [] } = useMailboxesQuery();
 	const { selectedMailboxId } = useSelectedMailbox();
 	const [open, setOpen] = useState(false);
+	const [isAddOpen, setIsAddOpen] = useState(false);
 
-	if (mailboxes.length <= 1) {
+	if (mailboxes.length === 0) {
 		return null;
 	}
 
@@ -126,44 +131,67 @@ export function MailboxSwitcher({
 	};
 
 	return (
-		<DropdownMenu open={open} onOpenChange={setOpen}>
-			<DropdownMenuTrigger asChild>
-				<button
-					type="button"
-					data-testid="mailbox-switcher"
-					className="flex items-center gap-1.5 rounded-md border border-transparent px-1 py-0.5 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted hover:text-foreground focus-visible:outline-none"
-					aria-label="Switch mailbox"
-				>
-					<ProviderBadge provider={active?.provider ?? "GOOGLE"} />
-					<span className="hidden max-w-[180px] truncate sm:inline">
-						{active?.email}
-					</span>
-					<ChevronDownIcon className="size-3.5 shrink-0" />
-				</button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent align="start" className="w-72">
-				{googleMailboxes.map((m) => (
-					<MailboxMenuRow
-						key={m.id}
-						mailbox={m}
-						isActive={m.id === selectedMailboxId}
-						enabled={open || m.id === selectedMailboxId}
-						onSelect={() => handleSelect(m.id)}
-					/>
-				))}
-				{googleMailboxes.length > 0 && outlookMailboxes.length > 0 && (
+		<>
+			<DropdownMenu open={open} onOpenChange={setOpen}>
+				<DropdownMenuTrigger asChild>
+					<button
+						type="button"
+						data-testid="mailbox-switcher"
+						className="flex items-center gap-1.5 rounded-md border border-transparent px-1 py-0.5 text-sm text-muted-foreground transition-colors hover:border-border hover:bg-muted hover:text-foreground focus-visible:outline-none"
+						aria-label="Switch mailbox"
+					>
+						<ProviderBadge
+							provider={active?.provider ?? "GOOGLE"}
+						/>
+						<span className="hidden max-w-[180px] truncate sm:inline">
+							{active?.email}
+						</span>
+						<ChevronDownIcon className="size-3.5 shrink-0" />
+					</button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent align="start" className="w-72">
+					{googleMailboxes.map((m) => (
+						<MailboxMenuRow
+							key={m.id}
+							mailbox={m}
+							isActive={m.id === selectedMailboxId}
+							enabled={open || m.id === selectedMailboxId}
+							onSelect={() => handleSelect(m.id)}
+						/>
+					))}
+					{googleMailboxes.length > 0 &&
+						outlookMailboxes.length > 0 && (
+							<DropdownMenuSeparator />
+						)}
+					{outlookMailboxes.map((m) => (
+						<MailboxMenuRow
+							key={m.id}
+							mailbox={m}
+							isActive={m.id === selectedMailboxId}
+							enabled={open || m.id === selectedMailboxId}
+							onSelect={() => handleSelect(m.id)}
+						/>
+					))}
 					<DropdownMenuSeparator />
-				)}
-				{outlookMailboxes.map((m) => (
-					<MailboxMenuRow
-						key={m.id}
-						mailbox={m}
-						isActive={m.id === selectedMailboxId}
-						enabled={open || m.id === selectedMailboxId}
-						onSelect={() => handleSelect(m.id)}
-					/>
-				))}
-			</DropdownMenuContent>
-		</DropdownMenu>
+					<DropdownMenuItem
+						className="flex cursor-pointer items-center gap-2.5 py-2.5"
+						onClick={() => {
+							setOpen(false);
+							setIsAddOpen(true);
+						}}
+					>
+						<PlusIcon className="size-4 shrink-0 text-muted-foreground" />
+						<span className="text-sm">
+							Add account (Gmail, Outlook…)
+						</span>
+					</DropdownMenuItem>
+				</DropdownMenuContent>
+			</DropdownMenu>
+			<AddMailboxDialog
+				open={isAddOpen}
+				onOpenChange={setIsAddOpen}
+				existingMailboxes={mailboxes}
+			/>
+		</>
 	);
 }

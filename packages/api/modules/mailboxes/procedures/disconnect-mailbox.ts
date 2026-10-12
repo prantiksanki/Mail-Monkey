@@ -21,7 +21,7 @@ export const disconnectMailbox = protectedProcedure
 			context.user.id,
 		);
 
-		const provider = mailbox.provider as "GOOGLE" | "OUTLOOK";
+		const provider = mailbox.provider as "GOOGLE" | "OUTLOOK" | "IMAP";
 
 		// 1. Stop watch / subscription (best-effort)
 		if (mailbox.watchEnabled) {

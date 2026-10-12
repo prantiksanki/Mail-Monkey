@@ -50,8 +50,7 @@
 			"!tailwind-animate.css",
 			"!**/globals.css",
 			"!**/global.css",
-			"!**/theme.css",
-			"!apps/mobile"
+			"!**/theme.css"
 		]
 	},
 	"javascript": {

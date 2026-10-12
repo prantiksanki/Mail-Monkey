@@ -6,10 +6,18 @@ import { useSession } from "@saas/auth/hooks/use-session";
 import { useSelectedMailbox } from "@saas/mailboxes/lib/selected-mailbox-context";
 import { usePurchases } from "@saas/payments/hooks/purchases";
 import {
+	formatElapsed,
+	type RecordingState,
+	useVoiceRecording,
+} from "@shared/hooks/use-voice-recording";
+import {
 	ArrowUpIcon,
 	CheckIcon,
+	Loader2Icon,
+	MicIcon,
 	PencilIcon,
 	SparklesIcon,
+	SquareIcon,
 	ZapIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -98,6 +106,12 @@ export function RuleAssistant() {
 	]);
 	const [prompt, setPrompt] = useState("");
 	const [seedVisible, setSeedVisible] = useState(true);
+	const { recordingState, elapsedSeconds, startRecording, stopRecording } =
+		useVoiceRecording((text) => {
+			setPrompt((prev) =>
+				prev.trim() ? `${prev.trim()} ${text}` : text,
+			);
+		});
 	const [editingRule, setEditingRule] = useState<EditingRule | null>(null);
 	const [formOpen, setFormOpen] = useState(false);
 
@@ -292,6 +306,10 @@ export function RuleAssistant() {
 						onTurnOn={handleTurnOn}
 						onEditConditions={handleEditConditions}
 						onTryAnother={handleTryAnother}
+						recordingState={recordingState}
+						elapsedSeconds={elapsedSeconds}
+						onStartRecording={startRecording}
+						onStopRecording={stopRecording}
 						pending={compileMutation.isPending}
 						disabled={!selectedMailboxId}
 					/>
@@ -347,6 +365,10 @@ interface ChatPanelProps {
 	) => Promise<void>;
 	onEditConditions: (rule: CompiledRule) => void;
 	onTryAnother: () => void;
+	recordingState: RecordingState;
+	elapsedSeconds: number;
+	onStartRecording: () => void;
+	onStopRecording: () => void;
 	pending: boolean;
 	disabled: boolean;
 }
@@ -364,11 +386,16 @@ function ChatPanel({
 	onTurnOn,
 	onEditConditions,
 	onTryAnother,
+	recordingState,
+	elapsedSeconds,
+	onStartRecording,
+	onStopRecording,
 	pending,
 	disabled,
 }: ChatPanelProps) {
 	const t = useTranslations();
 	const canSend = prompt.trim().length > 0 && !pending && !disabled;
+	const isRecordingBusy = recordingState !== "idle";
 
 	return (
 		<div className="flex min-h-[600px] flex-col rounded-2xl border border-border bg-card">
@@ -419,27 +446,70 @@ function ChatPanel({
 				</div>
 			)}
 
-			<div className="flex items-end gap-2 border-border border-t px-4 py-3">
-				<textarea
-					ref={composerRef}
-					value={prompt}
-					onChange={(e) => setPrompt(e.target.value)}
-					onKeyDown={onKeyDown}
-					placeholder={t("rules.assistant.composerPlaceholder")}
-					rows={1}
-					disabled={disabled}
-					className="flex-1 resize-none bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-				/>
-				<Button
-					variant="primary"
-					size="icon"
-					onClick={onSend}
-					disabled={!canSend}
-					loading={pending}
-					aria-label={t("rules.assistant.send")}
-				>
-					<ArrowUpIcon className="size-4" />
-				</Button>
+			<div className="flex flex-col gap-1 border-border border-t px-4 py-3">
+				{recordingState !== "idle" && (
+					<div className="flex items-center gap-1.5 px-2 text-muted-foreground text-xs">
+						{recordingState === "recording" && (
+							<>
+								<span className="size-2 animate-pulse rounded-full bg-destructive" />
+								<span>{formatElapsed(elapsedSeconds)}</span>
+							</>
+						)}
+						{recordingState === "transcribing" && (
+							<span>Transcribing…</span>
+						)}
+					</div>
+				)}
+				<div className="flex items-end gap-2">
+					<textarea
+						ref={composerRef}
+						value={prompt}
+						onChange={(e) => setPrompt(e.target.value)}
+						onKeyDown={onKeyDown}
+						placeholder={t("rules.assistant.composerPlaceholder")}
+						rows={1}
+						disabled={disabled || isRecordingBusy}
+						className="flex-1 resize-none bg-transparent px-2 py-2 text-sm placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+					/>
+					<Button
+						type="button"
+						variant={
+							recordingState === "recording"
+								? "destructive"
+								: "ghost"
+						}
+						size="icon"
+						onClick={
+							recordingState === "recording"
+								? onStopRecording
+								: onStartRecording
+						}
+						disabled={disabled || recordingState === "transcribing"}
+						aria-label={
+							recordingState === "recording"
+								? "Stop recording"
+								: "Record voice message"
+						}
+					>
+						{recordingState === "transcribing" ? (
+							<Loader2Icon className="size-4 animate-spin" />
+						) : recordingState === "recording" ? (
+							<SquareIcon className="size-4" />
+						) : (
+							<MicIcon className="size-4" />
+						)}
+					</Button>
+					<Button
+						variant="primary"
+						size="icon"
+						onClick={onSend}
+						disabled={!canSend || isRecordingBusy}
+						loading={pending}
+						aria-label={t("rules.assistant.send")}
+					>
+						<ArrowUpIcon className="size-4" />
+					</Button>
+				</div>
 			</div>
 		</div>
 	);
@@ -642,7 +712,7 @@ function RulePreviewCard({
 							{t("rules.assistant.turnOn")}
 						</Button>
 						<Button
-							variant="secondary"
+							variant="primary"
 							size="sm"
 							onClick={onEdit}
 							disabled={isCreating}
@@ -651,7 +721,7 @@ function RulePreviewCard({
 							{t("rules.assistant.editConditions")}
 						</Button>
 						<Button
-							variant="ghost"
+							variant="primary"
 							size="sm"
 							onClick={onTryAnother}
 							disabled={isCreating}
@@ -696,7 +766,7 @@ function Sidebar({ onTemplate }: SidebarProps) {
 								</p>
 							</div>
 							<Button
-								variant="secondary"
+								variant="primary"
 								size="sm"
 								onClick={() => onTemplate(key)}
 							>

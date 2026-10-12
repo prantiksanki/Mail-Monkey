@@ -46,6 +46,46 @@ function isUserLabel(id: string): boolean {
 	);
 }
 
+/**
+ * Turns a free-text query into per-word Prisma clauses to AND together: every
+ * word must appear somewhere (AND across words), but each word may land in a
+ * different field (OR across from/fromEmail/subject/snippet/bodyText). This
+ * matches how people — and the AI assistant — phrase searches: e.g. "Google
+ * security alerts" finds an email whose sender is "Google …" and whose subject
+ * is "Security alert …", which a single contiguous-substring match would miss.
+ * `bodyText` is included so content mentioned only inside the email body (past
+ * the short snippet preview) is still findable. A trailing "s" is stemmed so
+ * "alerts" matches "alert". Returns `[]` for an empty query.
+ */
+export function buildEmailSearchClauses(search?: string) {
+	const term = search?.trim();
+	if (!term) {
+		return [];
+	}
+	// Split on whitespace; cap the number of terms so a pathological query
+	// can't explode into a huge AND.
+	const words = term.split(/\s+/).filter(Boolean).slice(0, 10);
+	return words.map((word) => {
+		// Match the word with a trailing "s" removed — "alert" is a substring of
+		// both "alert" and "alerts", so this catches the singular/plural pair.
+		const stem =
+			word.length > 3 && word.toLowerCase().endsWith("s")
+				? word.slice(0, -1)
+				: word;
+		const contains = { contains: stem, mode: "insensitive" as const };
+		return {
+			OR: [
+				{ from: contains },
+				{ fromEmail: contains },
+				{ to: contains },
+				{ subject: contains },
+				{ snippet: contains },
+				{ bodyText: contains },
+			],
+		};
+	});
+}
+
 export async function upsertEmail(data: EmailUpsertData) {
 	return db.email.upsert({
 		where: { id: data.id },
@@ -73,6 +113,7 @@ const EMAIL_LIST_SELECT = {
 	threadId: true,
 	from: true,
 	fromEmail: true,
+	to: true,
 	subject: true,
 	snippet: true,
 	labelIds: true,
@@ -92,6 +133,10 @@ export async function getEmailsByMailbox(
 		 */
 		excludeLabelled?: boolean;
 		search?: string;
+		/** Only emails on/after this instant (by internalDate). */
+		since?: Date;
+		/** Only emails strictly before this instant (by internalDate). */
+		until?: Date;
 		limit?: number;
 		offset?: number;
 	} = {},
@@ -128,25 +173,28 @@ export async function getEmailsByMailbox(
 		return {};
 	};
 
-	// Free-text search across the sender, subject and snippet. Case-insensitive
-	// substring match so "matches anywhere" feels like Gmail's quick search.
-	const buildSearchFilter = () => {
-		const term = search?.trim();
-		if (!term) {
+	// Date-range filter on internalDate (used for "today", "last week", etc.).
+	const buildDateFilter = () => {
+		if (!opts.since && !opts.until) {
 			return {};
 		}
-		const contains = { contains: term, mode: "insensitive" as const };
 		return {
-			OR: [
-				{ from: contains },
-				{ fromEmail: contains },
-				{ subject: contains },
-				{ snippet: contains },
-			],
+			internalDate: {
+				...(opts.since && { gte: opts.since }),
+				...(opts.until && { lt: opts.until }),
+			},
 		};
 	};
 
-	const where = { mailboxId, ...buildLabelFilter(), ...buildSearchFilter() };
+	// Combine search word-clauses under AND so they never collide with an OR
+	// produced by the label filter (spreading two `OR` keys would drop one).
+	const searchClauses = buildEmailSearchClauses(search);
+	const where = {
+		mailboxId,
+		...buildLabelFilter(),
+		...(searchClauses.length > 0 ? { AND: searchClauses } : {}),
+		...buildDateFilter(),
+	};
 
 	// Fast path: no JS post-filter, let the DB do limit/offset.
 	if (!excludeLabelled) {
@@ -204,10 +252,128 @@ export async function getEmailsByMailbox(
 	return collected;
 }
 
+/**
+ * Counts emails carrying a given label, matching either the label name or its
+ * Gmail label ID (rows synced before we stored the name only carry the ID).
+ * Trash/Spam are excluded so the count mirrors what the label view shows.
+ */
+export async function countEmailsByLabel(
+	mailboxId: string,
+	matchValues: string[],
+): Promise<number> {
+	if (matchValues.length === 0) {
+		return 0;
+	}
+	return db.email.count({
+		where: {
+			mailboxId,
+			labelIds: { hasSome: matchValues },
+			NOT: { labelIds: { hasSome: ["TRASH", "SPAM"] } },
+		},
+	});
+}
+
+/**
+ * Counts unread emails currently sitting in the Inbox, mirroring the sidebar's
+ * "Inbox" badge. Trash/Spam are excluded so a message doesn't count twice
+ * after being moved out of the inbox.
+ */
+export async function countUnreadInbox(mailboxId: string): Promise<number> {
+	return db.email.count({
+		where: {
+			mailboxId,
+			isUnread: true,
+			labelIds: { has: "INBOX" },
+			NOT: { labelIds: { hasSome: ["TRASH", "SPAM"] } },
+		},
+	});
+}
+
+/** Total current inbox size — denominator for the Dashboard's Inbox Zero %. */
+export async function countInboxTotal(mailboxId: string): Promise<number> {
+	return db.email.count({
+		where: {
+			mailboxId,
+			labelIds: { has: "INBOX" },
+			NOT: { labelIds: { hasSome: ["TRASH", "SPAM"] } },
+		},
+	});
+}
+
+/**
+ * Unread + IMPORTANT inbox mail — the cross-provider "Priority" signal.
+ * IMPORTANT is Gmail's own system label; Outlook mail gets it synthesized
+ * from Graph's `importance: "high"` field (see outlook-parser.ts).
+ */
+export async function countPriorityInbox(mailboxId: string): Promise<number> {
+	return db.email.count({
+		where: {
+			mailboxId,
+			isUnread: true,
+			labelIds: { hasEvery: ["INBOX", "IMPORTANT"] },
+			NOT: { labelIds: { hasSome: ["TRASH", "SPAM"] } },
+		},
+	});
+}
+
 export async function getEmailById(mailboxId: string, id: string) {
 	return db.email.findFirst({
 		where: { id, mailboxId },
 	});
+}
+
+/**
+ * Finds recent inbox threads that the user has NOT replied to: the newest
+ * inbox emails whose `threadId` never appears in the SENT folder. Used by the
+ * assistant to answer "which emails haven't I replied to?".
+ *
+ * `search` optionally narrows the candidate inbox emails (sender/subject/snippet)
+ * so it can be scoped to e.g. a client domain.
+ */
+export async function findUnansweredThreads(
+	mailboxId: string,
+	opts: { search?: string; limit?: number } = {},
+) {
+	const limit = Number.isInteger(opts.limit) ? (opts.limit as number) : 15;
+	const searchClauses = buildEmailSearchClauses(opts.search);
+	const searchFilter = searchClauses.length > 0 ? { AND: searchClauses } : {};
+
+	// Thread ids the user has sent into (i.e. replied on / started).
+	const sent = await db.email.findMany({
+		where: { mailboxId, labelIds: { has: "SENT" } },
+		select: { threadId: true },
+	});
+	const repliedThreadIds = new Set(sent.map((e) => e.threadId));
+
+	// Scan recent inbox emails, keeping the newest one per thread that has no
+	// matching SENT message.
+	const inbox = await db.email.findMany({
+		where: {
+			mailboxId,
+			labelIds: { has: "INBOX" },
+			...searchFilter,
+		},
+		orderBy: { internalDate: "desc" },
+		take: Math.max(limit * 8, 120),
+		select: EMAIL_LIST_SELECT,
+	});
+
+	const seenThreads = new Set<string>();
+	const result: typeof inbox = [];
+	for (const email of inbox) {
+		if (repliedThreadIds.has(email.threadId)) {
+			continue;
+		}
+		if (seenThreads.has(email.threadId)) {
+			continue;
+		}
+		seenThreads.add(email.threadId);
+		result.push(email);
+		if (result.length >= limit) {
+			break;
+		}
+	}
+	return result;
 }
 
 /** Removes the local copy of an email (e.g. on permanent delete). */
@@ -278,5 +444,15 @@ export async function updateMailboxSyncState(
 	return db.mailbox.update({
 		where: { id: mailboxId },
 		data,
+	});
+}
+
+export async function updateEmailCategory(
+	id: string,
+	category: "PRIMARY" | "NEWSLETTER" | "PROMOTION" | "SOCIAL",
+) {
+	return db.email.update({
+		where: { id },
+		data: { category, categorizedAt: new Date() },
 	});
 }

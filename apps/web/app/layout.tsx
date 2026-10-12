@@ -3,43 +3,24 @@ import { getBaseUrl } from "@repo/utils";
 import type { Metadata } from "next";
 import { Bricolage_Grotesque } from "next/font/google";
 import localFont from "next/font/local";
+import { headers } from "next/headers";
+import Script from "next/script";
 import type { PropsWithChildren } from "react";
 import "./globals.css";
-import "cropperjs/dist/cropper.css";
 import { config } from "@/config";
 
-// Fonts are self-hosted from `./fonts` (see next/font/local) so dev/build never
-// depends on reaching fonts.googleapis.com at compile time. DM Sans, JetBrains
-// Mono, Bricolage Grotesque and Cormorant Garamond are variable fonts, so a
-// single file covers all the weights below.
+const enzuzoCookiebarId = process.env.NEXT_PUBLIC_ENZUZO_COOKIEBAR_ID;
 
-const sansFont = localFont({
-	src: [
-		{
-			path: "../fonts/dmsans-normal.woff2",
-			weight: "400",
-			style: "normal",
-		},
-		{
-			path: "../fonts/dmsans-normal.woff2",
-			weight: "500",
-			style: "normal",
-		},
-		{
-			path: "../fonts/dmsans-normal.woff2",
-			weight: "600",
-			style: "normal",
-		},
-		{
-			path: "../fonts/dmsans-normal.woff2",
-			weight: "700",
-			style: "normal",
-		},
-	],
-	display: "swap",
-	variable: "--font-inter",
-	fallback: ["system-ui", "sans-serif"],
-});
+// Fonts are self-hosted from `./fonts` (see next/font/local) so dev/build never
+// depends on reaching fonts.googleapis.com at compile time. JetBrains Mono,
+// Bricolage Grotesque and Cormorant Garamond are variable fonts, so a single
+// file covers all the weights below.
+//
+// Body/UI text uses the SF Pro system stack (--font-sans in
+// tooling/tailwind/theme.css) instead of a loaded font: SF Pro is an Apple
+// font that can't be legally self-hosted for the web, so `-apple-system` /
+// `BlinkMacSystemFont` are used to resolve to real San Francisco on Apple
+// devices, with native fallbacks elsewhere.
 
 const serifFont = localFont({
 	src: [
@@ -78,18 +59,30 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: PropsWithChildren) {
 	const { getLocale } = await import("next-intl/server");
 	const locale = await getLocale().catch(() => "en");
+	const baseUrl = getBaseUrl();
+	const headerStore = await headers();
+	const nonce = headerStore.get("x-nonce") ?? undefined;
 
 	return (
 		<html
 			lang={locale}
 			suppressHydrationWarning
-			className={cn(
-				sansFont.variable,
-				serifFont.variable,
-				displayFont.variable,
-			)}
+			className={cn(serifFont.variable, displayFont.variable)}
 		>
 			<body className="min-h-screen bg-background text-foreground antialiased">
+				{enzuzoCookiebarId ? (
+					// Cookie consent banner (Enzuzo). Loaded beforeInteractive, as
+					// high as Next.js allows, so it sets Google Consent Mode
+					// defaults before the GTM container (loaded afterInteractive
+					// from the google analytics provider) evaluates any tags.
+					// Enzuzo owns all consent state/UI now — see the "Consent Mode
+					// - With GTM Template" install method in the Enzuzo dashboard.
+					<Script
+						src={`https://app.enzuzo.com/scripts/cookiebar/${enzuzoCookiebarId}`}
+						strategy="beforeInteractive"
+						nonce={nonce}
+					/>
+				) : null}
 				<script
 					type="application/ld+json"
 					// biome-ignore lint/security/noDangerouslySetInnerHtml: static JSON-LD, no user input
@@ -97,12 +90,12 @@ export default async function RootLayout({ children }: PropsWithChildren) {
 						__html: JSON.stringify({
 							"@context": "https://schema.org",
 							"@type": "Organization",
-							name: "Zer0Email",
-							alternateName: "Zer0Email by PopPush AI",
-							url: "https://zer0email.com",
+							name: "Popsuites",
+							alternateName: "Popsuites by PopPush AI",
+							url: baseUrl,
 							logo: {
 								"@type": "ImageObject",
-								url: "https://zer0email.com/logo.png",
+								url: `${baseUrl}/images/popsuites-icon.png`,
 								width: 512,
 								height: 512,
 							},
@@ -124,14 +117,11 @@ export default async function RootLayout({ children }: PropsWithChildren) {
 							contactPoint: {
 								"@type": "ContactPoint",
 								contactType: "customer support",
-								url: "https://zer0email.com/contact",
+								url: `${baseUrl}/contact`,
 							},
 							sameAs: [
-								"https://www.wikidata.org/wiki/Q140377996",
-								"https://www.crunchbase.com/organization/zer0email",
-								"https://twitter.com/Zer0_Email",
-								"https://www.linkedin.com/company/zer0email",
-								"https://www.producthunt.com/products/zer0email",
+								"https://x.com/popsuites",
+								"https://www.producthunt.com/products/zer0-email/launches/popsuites",
 							],
 						}),
 					}}

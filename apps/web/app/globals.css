@@ -43,6 +43,16 @@
 .hero-word-in  { animation: heroWordIn 0.4s cubic-bezier(0.76,0,0.24,1); }
 .hero-ph-in    { animation: heroPhIn 0.35s ease; }
 
+/* ── "Speak your mind" voice section ────────────────────────────────────── */
+@keyframes sym-wave {
+	0%, 100% { transform: scaleY(0.28); }
+	50%      { transform: scaleY(1); }
+}
+@keyframes sym-dash {
+	/* -169 = 13 × (1 + 12) dash period, so the loop restarts seamlessly */
+	to { stroke-dashoffset: -169; }
+}
+
 @keyframes trusted-logo-marquee {
 	from {
 		transform: translateX(0);

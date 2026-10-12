@@ -362,6 +362,23 @@ When updating auth flows, ensure:
 - Audit hooks remain consistent
 - Locale detection works correctly
 
+### Brute-Force Protection (Anti-Automation)
+
+Password sign-in (`/sign-in/email`, disabled in the UI by `enablePasswordLogin` in `packages/auth/config.ts` but still reachable at the API level) is protected by layered controls, satisfying CASA-style "resistant to brute force attacks" requirements:
+
+- **IP-based rate limiting** — `packages/api/lib/rate-limit.ts` (`authLimiter`, 10 req/60s/IP on `/auth/*`) plus Better Auth's own built-in limiter (3 req/10s on `/sign-in*`).
+- **Per-account soft lockout** — `packages/auth/auth.ts` `hooks.before`/`hooks.after` on `/sign-in/email` call `recordFailedLoginAttempt`/`clearFailedLoginAttempts` (`@repo/database`, defined in `packages/database/prisma/queries/users.ts`). After `LOGIN_LOCKOUT_MAX_ATTEMPTS` (5) consecutive failures, `User.lockedUntil` is set and further attempts are rejected with `429 TOO_MANY_REQUESTS` until the cooldown (`LOGIN_LOCKOUT_COOLDOWN_MS`, 15 min) elapses. Both fields reset on a successful sign-in. This exists because IP-based limiting alone can't stop an attacker rotating IPs against one specific account.
+- When adding a new password-adjacent auth endpoint (e.g. change-password), consider whether it needs the same per-account backstop.
+
+### System-Generated Initial Passwords (CASA 1.1.2)
+
+`tooling/scripts/src/create-user.ts` is the only place the system, rather than the user, generates a credential (`nanoid(16)`, ~96 bits). Since it can't enforce a clock-based expiry from a one-shot CLI, the password is instead forced to be replaced before first use:
+
+- `createUser(...)` is called with `mustChangePassword: true` (`User.mustChangePassword`, `packages/database/prisma/schema.prisma`).
+- `apps/web/app/(saas)/app/layout.tsx` redirects to `/force-password-change` whenever `session.user.mustChangePassword` is set — same pattern as the `onboardingComplete` gate immediately above it.
+- `apps/web/app/(saas)/force-password-change/page.tsx` renders the existing `ChangePasswordForm` (`@saas/settings/components/ChangePassword`) unconditionally, regardless of `config.enablePasswordLogin` (that flag only gates the *settings page's* embedding of the form, not the form itself).
+- `packages/auth/auth.ts` `hooks.after` clears `mustChangePassword` on a successful `/change-password` call.
+
 ---
 
 ## UI & Styling

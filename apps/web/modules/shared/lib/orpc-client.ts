@@ -1,7 +1,7 @@
 import { createORPCClient, onError } from "@orpc/client";
 import { RPCLink } from "@orpc/client/fetch";
 import type { ApiRouterClient } from "@repo/api/orpc/router";
-import { getBaseUrl } from "@repo/utils";
+import { getBaseUrl } from "@repo/utils/lib/base-url";
 
 function isRateLimitedError(
 	error: unknown,
@@ -44,11 +44,21 @@ function surfaceRateLimitedToast(retryAfter: number | null): void {
 	void import("sonner").then(({ toast }) => toast.error(message));
 }
 
+// On the server, call the app's own API over loopback instead of its public
+// domain: a self-call through the public hostname round-trips through
+// Nginx/TLS and fails the whole page (see choose-plan 500s) on any blip in
+// that path, even though the process is reachable on localhost the whole
+// time.
+function getRpcBaseUrl() {
+	if (typeof window !== "undefined") {
+		return getBaseUrl();
+	}
+
+	return `http://127.0.0.1:${process.env.PORT ?? 3000}`;
+}
+
 const link = new RPCLink({
-	url:
-		typeof window !== "undefined"
-			? `${window.location.origin}/api/rpc`
-			: `${getBaseUrl()}/api/rpc`,
+	url: `${getRpcBaseUrl()}/api/rpc`,
 	headers: async () => {
 		if (typeof window !== "undefined") {
 			return {};

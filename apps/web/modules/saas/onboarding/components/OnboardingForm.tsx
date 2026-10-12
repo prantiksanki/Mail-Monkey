@@ -1,8 +1,10 @@
 "use client";
 
+import { authClient } from "@repo/auth/client";
 import { useRouter } from "@shared/hooks/router";
+import { clearCache } from "@shared/lib/cache";
 import { useSearchParams } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { withQuery } from "ufo";
 import {
 	ONBOARDING_STEPS,
@@ -25,6 +27,17 @@ export function OnboardingForm({ mailboxId }: { mailboxId: string | null }) {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const currentStep = parseStep(searchParams.get("step"));
+
+	useEffect(() => {
+		if (!mailboxId) {
+			return;
+		}
+		authClient
+			.updateUser({ onboardingComplete: true })
+			.then(() => clearCache())
+			.then(() => router.replace("/app"))
+			.catch(() => {});
+	}, [mailboxId, router]);
 
 	const goToStep = useCallback(
 		(step: OnboardingStepKey) => {

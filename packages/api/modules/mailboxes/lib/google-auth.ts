@@ -1,6 +1,7 @@
 import { ORPCError } from "@orpc/server";
 import { db } from "@repo/database";
 import { logger } from "@repo/logs";
+import { decryptToken, encryptToken } from "@repo/utils/lib/token-crypto";
 import { google } from "googleapis";
 
 export async function revokeOAuthToken(accountId: string) {
@@ -8,7 +9,7 @@ export async function revokeOAuthToken(accountId: string) {
 		where: { id: accountId },
 	});
 
-	const token = account?.refreshToken ?? account?.accessToken;
+	const token = decryptToken(account?.refreshToken ?? account?.accessToken);
 
 	if (!token) {
 		logger.warn("No token to revoke", { accountId });
@@ -48,8 +49,8 @@ export async function getOAuth2Client(accountId: string) {
 	);
 
 	oauth2.setCredentials({
-		access_token: account.accessToken,
-		refresh_token: account.refreshToken,
+		access_token: decryptToken(account.accessToken),
+		refresh_token: decryptToken(account.refreshToken),
 		expiry_date: account.accessTokenExpiresAt?.getTime(),
 	});
 
@@ -59,12 +60,14 @@ export async function getOAuth2Client(accountId: string) {
 		await db.account.update({
 			where: { id: accountId },
 			data: {
-				accessToken: tokens.access_token ?? undefined,
+				accessToken: tokens.access_token
+					? encryptToken(tokens.access_token)
+					: undefined,
 				accessTokenExpiresAt: tokens.expiry_date
 					? new Date(tokens.expiry_date)
 					: undefined,
 				...(tokens.refresh_token
-					? { refreshToken: tokens.refresh_token }
+					? { refreshToken: encryptToken(tokens.refresh_token) }
 					: {}),
 			},
 		});

@@ -4,12 +4,14 @@ import { config as authConfig } from "@repo/auth/config";
 import { Button } from "@repo/ui/components/button";
 import { OrganizationInvitationAlert } from "@saas/organizations/components/OrganizationInvitationAlert";
 import { FloatingPaths } from "@saas/shared/components/FloatingPaths";
-import { ArrowRightIcon, ChevronLeftIcon } from "lucide-react";
+import { PopsuiteInboxDemo } from "@saas/shared/components/PopsuiteInboxDemo";
+import { getSafeRedirectPath } from "@shared/lib/safe-redirect";
+import { ChevronLeftIcon, MailIcon } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect } from "react";
-import { withQuery } from "ufo";
 import { config } from "@/config";
 import { useSession } from "@/modules/saas/auth/hooks/use-session";
 import {
@@ -29,7 +31,7 @@ export function SignupForm() {
 
 	const redirectPath = invitationId
 		? `/organization-invitation/${invitationId}`
-		: (redirectTo ?? config.saas.redirectAfterSignIn);
+		: getSafeRedirectPath(redirectTo, config.saas.redirectAfterSignIn);
 
 	useEffect(() => {
 		if (sessionLoaded && user) {
@@ -43,25 +45,22 @@ export function SignupForm() {
 			<div className="bg-muted/60 relative hidden h-full flex-col border-r p-10 lg:flex">
 				<div className="from-background absolute inset-0 z-10 bg-gradient-to-t to-transparent" />
 				<div className="z-10 flex items-center gap-2">
-					<Link href="/" className="block">
+					<Link href="/" className="flex items-center gap-2">
+						<Image
+							src="/images/popsuites-icon.png"
+							alt=""
+							width={221}
+							height={160}
+							className="h-7 w-auto"
+							priority
+						/>
 						<span className="font-semibold text-xl">
 							{config.appName}
 						</span>
 					</Link>
 				</div>
-				<div className="z-10 mt-auto">
-					<blockquote className="space-y-2">
-						<p className="text-xl">
-							&ldquo;
-							{t.rich("auth.aside.quote", {
-								accent: (chunks) => <span>{chunks}</span>,
-							})}
-							&rdquo;
-						</p>
-						<footer className="font-mono text-sm font-semibold">
-							~ {t("auth.aside.author")}
-						</footer>
-					</blockquote>
+				<div className="z-10 flex flex-1 items-center justify-center">
+					<PopsuiteInboxDemo />
 				</div>
 				<div className="absolute inset-0">
 					<FloatingPaths position={1} />
@@ -77,9 +76,9 @@ export function SignupForm() {
 				/>
 
 				<Button
-					variant="ghost"
+					variant="neoPrimary"
 					size="sm"
-					className="absolute top-7 left-5"
+					className="absolute top-10 left-5 bg-[#0663DA] text-white shadow-[4px_4px_0px_0px_#00388F] hover:bg-[#0663DA]/90 hover:shadow-[2px_2px_0px_0px_#00388F]"
 					asChild
 				>
 					<Link href="/">
@@ -90,6 +89,13 @@ export function SignupForm() {
 
 				<div className="mx-auto w-full max-w-sm space-y-4">
 					<div className="flex items-center gap-2 lg:hidden">
+						<Image
+							src="/images/popsuites-icon.png"
+							alt=""
+							width={221}
+							height={160}
+							className="h-7 w-auto"
+						/>
 						<span className="font-semibold text-xl">
 							{config.appName}
 						</span>
@@ -112,36 +118,28 @@ export function SignupForm() {
 						<OrganizationInvitationAlert className="mb-6" />
 					)}
 
-					{authConfig.enableSignup &&
-						authConfig.enableSocialLogin && (
-							<div className="space-y-2">
-								{Object.keys(oAuthProviders).map(
-									(providerId) => (
-										<SocialSigninButton
-											key={providerId}
-											provider={
-												providerId as OAuthProvider
-											}
-											intent="signup"
-										/>
-									),
-								)}
-							</div>
-						)}
+					<div className="space-y-2">
+						{authConfig.enableSignup &&
+							authConfig.enableSocialLogin &&
+							Object.keys(oAuthProviders).map((providerId) => (
+								<SocialSigninButton
+									key={providerId}
+									provider={providerId as OAuthProvider}
+									intent="signup"
+								/>
+							))}
 
-					<p className="text-muted-foreground text-sm text-center">
-						<span>{t("auth.signup.alreadyHaveAccount")} </span>
-						<Link
-							href={withQuery(
-								"/auth/login",
-								Object.fromEntries(searchParams.entries()),
-							)}
-							className="font-medium underline underline-offset-4 hover:text-foreground/70"
+						<Button
+							variant="reverse"
+							className="h-12 w-full bg-white font-medium text-black hover:bg-white/90"
+							asChild
 						>
-							{t("auth.signup.signIn")}
-							<ArrowRightIcon className="ml-1 inline size-4 align-middle" />
-						</Link>
-					</p>
+							<Link href="/auth/connect-mailbox">
+								<MailIcon className="mr-2 size-4" />
+								Connect with custom email
+							</Link>
+						</Button>
+					</div>
 
 					<p className="text-muted-foreground text-xs">
 						By clicking continue, you agree to our{" "}

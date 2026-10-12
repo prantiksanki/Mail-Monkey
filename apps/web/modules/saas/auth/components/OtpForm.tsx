@@ -20,6 +20,7 @@ import {
 } from "@repo/ui/components/input-otp";
 import { useAuthErrorMessages } from "@saas/auth/hooks/errors-messages";
 import { useRouter } from "@shared/hooks/router";
+import { getSafeRedirectPath } from "@shared/lib/safe-redirect";
 import { AlertTriangleIcon, ArrowLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -43,7 +44,7 @@ export function OtpForm() {
 
 	const redirectPath = invitationId
 		? `/organization-invitation/${invitationId}`
-		: (redirectTo ?? config.saas.redirectAfterSignIn);
+		: getSafeRedirectPath(redirectTo, config.saas.redirectAfterSignIn);
 
 	const form = useForm({
 		resolver: zodResolver(formSchema),

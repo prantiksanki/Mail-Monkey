@@ -3,6 +3,7 @@ import { logger } from "@repo/logs";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { deleteMessage as gmailDeleteMessage } from "../lib/gmail-client";
+import { deleteImapMessage } from "../lib/imap-provider";
 import { verifyMailboxOwnership } from "../lib/ownership";
 
 export const deleteMessage = protectedProcedure
@@ -29,7 +30,11 @@ export const deleteMessage = protectedProcedure
 		// don't request, so this is the closest behavior with `gmail.modify`.
 		// Best-effort: even if this fails we still drop the local copy below.
 		try {
-			await gmailDeleteMessage(mailbox.accountId, input.messageId);
+			if (mailbox.provider === "IMAP") {
+				await deleteImapMessage(mailbox.accountId, input.messageId);
+			} else {
+				await gmailDeleteMessage(mailbox.accountId, input.messageId);
+			}
 		} catch (error) {
 			logger.warn(
 				"[delete-message] Gmail trash failed; removing locally",

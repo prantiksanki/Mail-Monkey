@@ -35,7 +35,10 @@ export const cancelSnoozeProcedure = protectedProcedure
 			mailboxId: snooze.mailboxId,
 			messageId: snooze.messageId,
 			originalLabelIds: snooze.originalLabelIds,
-			mailbox: { accountId: mailbox.accountId },
+			mailbox: {
+				accountId: mailbox.accountId,
+				provider: mailbox.provider,
+			},
 		});
 		await cancelSnoozedEmail(input.id, input.mailboxId);
 

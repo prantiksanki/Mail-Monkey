@@ -94,8 +94,12 @@ export const diagnoseMailboxExtended = protectedProcedure
 		} catch (error) {
 			diagnostics.error =
 				error instanceof Error ? error.message : String(error);
-			diagnostics.stack =
-				error instanceof Error ? error.stack : undefined;
+			// Stack traces leak internal file paths/library internals — only
+			// useful for local debugging, never to a production API response.
+			if (process.env.NODE_ENV !== "production") {
+				diagnostics.stack =
+					error instanceof Error ? error.stack : undefined;
+			}
 			return diagnostics;
 		}
 	});

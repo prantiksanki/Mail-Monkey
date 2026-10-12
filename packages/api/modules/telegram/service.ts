@@ -1,6 +1,6 @@
 import { randomInt } from "node:crypto";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateObject } from "@repo/ai";
+import { generateObject, TEXT_MODEL_ID } from "@repo/ai";
 import {
 	claimTelegramAction,
 	consumeTelegramLinkToken,
@@ -248,7 +248,7 @@ async function classifyIntent(
 			.join("\n");
 
 		const { object } = await generateObject({
-			model: google("gemini-3.5-flash"),
+			model: google(TEXT_MODEL_ID),
 			schema: INTENT_SCHEMA,
 			temperature: 0,
 			system: `You are a Telegram bot assistant for Zeromail, an email automation app.
@@ -364,6 +364,23 @@ async function clearLoginState(chatId: string): Promise<void> {
 	});
 }
 
+// Atomically consumes the login state on a successful OTP check: the delete
+// is scoped to the exact serialized `state` just read, so a concurrent second
+// submission of the same correct code (which read the same row) loses the
+// race — its delete matches zero rows instead of both submissions succeeding.
+async function consumeLoginState(
+	chatId: string,
+	state: LoginState,
+): Promise<boolean> {
+	const result = await db.verification.deleteMany({
+		where: {
+			identifier: `${LOGIN_STATE_PREFIX}${chatId}`,
+			value: JSON.stringify(state),
+		},
+	});
+	return result.count === 1;
+}
+
 function generateOtp(): string {
 	return String(randomInt(100000, 1000000));
 }
@@ -396,6 +413,9 @@ export async function getTelegramUserStatus(userId: string) {
 		lastName: connection?.lastName ?? null,
 		timezone: connection?.timezone ?? DEFAULT_TIME_ZONE,
 		dailyDigestTime: connection?.dailyDigestTime ?? DEFAULT_DIGEST_TIME,
+		// Lets the web UI tell a brand-new scan apart from an existing connection
+		// (upsert bumps updatedAt), so a pending QR can auto-hide on connect.
+		updatedAt: connection?.updatedAt.toISOString() ?? null,
 	};
 }
 
@@ -523,7 +543,7 @@ async function nlRouter(chatId: string, text: string, from: TelegramUser) {
 				}
 				const google = createGoogleGenerativeAI({ apiKey });
 				return generateObject({
-					model: google("gemini-3.5-flash"),
+					model: google(TEXT_MODEL_ID),
 					schema: INTENT_SCHEMA,
 					temperature: 0,
 					system: "Classify only: is this a confirmation (yes/ok/send/sure/do it) → CONFIRM_YES, or cancellation (no/cancel/stop) → CONFIRM_NO, or something else → UNKNOWN.",
@@ -1237,7 +1257,7 @@ async function nlRuleCreate(chatId: string, rulePrompt: string, ctx: ConvCtx) {
 			),
 		});
 		const { object } = await generateObject({
-			model: google("gemini-3.5-flash"),
+			model: google(TEXT_MODEL_ID),
 			schema: RULE_SCHEMA,
 			temperature: 0.1,
 			system: "Convert this email rule request into a structured rule. Return a single rule.",
@@ -1961,7 +1981,16 @@ async function handleOtpInput(
 		return;
 	}
 
-	await clearLoginState(chatId);
+	const consumed = await consumeLoginState(chatId, state);
+	if (!consumed) {
+		// Another concurrent submission already consumed this code (or a new
+		// login was started), so this request must not also succeed.
+		await sendTelegramMessage(
+			chatId,
+			"This code was already used or a new one was requested. Use /login to start again.",
+		);
+		return;
+	}
 
 	let user = await db.user.findUnique({ where: { email: state.email } });
 	if (!user) {
@@ -2367,7 +2396,7 @@ async function classifyEmails(
 	try {
 		const google = createGoogleGenerativeAI({ apiKey });
 		const { object } = await generateObject({
-			model: google("gemini-3.5-flash"),
+			model: google(TEXT_MODEL_ID),
 			schema: CLASSIFICATION_SCHEMA,
 			temperature: 0,
 			system: [
@@ -2775,10 +2804,9 @@ function getLocalParts(date: Date, timezone: string) {
 }
 
 function buildStartLink(startParam: string) {
-	const username = (process.env.TELEGRAM_BOT_USERNAME || "Mjy5bot").replace(
-		/^@/,
-		"",
-	);
+	const username = (
+		process.env.TELEGRAM_BOT_USERNAME || "popsuite_bot"
+	).replace(/^@/, "");
 	return `https://t.me/${username}?start=${encodeURIComponent(startParam)}`;
 }
 

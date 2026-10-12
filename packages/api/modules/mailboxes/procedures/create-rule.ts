@@ -1,7 +1,6 @@
 import { ORPCError } from "@orpc/client";
 import {
 	createRule as createRuleQuery,
-	findRuleByLabelInMailbox,
 	findRuleByNameInMailbox,
 	getRulesByMailboxId,
 } from "@repo/database";
@@ -56,22 +55,9 @@ export const createRule = protectedProcedure
 			});
 		}
 
-		// Enforce unique label names per mailbox: a mailbox can have at most one
-		// label of a given name, so two rules can't create the same label.
-		const newLabel = input.data.actions.find(
-			(a) => a.type === "LABEL" && a.fields?.label,
-		)?.fields?.label;
-		if (newLabel) {
-			const ruleWithLabel = await findRuleByLabelInMailbox({
-				mailboxId: input.mailboxId,
-				label: newLabel,
-			});
-			if (ruleWithLabel) {
-				throw new ORPCError("CONFLICT", {
-					message: `A label named "${newLabel}" already exists.`,
-				});
-			}
-		}
+		// Note: multiple rules may intentionally share the same label (e.g. the
+		// suggestion engine groups newsletters from many senders under a single
+		// "Newsletter" label), so we do NOT enforce label uniqueness here.
 
 		const rule = await createRuleQuery({
 			mailboxId: input.mailboxId,

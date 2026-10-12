@@ -1,12 +1,15 @@
 import { ORPCError } from "@orpc/client";
 import {
-	findRuleByLabelInMailbox,
 	findRuleByNameInMailbox,
+	getRulesByMailboxId,
 	updateRule as updateRuleQuery,
 } from "@repo/database";
+import { logger } from "@repo/logs";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
-import { verifyRuleOwnership } from "../lib/ownership";
+import { getMailProvider } from "../lib/mail-provider";
+import { verifyMailboxOwnership, verifyRuleOwnership } from "../lib/ownership";
+import { labelNamesFromActions } from "../lib/rule-labels";
 import { invalidateRuleSuggestionsCache } from "../lib/rule-suggestions";
 import { UpdateRuleSchema } from "../types";
 
@@ -26,7 +29,11 @@ export const updateRule = protectedProcedure
 		}),
 	)
 	.handler(async ({ input, context }) => {
-		await verifyRuleOwnership(input.id, input.mailboxId, context.user.id);
+		const previousRule = await verifyRuleOwnership(
+			input.id,
+			input.mailboxId,
+			context.user.id,
+		);
 
 		// Enforce unique rule names per mailbox (case-insensitive), ignoring
 		// the rule being updated so it can keep its own name.
@@ -43,25 +50,8 @@ export const updateRule = protectedProcedure
 			}
 		}
 
-		// Enforce unique label names per mailbox when the actions change,
-		// ignoring this rule so it can keep its own label.
-		if (input.data.actions !== undefined) {
-			const newLabel = input.data.actions.find(
-				(a) => a.type === "LABEL" && a.fields?.label,
-			)?.fields?.label;
-			if (newLabel) {
-				const ruleWithLabel = await findRuleByLabelInMailbox({
-					mailboxId: input.mailboxId,
-					label: newLabel,
-					excludeId: input.id,
-				});
-				if (ruleWithLabel) {
-					throw new ORPCError("CONFLICT", {
-						message: `A label named "${newLabel}" already exists.`,
-					});
-				}
-			}
-		}
+		// Note: multiple rules may intentionally share the same label, so label
+		// uniqueness is not enforced here (see create-rule.ts for rationale).
 
 		const updatedRule = await updateRuleQuery({
 			id: input.id,
@@ -71,6 +61,57 @@ export const updateRule = protectedProcedure
 			enabled: input.data.enabled,
 		});
 		invalidateRuleSuggestionsCache(input.mailboxId);
+
+		// If this edit dropped/renamed a LABEL action, remove the now-orphaned
+		// provider label so Gmail/Outlook stays in sync — but only if no other
+		// rule still uses that label name.
+		if (input.data.actions !== undefined) {
+			const previousLabels = labelNamesFromActions(previousRule.actions);
+			const currentLabels = new Set(
+				labelNamesFromActions(input.data.actions).map((l) =>
+					l.toLowerCase(),
+				),
+			);
+			const droppedLabels = previousLabels.filter(
+				(l) => !currentLabels.has(l.toLowerCase()),
+			);
+
+			if (droppedLabels.length > 0) {
+				const mailbox = await verifyMailboxOwnership(
+					input.mailboxId,
+					context.user.id,
+				);
+				const remaining = await getRulesByMailboxId({
+					mailboxId: input.mailboxId,
+				});
+				const stillUsed = new Set(
+					remaining
+						.flatMap((r) => labelNamesFromActions(r.actions))
+						.map((l) => l.toLowerCase()),
+				);
+				const provider = getMailProvider(mailbox.provider);
+				for (const label of droppedLabels) {
+					if (stillUsed.has(label.toLowerCase())) {
+						continue;
+					}
+					try {
+						await provider.deleteLabel(mailbox.accountId, label);
+					} catch (error) {
+						logger.warn(
+							"[update-rule] Failed to delete orphaned provider label",
+							{
+								mailboxId: input.mailboxId,
+								label,
+								error:
+									error instanceof Error
+										? error.message
+										: String(error),
+							},
+						);
+					}
+				}
+			}
+		}
 
 		return {
 			rule: updatedRule,

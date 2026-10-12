@@ -2,6 +2,7 @@ import { ORPCError } from "@orpc/client";
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { getDraft } from "../lib/gmail-client";
+import { getImapDraft } from "../lib/imap-drafts";
 import { verifyMailboxOwnership } from "../lib/ownership";
 import { looksLikeHtml } from "../lib/sanitize-html";
 
@@ -83,6 +84,33 @@ export const getDraftProcedure = protectedProcedure
 			input.mailboxId,
 			context.user.id,
 		);
+
+		if (mailbox.provider === "OUTLOOK") {
+			throw new ORPCError("BAD_REQUEST", {
+				message: "Drafts aren't supported for Outlook mailboxes yet.",
+			});
+		}
+
+		if (mailbox.provider === "IMAP") {
+			const imapDraft = await getImapDraft(
+				mailbox.accountId,
+				input.draftId,
+			);
+			if (!imapDraft) {
+				throw new ORPCError("NOT_FOUND", {
+					message: "This draft no longer exists.",
+				});
+			}
+			return {
+				draftId: input.draftId,
+				to: imapDraft.to,
+				cc: imapDraft.cc,
+				bcc: imapDraft.bcc,
+				subject: imapDraft.subject,
+				body: imapDraft.html ? "" : imapDraft.text,
+				bodyHtml: imapDraft.html || undefined,
+			};
+		}
 
 		const draft = await getDraft(mailbox.accountId, input.draftId, "raw");
 		const rawData = draft.message?.raw;

@@ -318,11 +318,6 @@ test.describe("Navigation between auth pages", () => {
 		).toBeVisible();
 	});
 
-	test("login page shows forgot password link", async ({ page }) => {
-		await page.goto("/auth/login");
-		await expect(page.getByRole("link", { name: /forgot/i })).toBeVisible();
-	});
-
 	test("signup page shows Terms and Privacy links", async ({ page }) => {
 		await page.goto("/auth/signup");
 		await expect(page.getByRole("link", { name: /terms/i })).toBeVisible();

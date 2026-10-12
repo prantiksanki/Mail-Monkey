@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@repo/ui/components/button";
+import { ConnectImapMailboxDialog } from "@saas/mailboxes/components/ConnectImapMailboxDialog";
 import { useMailboxesQuery } from "@saas/mailboxes/lib/api";
 import {
 	ArrowLeftIcon,
@@ -10,11 +11,18 @@ import {
 	PlusIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 interface OnboardingStepMailboxesProps {
 	onBack: () => void;
 	onCompleted: () => void;
 }
+
+const PROVIDER_LABEL_KEYS = {
+	GOOGLE: "onboarding.mailboxes.provider.google",
+	OUTLOOK: "onboarding.mailboxes.provider.outlook",
+	IMAP: "onboarding.mailboxes.provider.imap",
+} as const;
 
 export function OnboardingStepMailboxes({
 	onBack,
@@ -22,6 +30,8 @@ export function OnboardingStepMailboxes({
 }: OnboardingStepMailboxesProps) {
 	const t = useTranslations();
 	const { data: mailboxes = [], isLoading } = useMailboxesQuery();
+	const [isImapDialogOpen, setIsImapDialogOpen] = useState(false);
+	const hasNoMailboxes = !isLoading && mailboxes.length === 0;
 
 	return (
 		<div>
@@ -29,14 +39,21 @@ export function OnboardingStepMailboxes({
 				{t("onboarding.mailboxes.eyebrow")}
 			</p>
 			<h1 className="mt-3 text-balance font-serif font-normal text-4xl leading-[1.05] tracking-tight md:text-5xl">
-				{t.rich("onboarding.mailboxes.heading", {
-					accent: (chunks) => (
-						<em className="italic text-primary">{chunks}</em>
-					),
-				})}
+				{t.rich(
+					hasNoMailboxes
+						? "onboarding.mailboxes.empty.heading"
+						: "onboarding.mailboxes.heading",
+					{
+						accent: (chunks) => (
+							<em className="italic text-primary">{chunks}</em>
+						),
+					},
+				)}
 			</h1>
 			<p className="mt-4 max-w-lg text-foreground/60">
-				{t("onboarding.mailboxes.description")}
+				{hasNoMailboxes
+					? t("onboarding.mailboxes.empty.description")
+					: t("onboarding.mailboxes.description")}
 			</p>
 
 			<div className="mt-8 space-y-2.5">
@@ -57,7 +74,7 @@ export function OnboardingStepMailboxes({
 									{mailbox.email}
 								</p>
 								<p className="text-foreground/60 text-xs">
-									{t("onboarding.mailboxes.provider.google")}
+									{t(PROVIDER_LABEL_KEYS[mailbox.provider])}
 								</p>
 							</div>
 							<span className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1 font-medium text-primary-foreground text-xs">
@@ -74,13 +91,32 @@ export function OnboardingStepMailboxes({
 				</div>
 				<div className="min-w-0 flex-1">
 					<p className="font-medium text-sm">
-						{t("onboarding.mailboxes.addMore.title")}
+						{hasNoMailboxes
+							? t("onboarding.mailboxes.empty.title")
+							: t("onboarding.mailboxes.addMore.title")}
 					</p>
 					<p className="mt-0.5 text-foreground/60 text-xs">
-						{t("onboarding.mailboxes.addMore.description")}
+						{hasNoMailboxes
+							? t("onboarding.mailboxes.empty.cardDescription")
+							: t("onboarding.mailboxes.addMore.description")}
 					</p>
+					{hasNoMailboxes && (
+						<Button
+							className="mt-3"
+							size="sm"
+							onClick={() => setIsImapDialogOpen(true)}
+						>
+							{t("onboarding.mailboxes.empty.connect")}
+						</Button>
+					)}
 				</div>
 			</div>
+
+			<ConnectImapMailboxDialog
+				open={isImapDialogOpen}
+				onOpenChange={setIsImapDialogOpen}
+				onConnected={() => setIsImapDialogOpen(false)}
+			/>
 
 			<div className="mt-8 flex items-center justify-between">
 				<Button variant="ghost" onClick={onBack}>

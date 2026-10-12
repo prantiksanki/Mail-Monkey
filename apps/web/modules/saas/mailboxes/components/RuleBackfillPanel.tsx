@@ -47,7 +47,7 @@ export function RuleBackfillPanel({
 			await startMutation.mutateAsync({
 				mailboxId,
 				ruleId,
-				windowMonths: "6",
+				windowMonths: "1",
 			});
 			toast.success(t("rules.backfill.notifications.started"));
 		} catch {
@@ -81,7 +81,7 @@ export function RuleBackfillPanel({
 					</div>
 					<Button
 						size="sm"
-						variant="secondary"
+						variant="primary"
 						onClick={handleStart}
 						loading={startMutation.isPending}
 						disabled={isRunning}

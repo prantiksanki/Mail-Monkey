@@ -1,12 +1,10 @@
-import { ArchiveDemo } from "@marketing/home/components/ArchiveDemo";
-import { BeforeAfter } from "@marketing/home/components/BeforeAfter";
 import { FaqSection } from "@marketing/home/components/FaqSection";
+import { FeatureCarousel } from "@marketing/home/components/FeatureCarousel";
 import { FinalCta } from "@marketing/home/components/FinalCta";
 import { Hero } from "@marketing/home/components/Hero";
-import { Intelligence } from "@marketing/home/components/Intelligence";
 import { JsonLd } from "@marketing/home/components/JsonLd";
-import { MultiAccount } from "@marketing/home/components/MultiAccount";
-import { PricingSection } from "@marketing/home/components/PricingSection";
+import { SecurityCompliance } from "@marketing/home/components/SecurityCompliance";
+import { SpeakYourMind } from "@marketing/home/components/SpeakYourMind";
 import { StatsStrip } from "@marketing/home/components/StatsStrip";
 import { getBaseUrl } from "@repo/utils";
 import type { Metadata } from "next";
@@ -16,25 +14,29 @@ export const revalidate = 3600;
 
 export function generateMetadata(): Metadata {
 	const baseUrl = getBaseUrl();
-	const title = "Zer0Email — AI Chief of Staff for Email";
+	const title = "AI Email Assistant for Gmail, Outlook & Zoho";
+	const socialTitle =
+		"AI Email Assistant for Gmail, Outlook & Zoho | Popsuites";
 	const description =
-		"Zer0Email uses intelligent routing and auto-labeling to keep your inbox clean and surface what actually matters. Connect Gmail or Outlook in seconds.";
+		"Popsuites sorts and labels your email with AI so nothing important gets missed. Works inside Gmail, Outlook and Zoho Mail. Free plan to start.";
 
 	return {
 		title,
 		description,
 		alternates: { canonical: baseUrl, languages: { en: baseUrl } },
 		openGraph: {
-			title,
+			title: socialTitle,
 			description,
 			url: baseUrl,
-			siteName: "Zer0Email",
+			siteName: "Popsuites",
 			type: "website",
+			images: [`${baseUrl}/opengraph-image`],
 		},
 		twitter: {
 			card: "summary_large_image",
-			title,
+			title: socialTitle,
 			description,
+			images: [`${baseUrl}/opengraph-image`],
 		},
 	};
 }
@@ -52,12 +54,10 @@ export default async function Home({
 			<JsonLd />
 			<Hero />
 			<StatsStrip />
-			<BeforeAfter />
-			<Intelligence />
-			<ArchiveDemo />
-			<MultiAccount />
-			<PricingSection />
+			<SpeakYourMind />
+			<FeatureCarousel />
 			<FaqSection />
+			<SecurityCompliance />
 			<FinalCta />
 		</>
 	);

@@ -14,6 +14,14 @@ vi.mock("@repo/logs", () => ({
 	logger: { info: vi.fn(), warn: vi.fn(), error: vi.fn() },
 }));
 
+// This suite exercises the Microsoft OAuth refresh flow, not token
+// encryption (covered separately) — stub encrypt/decrypt as identity so
+// plain fixture strings like "rt-abc" don't fail decryptToken's format check.
+vi.mock("@repo/utils", () => ({
+	decryptToken: (value: string | null | undefined) => value ?? null,
+	encryptToken: (value: string | null | undefined) => value ?? null,
+}));
+
 import { db } from "@repo/database";
 import { getMicrosoftAccessToken } from "./microsoft-auth";
 

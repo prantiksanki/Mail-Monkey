@@ -7,9 +7,10 @@ import { Card } from "@repo/ui/components/card";
 import { useMailboxesQuery } from "@saas/mailboxes/lib/api";
 import { useRuleSuggestionsQuery } from "@saas/mailboxes/lib/rules-api";
 import { useSelectedMailbox } from "@saas/mailboxes/lib/selected-mailbox-context";
+import { orpcClient } from "@shared/lib/orpc-client";
+import { useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
-import { useAnalytics } from "@/modules/analytics";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { RuleFormDialog } from "./RuleFormDialog";
 import type { RuleRowRule } from "./RuleRow";
 import { RuleSuggestionsPanel } from "./RuleSuggestionsPanel";
@@ -21,22 +22,6 @@ function isUnauthorizedError(error: unknown): boolean {
 		"code" in error &&
 		(error as { code: unknown }).code === "UNAUTHORIZED"
 	);
-}
-
-function hasSeen(key: string): boolean {
-	try {
-		return window.localStorage.getItem(key) !== null;
-	} catch {
-		return false;
-	}
-}
-
-function markSeen(key: string): void {
-	try {
-		window.localStorage.setItem(key, "1");
-	} catch {
-		// localStorage unavailable (private mode / disabled) — best effort only.
-	}
 }
 
 type EditingRule = {
@@ -52,7 +37,6 @@ export function InboxIntelligencePage() {
 	const { selectedMailboxId } = useSelectedMailbox();
 	const { data: mailboxes = [] } = useMailboxesQuery();
 	const { data, error } = useRuleSuggestionsQuery(selectedMailboxId);
-	const { trackEvent } = useAnalytics();
 	const needsReconnect = isUnauthorizedError(error);
 	const [editingRule, setEditingRule] = useState<EditingRule | null>(null);
 	const selectedMailbox = mailboxes.find(
@@ -64,22 +48,20 @@ export function InboxIntelligencePage() {
 		category: "Productivity" | "Finance" | "Social";
 	}>;
 
+	// The once-per-lifetime dedup lives server-side (User.firstSummaryViewedAt);
+	// this ref just avoids a duplicate in-flight call within a single mount.
+	const firstSummaryReported = useRef(false);
+	const reportFirstSummary = useMutation({
+		mutationFn: () => orpcClient.telemetry.markFirstSummaryViewed(),
+	});
+
 	useEffect(() => {
-		if (suggestions.length === 0 || !selectedMailboxId) {
+		if (suggestions.length === 0 || firstSummaryReported.current) {
 			return;
 		}
-		// Track only the first time this mailbox's summary is ever seen,
-		// not once per component mount.
-		const storageKey = `zeromail.first-summary-viewed.${selectedMailboxId}`;
-		if (hasSeen(storageKey)) {
-			return;
-		}
-		trackEvent("first_summary_viewed", {
-			mailbox_id: selectedMailboxId,
-			suggestion_count: suggestions.length,
-		});
-		markSeen(storageKey);
-	}, [suggestions, selectedMailboxId, trackEvent]);
+		firstSummaryReported.current = true;
+		reportFirstSummary.mutate();
+	}, [suggestions.length]);
 
 	const summary = useMemo(() => {
 		const highConfidence = suggestions.filter(

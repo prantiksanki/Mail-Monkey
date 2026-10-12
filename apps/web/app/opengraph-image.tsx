@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Zer0Email — AI Chief of Staff for Email";
+export const alt = "Popsuites | Nothing In Your Inbox Gets Missed";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -29,7 +29,7 @@ export default function OgImage() {
 					lineHeight: 1,
 				}}
 			>
-				Zer0Email
+				Popsuites
 			</div>
 			<div
 				style={{
@@ -41,7 +41,7 @@ export default function OgImage() {
 					lineHeight: 1.4,
 				}}
 			>
-				AI Chief of Staff for Email
+				Nothing In Your Inbox Gets Missed
 			</div>
 			<div
 				style={{

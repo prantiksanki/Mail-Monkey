@@ -54,25 +54,37 @@ function buildContentSecurityPolicy(nonce: string): string {
 			"'self'",
 			"blob:",
 			"data:",
-			"https:",
+			// Explicit allow-list matching `images.remotePatterns` in
+			// next.config.ts — a bare `https:` here would let the browser
+			// load an <img> from literally any HTTPS host (flagged by DAST
+			// scanners as a CSP wildcard directive).
+			"https://lh3.googleusercontent.com", // Google account profile photos
+			"https://picsum.photos", // placeholder images
+			"https://images.unsplash.com", // blog hero images
+			"https://randomuser.me", // testimonial portraits
+			"https://miro.medium.com", // blog posts cross-published from Medium
+			"https://api.producthunt.com", // Product Hunt review badge (marketing footer)
 			...(storageOrigin ? [storageOrigin] : []),
 		].join(" "),
 		"font-src 'self' data:",
 		[
 			"connect-src",
 			"'self'",
+			"blob:",
 			...(isDevelopment ? ["ws:", "wss:"] : []),
 			"https://www.google-analytics.com",
 			"https://*.google-analytics.com",
 			"https://*.analytics.google.com",
+			"https://www.googletagmanager.com",
 			"https://i.posthog.com",
 			"https://api.posthog.com",
 			"https://plausible.io",
 			"https://analytics.eu.umami.is",
 			"https://api.pirsch.io",
+			"https://*.enzuzo.com",
 			...(storageOrigin ? [storageOrigin] : []),
 		].join(" "),
-		"frame-src 'self'",
+		"frame-src 'self' https://www.googletagmanager.com",
 		"media-src 'self' blob: data:",
 		"worker-src 'self' blob:",
 		"manifest-src 'self'",
@@ -152,6 +164,6 @@ export default async function proxy(req: NextRequest) {
 
 export const config = {
 	matcher: [
-		"/((?!api|image-proxy|images|fonts|_next/static|_next/image|favicon.ico|icon.png|sitemap.xml|robots.txt).*)",
+		"/((?!api|image-proxy|images|fonts|lottie|_next/static|_next/image|favicon.ico|icon.png|opengraph-image|sitemap.xml|robots.txt|.well-known).*)",
 	],
 };

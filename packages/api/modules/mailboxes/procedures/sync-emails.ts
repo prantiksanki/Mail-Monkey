@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { syncAllEmails, syncRecentEmails } from "../lib/email-sync";
+import { syncAllImapEmails, syncRecentImapEmails } from "../lib/imap-sync";
+import {
+	syncAllOutlookEmails,
+	syncRecentOutlookEmails,
+} from "../lib/outlook-sync";
 import { verifyMailboxOwnership } from "../lib/ownership";
 
 export const syncEmails = protectedProcedure
@@ -25,27 +30,30 @@ export const syncEmails = protectedProcedure
 			context.user.id,
 		);
 
-		if (input.mode === "full") {
-			// Fire-and-forget — returns immediately; sync runs in background
-			void syncAllEmails({
-				id: mailbox.id,
-				accountId: mailbox.accountId,
-				email: mailbox.email,
-			});
-			return { started: true, synced: null };
-		}
-
-		// Incremental sync is only implemented for Gmail; Outlook falls back to
-		// its live list path in list-inbox-messages, so a no-op is fine here.
-		if (mailbox.provider !== "GOOGLE") {
-			return { started: true, synced: 0 };
-		}
-
-		const synced = await syncRecentEmails({
+		const mailboxRef = {
 			id: mailbox.id,
 			accountId: mailbox.accountId,
 			email: mailbox.email,
-		});
+		};
+
+		if (input.mode === "full") {
+			// Fire-and-forget — returns immediately; sync runs in background
+			if (mailbox.provider === "OUTLOOK") {
+				void syncAllOutlookEmails(mailboxRef);
+			} else if (mailbox.provider === "IMAP") {
+				void syncAllImapEmails(mailboxRef);
+			} else {
+				void syncAllEmails(mailboxRef);
+			}
+			return { started: true, synced: null };
+		}
+
+		const synced =
+			mailbox.provider === "OUTLOOK"
+				? await syncRecentOutlookEmails(mailboxRef)
+				: mailbox.provider === "IMAP"
+					? await syncRecentImapEmails(mailboxRef)
+					: await syncRecentEmails(mailboxRef);
 
 		return { started: true, synced };
 	});

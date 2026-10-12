@@ -2,8 +2,10 @@
 	"dependencies": {
 		"@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
 		"@polar-sh/sdk": "^0.41.4",
+		"@repo/analytics": "workspace:*",
 		"@repo/database": "workspace:*",
 		"@repo/logs": "workspace:*",
+		"@repo/utils": "workspace:*",
 		"chargebee-typescript": "^2.53.0",
 		"dodopayments": "^2.8.0",
 		"stripe": "^19.3.1",

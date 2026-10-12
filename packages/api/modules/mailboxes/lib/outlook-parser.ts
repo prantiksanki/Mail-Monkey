@@ -6,6 +6,23 @@ function _extractEmail(value: string): string {
 	return (match ? match[1] : value).toLowerCase().trim();
 }
 
+/**
+ * Builds the local labelIds mirror for an Outlook message. Every message this
+ * parser ever sees comes from the inbox folder (both the webhook subscription
+ * and listOutlookInboxMessages are scoped to /me/mailFolders/inbox), so INBOX
+ * is always present — without it, INBOX-scoped queries like countUnreadInbox
+ * silently return 0 for every Outlook mailbox. IMPORTANT mirrors Graph's own
+ * `importance: "high"` as the cross-provider Priority signal (Gmail already
+ * stores its own IMPORTANT system label the same way).
+ */
+function buildOutlookLabelIds(msg: GraphMessage): string[] {
+	const labelIds = ["INBOX"];
+	if (msg.importance === "high") {
+		labelIds.push("IMPORTANT");
+	}
+	return labelIds;
+}
+
 export function parseOutlookMessage(msg: GraphMessage): ParsedEmail {
 	const fromAddr = msg.from?.emailAddress?.address ?? "";
 	const fromName = msg.from?.emailAddress?.name ?? "";
@@ -36,7 +53,12 @@ export function parseOutlookMessage(msg: GraphMessage): ParsedEmail {
 		bodyText: isHtml ? "" : bodyContent,
 		bodyHtml: isHtml ? bodyContent : "",
 		date: new Date(msg.receivedDateTime),
-		labelIds: [],
+		labelIds: buildOutlookLabelIds(msg),
 		headers,
+		// Graph doesn't embed attachment metadata in the message payload (unlike
+		// Gmail) — only a hasAttachments flag. Callers that need the real list
+		// (payment-tracking get-card.ts) fetch it separately via
+		// listOutlookAttachments when msg.hasAttachments is true.
+		attachments: [],
 	};
 }

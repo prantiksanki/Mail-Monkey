@@ -111,13 +111,6 @@ export const webhookHandler: WebhookHandler = async (req: Request) => {
 	try {
 		const text = await req.text();
 
-		// TEMP DEBUG: confirm the webhook is reaching us and what it contains.
-		console.log("[ls-webhook] received", {
-			hasSecret: !!process.env.LEMONSQUEEZY_WEBHOOK_SECRET,
-			hasSignatureHeader: !!req.headers.get("x-signature"),
-			bodyPreview: text.slice(0, 500),
-		});
-
 		const hmac = createHmac(
 			"sha256",
 			process.env.LEMONSQUEEZY_WEBHOOK_SECRET as string,

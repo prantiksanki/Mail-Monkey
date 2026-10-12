@@ -23,14 +23,18 @@ export async function restoreSnoozedToInbox(snooze: {
 	mailboxId: string;
 	messageId: string;
 	originalLabelIds: string[];
-	mailbox: { accountId: string };
+	mailbox: { accountId: string; provider?: string };
 }) {
-	await modifyMessageLabels(
-		snooze.mailbox.accountId,
-		snooze.messageId,
-		["INBOX", "UNREAD"],
-		[],
-	);
+	// IMAP has no server-side label to flip: snooze is local-only there (the
+	// message never leaves the server's INBOX), so only the local copy changes.
+	if (snooze.mailbox.provider !== "IMAP") {
+		await modifyMessageLabels(
+			snooze.mailbox.accountId,
+			snooze.messageId,
+			["INBOX", "UNREAD"],
+			[],
+		);
+	}
 
 	const localEmail = await getEmailById(snooze.mailboxId, snooze.messageId);
 	if (localEmail) {

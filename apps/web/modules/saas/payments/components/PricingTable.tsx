@@ -23,7 +23,8 @@ const plans = paymentsConfig.plans;
 
 const PLAN_HIERARCHY: Record<string, number> = {
 	free: 0,
-	pro: 1,
+	starter: 1,
+	pro: 2,
 };
 
 export function PricingTable({
@@ -31,11 +32,14 @@ export function PricingTable({
 	userId,
 	organizationId,
 	activePlanId,
+	variant = "default",
 }: {
 	className?: string;
 	userId?: string;
 	organizationId?: string;
 	activePlanId?: string;
+	/** "marketing" matches the landing page's dark-blue pricing section look. */
+	variant?: "default" | "marketing";
 }) {
 	const t = useTranslations();
 	const format = useFormatter();
@@ -86,10 +90,11 @@ export function PricingTable({
 	};
 
 	const filteredPlans = Object.entries(plans).filter(([planId]) => {
-		if (planId === activePlanId) {
+		// No usable free tier — never offer it as a selectable plan.
+		if (planId === "free") {
 			return false;
 		}
-		if (activePlanId && planId === "free") {
+		if (planId === activePlanId) {
 			return false;
 		}
 		if (
@@ -117,212 +122,313 @@ export function PricingTable({
 		);
 	}
 
+	const isMarketing = variant === "marketing";
+
 	return (
 		<div className={cn("@container", className)}>
-			{hasSubscriptions && (
-				<div className="mb-6 flex justify-start">
-					<Tabs
-						value={interval}
-						onValueChange={(value) =>
-							setInterval(value as typeof interval)
-						}
-						data-test="price-table-interval-tabs"
+			<div className="relative">
+				{hasSubscriptions && (
+					<div
+						className={cn(
+							"mb-6 flex",
+							isMarketing ? "justify-center" : "justify-start",
+						)}
 					>
-						<TabsList className="border-foreground/10">
-							<TabsTrigger value="month">
-								{t("pricing.monthly")}
-							</TabsTrigger>
-							<TabsTrigger value="year">
-								{t("pricing.yearly")}
-							</TabsTrigger>
-						</TabsList>
-					</Tabs>
-				</div>
-			)}
-			<div
-				className={cn("grid grid-cols-1 gap-5", {
-					"@xl:grid-cols-2": filteredPlans.length >= 2,
-					"@3xl:grid-cols-3": filteredPlans.length >= 3,
-					"@4xl:grid-cols-4": filteredPlans.length >= 4,
-				})}
-			>
-				{filteredPlans
-					.filter(([planId]) => planId !== activePlanId)
-					.map(([planId, plan]) => {
-						const isFree = "isFree" in plan ? plan.isFree : false;
-						const isEnterprise =
-							"isEnterprise" in plan ? plan.isEnterprise : false;
-						const prices =
-							"prices" in plan ? plan.prices : undefined;
-						const recommended =
-							"recommended" in plan ? plan.recommended : false;
-						const hidden = "hidden" in plan ? plan.hidden : false;
+						<Tabs
+							value={interval}
+							onValueChange={(value) =>
+								setInterval(value as typeof interval)
+							}
+							data-test="price-table-interval-tabs"
+						>
+							<TabsList className="border-foreground/10">
+								<TabsTrigger value="month">
+									{t("pricing.monthly")}
+								</TabsTrigger>
+								<TabsTrigger value="year">
+									{t("pricing.yearly")}
+								</TabsTrigger>
+							</TabsList>
+						</Tabs>
+					</div>
+				)}
+				<div
+					className={cn("grid grid-cols-1 gap-5", {
+						"@xl:grid-cols-2": filteredPlans.length >= 2,
+						"@3xl:grid-cols-3": filteredPlans.length >= 3,
+						"@4xl:grid-cols-4": filteredPlans.length >= 4,
+					})}
+				>
+					{filteredPlans
+						.filter(([planId]) => planId !== activePlanId)
+						.map(([planId, plan]) => {
+							const isFree =
+								"isFree" in plan ? plan.isFree : false;
+							const isEnterprise =
+								"isEnterprise" in plan
+									? plan.isEnterprise
+									: false;
+							const prices =
+								"prices" in plan ? plan.prices : undefined;
+							const recommended =
+								"recommended" in plan
+									? plan.recommended
+									: false;
+							const hidden =
+								"hidden" in plan ? plan.hidden : false;
 
-						const { title, description, features } =
-							planData[planId as keyof typeof planData];
+							const { title, description, features } =
+								planData[planId as keyof typeof planData];
 
-						const price = isFree
-							? {
-									amount: 0,
-									currency: localeCurrency,
-									interval,
-									productId: "",
-									type: "recurring",
-								}
-							: prices?.find(
-									(price) =>
-										!hidden &&
-										price.interval === interval &&
-										price.currency === localeCurrency,
-								);
+							const price = isFree
+								? {
+										amount: 0,
+										currency: localeCurrency,
+										interval,
+										productId: "",
+										type: "recurring",
+									}
+								: prices?.find(
+										(price) =>
+											!hidden &&
+											price.interval === interval &&
+											price.currency === localeCurrency,
+									);
 
-						if (!price && !isEnterprise) {
-							return null;
-						}
+							if (!price && !isEnterprise) {
+								return null;
+							}
 
-						return (
-							<div
-								key={planId}
-								className={cn(
-									"relative rounded-[1.75rem] border border-white/[0.08] bg-white/[0.03] p-7 shadow-[0_22px_80px_rgba(0,0,0,0.18)]",
-									{
-										"border-primary/40 shadow-[0_24px_90px_var(--primary-soft)]":
-											recommended,
-									},
-								)}
-								data-test="price-table-plan"
-							>
-								{recommended && (
-									<div className="-top-3 -translate-x-1/2 absolute left-1/2 rounded-full bg-primary px-3 py-1 font-medium text-[11px] uppercase tracking-[0.16em] text-black">
-										{t("pricing.recommended")}
-									</div>
-								)}
-								<div className="flex h-full flex-col justify-between gap-5">
-									<div>
-										<h3 className="my-0 text-2xl font-semibold tracking-[-0.03em] text-foreground">
-											{title}
-										</h3>
-										{description && (
-											<p className="mt-2 text-sm leading-6 text-foreground/60">
-												{description}
-											</p>
-										)}
-
-										{!!features?.length && (
-											<ul className="mt-5 grid list-none gap-2.5 text-foreground/70 text-sm">
-												{features.map(
-													(feature, key) => (
-														<li
-															key={key}
-															className="flex items-start justify-start"
-														>
-															<CheckIcon className="mt-0.5 mr-2 size-4 shrink-0 text-primary" />
-															<span>
-																{feature}
-															</span>
-														</li>
-													),
-												)}
-											</ul>
-										)}
-
-										{price &&
-											"trialPeriodDays" in price &&
-											price.trialPeriodDays && (
-												<div className="mt-4 flex items-center justify-start text-sm font-medium text-primary opacity-80">
-													<BadgePercentIcon className="mr-2 size-4" />
-													{t("pricing.trialPeriod", {
-														days: price.trialPeriodDays,
-													})}
-												</div>
+							return (
+								<div
+									key={planId}
+									className={cn(
+										"relative flex flex-col rounded-[28px] p-7 transition-all duration-300",
+										isMarketing
+											? recommended
+												? "border border-white/20 bg-[#00388F] shadow-[0_0_60px_-12px_rgba(0,56,143,0.35)]"
+												: "border border-[#00388F]/15 bg-[hsl(214,95%,44%)] shadow-[0_22px_80px_rgba(0,56,143,0.2)] hover:bg-[hsl(214,90%,40%)]"
+											: cn(
+													"border border-border bg-card shadow-[0_22px_80px_rgba(0,0,0,0.06)]",
+													recommended &&
+														"border-primary/40 shadow-[0_24px_90px_var(--primary-soft)]",
+												),
+									)}
+									data-test="price-table-plan"
+								>
+									{recommended && (
+										<div
+											className={cn(
+												"-top-3 -translate-x-1/2 absolute left-1/2 rounded-full px-3 py-1 font-medium text-[11px] uppercase tracking-[0.16em]",
+												isMarketing
+													? "bg-white text-[hsl(214,95%,44%)]"
+													: "bg-primary text-primary-foreground",
 											)}
-									</div>
-
-									<div>
-										{price && (
-											<div
-												className="flex items-baseline gap-1.5"
-												data-test="price-table-plan-price"
-											>
-												<span className="text-4xl font-semibold leading-none tracking-[-0.04em] text-foreground lg:text-5xl">
-													{format.number(
-														price.amount,
-														{
-															style: "currency",
-															currency:
-																price.currency,
-														},
-													)}
-												</span>
-												{"interval" in price && (
-													<span className="text-foreground/50 text-xs">
-														{" / "}
-														{interval === "month"
-															? t(
-																	"pricing.month",
-																	{
-																		count: 1,
-																	},
-																)
-															: t(
-																	"pricing.year",
-																	{
-																		count: 1,
-																	},
-																)}
-													</span>
+										>
+											{t("pricing.recommended")}
+										</div>
+									)}
+									<div className="flex h-full flex-col justify-between gap-5">
+										<div>
+											<h3
+												className={cn(
+													"my-0 text-2xl font-semibold tracking-[-0.03em]",
+													isMarketing
+														? "text-white"
+														: "text-foreground",
 												)}
-												{organizationId &&
-													"seatBased" in price &&
-													price.seatBased && (
-														<span className="text-foreground/50 text-xs">
-															{" / "}
-															{t(
-																"pricing.perSeat",
+											>
+												{title}
+											</h3>
+											{description && (
+												<p
+													className={cn(
+														"mt-2 text-sm leading-6",
+														isMarketing
+															? "text-white/70"
+															: "text-foreground/60",
+													)}
+												>
+													{description}
+												</p>
+											)}
+
+											{!!features?.length && (
+												<ul
+													className={cn(
+														"mt-5 grid list-none gap-2.5 text-sm",
+														isMarketing
+															? "text-white/85"
+															: "text-foreground/70",
+													)}
+												>
+													{features.map(
+														(feature, key) => (
+															<li
+																key={key}
+																className="flex items-start justify-start"
+															>
+																<CheckIcon
+																	className={cn(
+																		"mt-0.5 mr-2 size-4 shrink-0",
+																		isMarketing
+																			? "text-white/70"
+																			: "text-primary",
+																	)}
+																/>
+																<span>
+																	{feature}
+																</span>
+															</li>
+														),
+													)}
+												</ul>
+											)}
+
+											{price &&
+												"trialPeriodDays" in price &&
+												price.trialPeriodDays && (
+													<div
+														className={cn(
+															"mt-4 flex items-center justify-start text-sm font-medium",
+															isMarketing
+																? "text-white/85"
+																: "text-primary opacity-80",
+														)}
+													>
+														<BadgePercentIcon className="mr-2 size-4" />
+														{t(
+															"pricing.trialPeriod",
+															{
+																days: price.trialPeriodDays,
+															},
+														)}
+													</div>
+												)}
+										</div>
+
+										<div>
+											{price && (
+												<div
+													className="flex items-baseline gap-1.5"
+													data-test="price-table-plan-price"
+												>
+													<span
+														className={cn(
+															"text-4xl font-semibold leading-none tracking-[-0.04em] lg:text-5xl",
+															isMarketing
+																? "text-white"
+																: "text-foreground",
+														)}
+													>
+														{format.number(
+															price.amount,
+															{
+																style: "currency",
+																currency:
+																	price.currency,
+															},
+														)}
+													</span>
+													{"interval" in price && (
+														<span
+															className={cn(
+																"text-xs",
+																isMarketing
+																	? "text-white/60"
+																	: "text-foreground/50",
 															)}
+														>
+															{" / "}
+															{interval ===
+															"month"
+																? t(
+																		"pricing.month",
+																		{
+																			count: 1,
+																		},
+																	)
+																: t(
+																		"pricing.year",
+																		{
+																			count: 1,
+																		},
+																	)}
 														</span>
 													)}
-											</div>
-										)}
+													{organizationId &&
+														"seatBased" in price &&
+														price.seatBased && (
+															<span
+																className={cn(
+																	"text-xs",
+																	isMarketing
+																		? "text-white/60"
+																		: "text-foreground/50",
+																)}
+															>
+																{" / "}
+																{t(
+																	"pricing.perSeat",
+																)}
+															</span>
+														)}
+												</div>
+											)}
 
-										{isEnterprise ? (
-											<Button
-												className="mt-4 h-12 w-full font-semibold uppercase"
-												variant="glass"
-												asChild
-											>
-												<LocaleLink href="/contact">
-													<PhoneIcon className="mr-2 size-4" />
-													{t("pricing.contactSales")}
-												</LocaleLink>
-											</Button>
-										) : (
-											<Button
-												className="mt-4 h-12 w-full font-semibold uppercase tracking-[0.08em]"
-												variant={
-													recommended
-														? "primary"
-														: "secondary"
-												}
-												onClick={() =>
-													onSelectPlan(
-														planId as PlanId,
-														price?.productId,
-													)
-												}
-												loading={loading === planId}
-											>
-												{userId || organizationId
-													? t("pricing.choosePlan")
-													: t("pricing.getStarted")}
-												<ArrowRightIcon className="ml-2 size-4" />
-											</Button>
-										)}
+											{isEnterprise ? (
+												<Button
+													className="mt-4 h-12 w-full font-semibold uppercase"
+													variant="glass"
+													asChild
+												>
+													<LocaleLink href="/contact">
+														<PhoneIcon className="mr-2 size-4" />
+														{t(
+															"pricing.contactSales",
+														)}
+													</LocaleLink>
+												</Button>
+											) : (
+												<Button
+													className={cn(
+														"mt-4 h-12 w-full font-semibold uppercase tracking-[0.08em]",
+														isMarketing &&
+															(recommended
+																? "bg-white text-[hsl(214,95%,44%)] shadow-[0_4px_24px_-4px_rgba(255,255,255,0.35)] hover:bg-white/90"
+																: "bg-white text-[hsl(214,95%,44%)] shadow-[0_4px_24px_-4px_rgba(0,56,143,0.3)] hover:bg-white/90"),
+													)}
+													variant={
+														isMarketing
+															? undefined
+															: recommended
+																? "primary"
+																: "secondary"
+													}
+													onClick={() =>
+														onSelectPlan(
+															planId as PlanId,
+															price?.productId,
+														)
+													}
+													loading={loading === planId}
+												>
+													{userId || organizationId
+														? t(
+																"pricing.choosePlan",
+															)
+														: t(
+																"pricing.getStarted",
+															)}
+													<ArrowRightIcon className="ml-2 size-4" />
+												</Button>
+											)}
+										</div>
 									</div>
 								</div>
-							</div>
-						);
-					})}
+							);
+						})}
+				</div>
 			</div>
 		</div>
 	);

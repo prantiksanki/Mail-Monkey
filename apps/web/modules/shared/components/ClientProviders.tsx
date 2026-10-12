@@ -4,19 +4,9 @@ import { AnalyticsScript } from "@analytics";
 import { ProgressProvider } from "@bprogress/next/app";
 import { Toaster } from "@repo/ui/components/toast";
 import { ApiClientProvider } from "@shared/components/ApiClientProvider";
-import { ConsentBanner } from "@shared/components/ConsentBanner";
-import { useCookieConsent } from "@shared/hooks/cookie-consent";
 import { ThemeProvider } from "next-themes";
 import type { PropsWithChildren } from "react";
 import { config } from "@/config";
-
-function ConsentedAnalytics() {
-	const { userHasConsented } = useCookieConsent();
-	if (!userHasConsented) {
-		return null;
-	}
-	return <AnalyticsScript />;
-}
 
 export function ClientProviders({
 	children,
@@ -43,8 +33,12 @@ export function ClientProviders({
 						{children}
 
 						<Toaster position="top-right" />
-						<ConsentBanner />
-						<ConsentedAnalytics />
+						{/*
+							No custom cookie banner here: the Enzuzo script (loaded
+							beforeInteractive in the root layout) renders its own banner
+							and owns all consent state via Google Consent Mode.
+						*/}
+						<AnalyticsScript nonce={nonce} />
 					</ApiClientProvider>
 				</ThemeProvider>
 			</ProgressProvider>

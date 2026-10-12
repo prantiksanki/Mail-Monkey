@@ -60,6 +60,7 @@ const buildSasUrl = (
 	bucket: keyof typeof config.bucketNames,
 	permissions: BlobSASPermissions,
 	expiresInSeconds: number,
+	responseOverrides?: { contentType?: string; contentDisposition?: string },
 ) => {
 	const { accountName, sharedKeyCredential } = getAzureConfig();
 	const containerName = getContainerName(bucket);
@@ -73,6 +74,16 @@ const buildSasUrl = (
 			// Allow for minor clock skew between this server and Azure.
 			startsOn: new Date(now - 5 * 60 * 1000),
 			expiresOn: new Date(now + expiresInSeconds * 1000),
+			// Response header overrides (rsct/rscd). Azure SAS has no way to
+			// constrain what Content-Type a client's PUT is allowed to send on
+			// upload — unlike S3 SigV4, the signature doesn't bind to that
+			// header — so a blob can end up stored with an attacker-chosen
+			// Content-Type (e.g. text/html, image/svg+xml with an embedded
+			// <script>). These overrides are the mitigation: force a safe
+			// Content-Type on every read through a SAS this app issues,
+			// regardless of what was actually stored.
+			contentType: responseOverrides?.contentType,
+			contentDisposition: responseOverrides?.contentDisposition,
 		},
 		sharedKeyCredential,
 	).toString();
@@ -103,7 +114,15 @@ export const getSignedUrl: GetSignedUrlHander = async (
 ) => {
 	try {
 		const permissions = BlobSASPermissions.parse("r");
-		return buildSasUrl(path, bucket, permissions, expiresIn ?? 60 * 60);
+		// This app's only bucket ("avatars") holds profile photos, so every
+		// read is pinned to image/jpeg and inline display — see the comment
+		// in buildSasUrl for why this override exists. If this function is
+		// ever reused for a bucket holding non-image content, these
+		// hardcoded overrides need to become a caller-supplied parameter.
+		return buildSasUrl(path, bucket, permissions, expiresIn ?? 60 * 60, {
+			contentType: "image/jpeg",
+			contentDisposition: "inline",
+		});
 	} catch (e) {
 		logger.error(e);
 

@@ -1,14 +1,20 @@
+import { timingSafeEqual } from "node:crypto";
 import { logger } from "@repo/logs";
 import { handleTelegramUpdate, type TelegramUpdate } from "./service";
 
 export async function telegramWebhookHandler(request: Request) {
 	const expectedSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
-	if (
-		expectedSecret &&
-		request.headers.get("x-telegram-bot-api-secret-token") !==
-			expectedSecret
-	) {
-		return new Response("Unauthorized", { status: 401 });
+	if (expectedSecret) {
+		const provided =
+			request.headers.get("x-telegram-bot-api-secret-token") ?? "";
+		const expectedBuf = Buffer.from(expectedSecret, "utf8");
+		const providedBuf = Buffer.from(provided, "utf8");
+		if (
+			expectedBuf.length !== providedBuf.length ||
+			!timingSafeEqual(expectedBuf, providedBuf)
+		) {
+			return new Response("Unauthorized", { status: 401 });
+		}
 	}
 
 	let update: TelegramUpdate;

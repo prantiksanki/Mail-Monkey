@@ -29,10 +29,10 @@ const testimonials: TestimonialItem[] = [
 export function Testimonial() {
 	return (
 		<section className="w-full bg-background px-6 py-20 text-center sm:px-8 sm:py-24">
-			<span className="mb-4 inline-block rounded-full bg-foreground px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-background">
+			<span className="mb-4 inline-block rounded-full bg-primary px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-primary-foreground">
 				Testimonials
 			</span>
-			<div className="mb-2 font-serif text-[34px] font-normal leading-[1.02] tracking-tight text-foreground sm:text-[40px] md:text-[52px]">
+			<div className="mb-2 font-sans text-[34px] font-normal leading-[1.02] tracking-tight text-foreground sm:text-[40px] md:text-[52px]">
 				Loved by people
 				<br />
 				who get things done.

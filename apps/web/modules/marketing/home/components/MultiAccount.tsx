@@ -1,3 +1,4 @@
+import { cn } from "@repo/ui";
 import {
 	InboxIcon,
 	LayoutGridIcon,
@@ -43,10 +44,10 @@ const tiles: FeatureTile[] = [
 export function MultiAccount() {
 	return (
 		<section className="w-full bg-background px-6 py-20 text-center sm:px-8 sm:py-24">
-			<span className="mb-4 inline-block rounded-full bg-foreground px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-background">
+			<span className="mb-4 inline-block rounded-full bg-primary px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-primary-foreground">
 				Multi-account
 			</span>
-			<div className="mb-2 font-serif text-[34px] font-normal leading-[1.02] tracking-tight text-foreground sm:text-[40px] md:text-[52px]">
+			<div className="mb-2 font-sans text-[34px] font-normal leading-[1.02] tracking-tight text-foreground sm:text-[40px] md:text-[52px]">
 				Every account.
 				<br />
 				One place.
@@ -64,7 +65,7 @@ export function MultiAccount() {
 				<NextLink
 					href="/auth/signup"
 					prefetch
-					className="inline-flex items-center gap-2.5 rounded-full border border-foreground bg-foreground px-6 py-3 text-[15px] text-background transition-colors hover:bg-foreground/90"
+					className="inline-flex items-center gap-2.5 rounded-full border-2 border-border bg-[#0663DA] px-6 py-3 text-[15px] font-medium leading-none text-primary-foreground shadow-[2px_2px_0px_0px_#00388F] transition-all hover:translate-x-px hover:translate-y-px hover:bg-[#0663DA]/90 hover:shadow-[1px_1px_0px_0px_#00388F]"
 				>
 					<Image
 						src="/images/gmail-logo.png"
@@ -78,7 +79,7 @@ export function MultiAccount() {
 				<NextLink
 					href="/auth/signup"
 					prefetch
-					className="inline-flex items-center gap-2.5 rounded-full border border-foreground bg-foreground px-6 py-3 text-[15px] text-background transition-colors hover:bg-foreground/90"
+					className="inline-flex items-center gap-2.5 rounded-full border-2 border-border bg-[#152238] px-6 py-3 text-[15px] font-medium leading-none text-primary-foreground shadow-[2px_2px_0px_0px_#0F1827] transition-all hover:translate-x-px hover:translate-y-px hover:bg-[#152238]/90 hover:shadow-[1px_1px_0px_0px_#0F1827]"
 				>
 					<Image
 						src="/images/outlook-logo.png"
@@ -92,19 +93,40 @@ export function MultiAccount() {
 			</div>
 
 			<div className="mx-auto grid max-w-[860px] grid-cols-1 gap-px overflow-hidden rounded-[2rem] border border-border bg-border shadow-[0_18px_50px_-32px_rgba(0,0,0,0.2)] sm:grid-cols-2">
-				{tiles.map((tile) => (
-					<div key={tile.title} className="bg-card p-8 text-left">
-						<span className="mb-5 flex size-11 items-center justify-center rounded-full border border-border bg-muted text-foreground">
-							{tile.icon}
-						</span>
-						<h4 className="mb-2 font-serif text-[28px] font-normal tracking-tight text-foreground">
-							{tile.title}
-						</h4>
-						<p className="text-[15px] leading-[1.8] text-foreground">
-							{tile.description}
-						</p>
-					</div>
-				))}
+				{tiles.map((tile, index) => {
+					const isTopRow = index < 2;
+
+					return (
+						<div
+							key={tile.title}
+							className="group/feature relative overflow-hidden bg-card p-8 text-left"
+						>
+							<div
+								className={cn(
+									"pointer-events-none absolute inset-0 z-0 opacity-0 transition duration-200 group-hover/feature:opacity-100",
+									isTopRow
+										? "bg-gradient-to-t from-[#0663DA]/5 to-transparent"
+										: "bg-gradient-to-b from-[#0663DA]/5 to-transparent",
+								)}
+							/>
+
+							<span className="relative z-10 mb-5 flex size-11 items-center justify-center rounded-full border border-border bg-muted text-foreground">
+								{tile.icon}
+							</span>
+
+							<div className="relative z-10 mb-2 pl-6">
+								<span className="absolute inset-y-0 left-0 my-auto h-6 w-1 rounded-tr-full rounded-br-full bg-border-strong transition-all duration-200 group-hover/feature:h-8 group-hover/feature:bg-[#0663DA]" />
+								<h4 className="inline-block font-sans text-[28px] font-normal tracking-tight text-foreground transition duration-200 group-hover/feature:translate-x-2">
+									{tile.title}
+								</h4>
+							</div>
+
+							<p className="relative z-10 text-[15px] leading-[1.8] text-foreground">
+								{tile.description}
+							</p>
+						</div>
+					);
+				})}
 			</div>
 		</section>
 	);

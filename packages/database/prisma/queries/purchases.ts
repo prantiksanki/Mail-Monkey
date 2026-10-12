@@ -34,6 +34,33 @@ export async function getPurchaseBySubscriptionId(subscriptionId: string) {
 	});
 }
 
+/**
+ * Find the synthetic free-trial purchase for a user, if one exists (even if
+ * already expired). Used to enforce one trial per user.
+ */
+export async function getTrialPurchaseByUserId(userId: string) {
+	return db.purchase.findFirst({
+		where: {
+			userId,
+			customerId: "trial",
+		},
+	});
+}
+
+/**
+ * Find all trials whose trial period has elapsed and are still active, so the
+ * trial-expiry job can downgrade them back to the free plan.
+ */
+export async function getExpiredDueTrials(now: Date = new Date()) {
+	return db.purchase.findMany({
+		where: {
+			customerId: "trial",
+			status: "trialing",
+			trialEndsAt: { lte: now },
+		},
+	});
+}
+
 export async function createPurchase(
 	purchase: Omit<
 		z.infer<typeof PurchaseSchema>,

@@ -13,7 +13,7 @@ const faqItems: FaqItem[] = [
 		answer: "Any incoming email that matches an active rule and triggers an action. Emails that don't match a rule don't count against your monthly quota.",
 	},
 	{
-		question: "Which email providers does Zer0Email support?",
+		question: "Which email providers does Popsuites support?",
 		answer: "Gmail and Outlook. You can connect multiple accounts across both providers and manage them all from one dashboard.",
 	},
 	{
@@ -32,10 +32,10 @@ export function FaqSection() {
 			id="faq"
 			className="w-full scroll-mt-24 bg-background px-6 py-20 text-center sm:px-8 sm:py-24"
 		>
-			<span className="mb-4 inline-block rounded-full bg-foreground px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-background">
+			<span className="mb-4 inline-block rounded-full bg-primary px-5 py-2 text-xs font-bold uppercase tracking-[0.3em] text-primary-foreground">
 				FAQ
 			</span>
-			<div className="mb-2 font-serif text-[34px] font-normal leading-[1.02] tracking-tight text-foreground sm:text-[40px] md:text-[52px]">
+			<div className="mb-2 font-sans text-[34px] font-normal leading-[1.02] tracking-tight text-foreground sm:text-[40px] md:text-[52px]">
 				Frequently asked
 				<br />
 				questions.

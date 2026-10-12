@@ -26,9 +26,35 @@ function isDevBypassEnabled(): boolean {
 	return process.env.DISABLE_RATE_LIMIT === "1";
 }
 
-// Railway's ingress proxy appends the real client IP to `x-forwarded-for` on
-// the right. Take the last entry, fall back to `x-real-ip`, then anonymous.
+// Strip a trailing ":<port>" from an "IPv4:port" or "[IPv6]:port" value.
+// Azure App Service's ingress appends the client IP *with* its source port to
+// `x-forwarded-for`, and the port changes per TCP connection — leaving it in
+// makes every request a distinct rate-limit key, so the counter never
+// accumulates. Bare IPv6 (multiple colons, no brackets) is returned unchanged.
+function stripPort(value: string): string {
+	const v = value.trim();
+	if (v.startsWith("[")) {
+		const end = v.indexOf("]");
+		return end === -1 ? v : v.slice(1, end);
+	}
+	const firstColon = v.indexOf(":");
+	// Exactly one colon => "host:port".
+	if (firstColon !== -1 && v.indexOf(":", firstColon + 1) === -1) {
+		return v.slice(0, firstColon);
+	}
+	return v;
+}
+
+// Ingress proxies (Azure App Service, Railway) append the real client IP to the
+// right of `x-forwarded-for`; Azure also exposes it — without a port — in
+// `x-azure-clientip`, which is the most reliable source when present. Azure
+// includes the source port in its `x-forwarded-for` entry, so every candidate
+// is run through stripPort. Falls back to `x-real-ip`, then anonymous.
 export function getClientIp(c: Context): string {
+	const azureClientIp = c.req.header("x-azure-clientip");
+	if (azureClientIp?.trim()) {
+		return stripPort(azureClientIp);
+	}
 	const xff = c.req.header("x-forwarded-for");
 	if (xff) {
 		const parts = xff
@@ -37,12 +63,12 @@ export function getClientIp(c: Context): string {
 			.filter(Boolean);
 		const last = parts.at(-1);
 		if (last) {
-			return last;
+			return stripPort(last);
 		}
 	}
 	const realIp = c.req.header("x-real-ip");
-	if (realIp) {
-		return realIp;
+	if (realIp?.trim()) {
+		return stripPort(realIp);
 	}
 	return "anonymous";
 }
@@ -132,4 +158,26 @@ export const telegramWebhookLimiter = makeLimiter({
 	tier: "webhook-telegram",
 	limit: 200,
 	requestPropertyName: "rlTelegramWebhook",
+});
+
+export const zoomWebhookLimiter = makeLimiter({
+	tier: "webhook-zoom",
+	limit: 50,
+	requestPropertyName: "rlZoomWebhook",
+});
+
+export const publicContactFormLimiter = makeLimiter({
+	tier: "public-contact-form",
+	limit: 5,
+	requestPropertyName: "rlPublicContactForm",
+});
+
+// Public, unauthenticated, and opens a live TCP connection to an
+// attacker-controlled host:port on our behalf — tighter than the other
+// public-form limiters given that SSRF/abuse surface.
+export const publicImapVerifyLimiter = makeLimiter({
+	tier: "public-imap-verify",
+	limit: 5,
+	windowMs: 5 * ONE_MINUTE_MS,
+	requestPropertyName: "rlPublicImapVerify",
 });

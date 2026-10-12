@@ -7,6 +7,8 @@ type IconProps = {
 export const oAuthProviders = {
 	google: {
 		name: "Google",
+		consumerName: "Gmail",
+		buttonClassName: "bg-[#0663DA] hover:bg-[#0663DA]/90",
 		icon: ({ ...props }: IconProps) => (
 			<svg viewBox="0 0 488 512" {...props}>
 				<title>Google</title>
@@ -19,6 +21,8 @@ export const oAuthProviders = {
 	},
 	microsoft: {
 		name: "Microsoft",
+		consumerName: "Outlook",
+		buttonClassName: "bg-[#152238] hover:bg-[#152238]/90",
 		icon: ({ ...props }: IconProps) => (
 			<svg viewBox="0 0 21 21" {...props}>
 				<title>Microsoft</title>
@@ -33,6 +37,8 @@ export const oAuthProviders = {
 	string,
 	{
 		name: string;
+		consumerName: string;
+		buttonClassName: string;
 		icon: JSXElementConstructor<React.SVGProps<SVGSVGElement>>;
 	}
 >;

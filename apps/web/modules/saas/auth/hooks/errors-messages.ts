@@ -16,6 +16,10 @@ export function useAuthErrorMessages() {
 		INVALID_PASSWORD: t("auth.errors.invalidPassword"),
 		INVALID_EMAIL: t("auth.errors.invalidEmail"),
 		INVALID_TOKEN: t("auth.errors.invalidToken"),
+		// Better Auth's magic-link plugin emits this as a distinct code from
+		// INVALID_TOKEN (a token consumed/never-existing vs. one that was
+		// found but past its TTL) — same user-facing copy either way.
+		EXPIRED_TOKEN: t("auth.errors.invalidToken"),
 		CREDENTIAL_ACCOUNT_NOT_FOUND: t(
 			"auth.errors.credentialAccountNotFound",
 		),

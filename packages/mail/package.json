@@ -1,16 +1,17 @@
 {
 	"dependencies": {
+		"@aws-sdk/client-sesv2": "^3.1127.0",
 		"@react-email/components": "^1.0.6",
 		"@react-email/render": "^2.0.4",
 		"@repo/i18n": "workspace:*",
 		"@repo/logs": "workspace:*",
 		"@repo/ui": "workspace:*",
-		"next-intl": "4.8.1",
-		"nodemailer": "^7.0.10",
+		"next-intl": "4.14.7",
+		"nodemailer": "^9.1.1",
 		"react": "19.2.4",
 		"react-dom": "19.2.4",
 		"react-email": "^5.2.5",
-		"resend": "^6.4.2",
+		"resend": "^6.29.0",
 		"use-intl": "^4.8.1"
 	},
 	"devDependencies": {
@@ -18,7 +19,7 @@
 		"@repo/tsconfig": "workspace:*",
 		"@tailwindcss/line-clamp": "^0.4.4",
 		"@types/node": "24.10.1",
-		"@types/nodemailer": "^7.0.3",
+		"@types/nodemailer": "^8.0.2",
 		"@types/react": "19.2.3"
 	},
 	"main": "./index.ts",

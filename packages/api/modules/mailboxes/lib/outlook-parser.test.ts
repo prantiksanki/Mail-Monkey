@@ -9,6 +9,7 @@ function baseMessage(overrides: Partial<GraphMessage> = {}): GraphMessage {
 		subject: "Hello",
 		bodyPreview: "Hello there",
 		receivedDateTime: "2024-01-15T10:00:00Z",
+		isRead: false,
 		from: {
 			emailAddress: {
 				address: "Sender@Example.com",
@@ -38,7 +39,34 @@ describe("parseOutlookMessage", () => {
 		expect(result.subject).toBe("Hello");
 		expect(result.snippet).toBe("Hello there");
 		expect(result.date).toEqual(new Date("2024-01-15T10:00:00Z"));
-		expect(result.labelIds).toEqual([]);
+		expect(result.labelIds).toEqual(["INBOX"]);
+	});
+
+	it("always includes INBOX since every message this parser sees is inbox-scoped", () => {
+		const result = parseOutlookMessage(
+			baseMessage({ importance: "normal" }),
+		);
+
+		expect(result.labelIds).toEqual(["INBOX"]);
+	});
+
+	it("adds IMPORTANT to labelIds when Graph importance is high", () => {
+		const result = parseOutlookMessage(baseMessage({ importance: "high" }));
+
+		expect(result.labelIds).toEqual(["INBOX", "IMPORTANT"]);
+	});
+
+	it("does not add IMPORTANT when Graph importance is normal or low", () => {
+		expect(
+			parseOutlookMessage(baseMessage({ importance: "normal" })).labelIds,
+		).toEqual(["INBOX"]);
+		expect(
+			parseOutlookMessage(baseMessage({ importance: "low" })).labelIds,
+		).toEqual(["INBOX"]);
+		expect(
+			parseOutlookMessage(baseMessage({ importance: undefined }))
+				.labelIds,
+		).toEqual(["INBOX"]);
 	});
 
 	it("handles missing from address gracefully", () => {

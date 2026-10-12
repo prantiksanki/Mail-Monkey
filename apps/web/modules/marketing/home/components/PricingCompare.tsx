@@ -10,7 +10,7 @@ import { CheckIcon, MinusIcon } from "lucide-react";
 import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 
-type PlanId = "free" | "pro";
+type PlanId = "starter" | "pro";
 
 type Row = {
 	feature: string;
@@ -22,7 +22,7 @@ function Check() {
 }
 
 function Dash() {
-	return <MinusIcon className="mx-auto size-4 text-white/40" />;
+	return <MinusIcon className="mx-auto size-4 text-white/55" />;
 }
 
 export function PricingCompare() {
@@ -31,28 +31,36 @@ export function PricingCompare() {
 	const rows: Row[] = [
 		{
 			feature: t("mailboxes"),
-			values: { free: "1", pro: t("unlimited") },
+			values: { starter: "3", pro: t("unlimited") },
 		},
 		{
 			feature: t("rulesPerMailbox"),
-			values: { free: "5", pro: t("unlimited") },
+			values: { starter: t("unlimited"), pro: t("unlimited") },
 		},
 		{
 			feature: t("emailsProcessed"),
-			values: { free: "100", pro: "10,000" },
+			values: { starter: "3,000", pro: "15,000" },
 		},
 		{
 			feature: t("ruleEngine"),
-			values: { free: <Check />, pro: <Check /> },
+			values: { starter: <Check />, pro: <Check /> },
 		},
 		{
 			feature: t("aiAssistant"),
-			values: { free: <Dash />, pro: <Check /> },
+			values: { starter: <Check />, pro: <Check /> },
+		},
+		{
+			feature: t("calendarScheduling"),
+			values: { starter: <Dash />, pro: <Check /> },
+		},
+		{
+			feature: t("voice"),
+			values: { starter: <Dash />, pro: <Check /> },
 		},
 		{
 			feature: t("support"),
 			values: {
-				free: t("supportCommunity"),
+				starter: t("supportCommunity"),
 				pro: t("supportPriority"),
 			},
 		},
@@ -71,13 +79,13 @@ export function PricingCompare() {
 				<Table>
 					<TableHeader>
 						<TableRow className="hover:bg-transparent">
-							<TableHead className="text-[11px] font-medium uppercase tracking-[0.16em] text-white/50">
+							<TableHead className="text-[11px] font-semibold uppercase tracking-[0.16em] text-white/70">
 								{t("feature")}
 							</TableHead>
-							<TableHead className="text-center text-[11px] font-medium uppercase tracking-[0.16em] text-white/50">
-								{t("planFree")}
+							<TableHead className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-white/70">
+								{t("planStarter")}
 							</TableHead>
-							<TableHead className="text-center text-[11px] font-medium uppercase tracking-[0.16em] text-white/50">
+							<TableHead className="text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-white/70">
 								{t("planPro")}
 							</TableHead>
 						</TableRow>
@@ -88,10 +96,10 @@ export function PricingCompare() {
 								<TableCell className="text-sm font-medium text-white/85">
 									{row.feature}
 								</TableCell>
-								<TableCell className="text-center text-sm text-white/70">
-									{row.values.free}
+								<TableCell className="text-center text-sm font-medium text-white/85">
+									{row.values.starter}
 								</TableCell>
-								<TableCell className="text-center text-sm text-white/70">
+								<TableCell className="text-center text-sm font-medium text-white/85">
 									{row.values.pro}
 								</TableCell>
 							</TableRow>

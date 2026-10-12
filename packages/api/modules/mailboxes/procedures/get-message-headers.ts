@@ -2,6 +2,7 @@ import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { getMessage } from "../lib/gmail-client";
 import { parseEmailHeaders } from "../lib/header-parser";
+import { imapProvider } from "../lib/imap-provider";
 import { getOutlookMessage } from "../lib/outlook-client";
 import { verifyMailboxOwnership } from "../lib/ownership";
 
@@ -32,9 +33,15 @@ export const getMessageHeaders = protectedProcedure
 			context.user.id,
 		);
 
-		const rawHeaders: Record<string, string> = {};
+		let rawHeaders: Record<string, string> = {};
 
-		if (mailbox.provider === "OUTLOOK") {
+		if (mailbox.provider === "IMAP") {
+			const parsed = await imapProvider.getParsedMessage(
+				mailbox.accountId,
+				input.messageId,
+			);
+			rawHeaders = parsed.headers;
+		} else if (mailbox.provider === "OUTLOOK") {
 			const msg = await getOutlookMessage(
 				mailbox.accountId,
 				input.messageId,

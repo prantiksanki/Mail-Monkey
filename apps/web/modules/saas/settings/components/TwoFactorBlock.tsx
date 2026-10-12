@@ -71,6 +71,15 @@ export function TwoFactorBlock() {
 				throw error;
 			}
 
+			// better-auth 1.7 typed `enable`'s response as a discriminated
+			// union over `method` (`otp` has no `totpURI`); this app only
+			// ever enables the TOTP method (no OTP-based 2FA UI exists), so
+			// the `otp` branch is unreachable in practice, but narrow
+			// explicitly rather than asserting.
+			if (data.method !== "totp") {
+				throw new Error("Expected TOTP enable response");
+			}
+
 			setTotpURI(data.totpURI);
 			setDialogView("totp-url");
 		},

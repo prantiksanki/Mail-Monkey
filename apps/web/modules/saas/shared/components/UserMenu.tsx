@@ -16,6 +16,7 @@ import {
 	DropdownMenuTrigger,
 } from "@repo/ui";
 import { useSession } from "@saas/auth/hooks/use-session";
+import { clearClientStateOnLogout } from "@saas/shared/lib/clear-client-state";
 import { UserAvatar } from "@shared/components/UserAvatar";
 import {
 	BookIcon,
@@ -67,6 +68,7 @@ export function UserMenu({
 		authClient.signOut({
 			fetchOptions: {
 				onSuccess: async () => {
+					clearClientStateOnLogout();
 					window.location.href = new URL(
 						config.saas.redirectAfterLogout,
 						window.location.origin,

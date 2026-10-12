@@ -18,14 +18,14 @@ export function SettingsItem({
 				<div className="flex shrink-0 flex-col gap-2 border-b border-border/70 pb-4 @xl:border-b-0 @xl:border-r @xl:pb-0 @xl:pr-8">
 					<h3
 						className={cn(
-							"m-0 font-serif text-[1.65rem] font-normal leading-none tracking-tight",
+							"m-0 font-serif text-3xl font-normal leading-none tracking-tight",
 							danger && "text-destructive",
 						)}
 					>
 						{title}
 					</h3>
 					{description && (
-						<p className="m-0 max-w-sm text-sm leading-6 text-foreground/60">
+						<p className="m-0 max-w-sm text-sm leading-6 text-foreground">
 							{description}
 						</p>
 					)}

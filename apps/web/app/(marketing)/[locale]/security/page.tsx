@@ -1,4 +1,6 @@
 import { Badge } from "@repo/ui/components/badge";
+import { getBaseUrl } from "@repo/utils";
+import { BreadcrumbJsonLd } from "@shared/components/BreadcrumbJsonLd";
 import {
 	CheckCircle2Icon,
 	ExternalLinkIcon,
@@ -11,22 +13,25 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
 const SSL_LABS_URL =
-	"https://www.ssllabs.com/ssltest/analyze.html?d=zer0email.com";
+	"https://www.ssllabs.com/ssltest/analyze.html?d=popsuites.ai";
 const MOZILLA_OBSERVATORY_URL =
-	"https://observatory.mozilla.org/analyze/zer0email.com";
+	"https://observatory.mozilla.org/analyze/popsuites.ai";
+
+const securityUrl = `${getBaseUrl()}/security`;
 
 export const metadata: Metadata = {
-	title: "Security | Zer0Email",
+	title: "Security",
 	description:
-		"How Zer0Email protects your inbox: TLS 1.3 encryption, security headers, OAuth-only Gmail access, and third-party audits. Verify everything yourself.",
-	alternates: { canonical: "https://zer0email.com/security" },
+		"How Popsuites protects your inbox: TLS 1.3 encryption, security headers, OAuth-only Gmail access, and third-party audits. Verify everything yourself.",
+	alternates: { canonical: securityUrl },
 	openGraph: {
-		title: "Security | Zer0Email",
+		title: "Security | Popsuites",
 		description:
-			"How Zer0Email protects your inbox: TLS 1.3 encryption, security headers, OAuth-only Gmail access, and third-party audits.",
-		url: "https://zer0email.com/security",
-		siteName: "Zer0Email",
+			"How Popsuites protects your inbox: TLS 1.3 encryption, security headers, OAuth-only Gmail access, and third-party audits.",
+		url: securityUrl,
+		siteName: "Popsuites",
 		type: "website",
+		images: ["/opengraph-image"],
 	},
 };
 
@@ -160,6 +165,12 @@ function TrustBadge({ signal }: { signal: TrustSignal }) {
 export default function SecurityPage() {
 	return (
 		<div className="container max-w-5xl pt-24 pb-20">
+			<BreadcrumbJsonLd
+				items={[
+					{ name: "Home", url: getBaseUrl() },
+					{ name: "Security", url: securityUrl },
+				]}
+			/>
 			<div className="mb-12 pt-8 text-center">
 				<Badge className="mb-4 border-primary/30 bg-primary/10 text-primary">
 					<ShieldCheckIcon
@@ -172,7 +183,7 @@ export default function SecurityPage() {
 					Built on a quiet, encrypted foundation.
 				</h1>
 				<p className="mx-auto max-w-2xl text-balance text-foreground/55 text-lg">
-					Zer0Email handles your inbox — that means we take
+					Popsuites handles your inbox — that means we take
 					encryption, transport security, and third-party audits
 					seriously. Verify everything below for yourself.
 				</p>
@@ -220,7 +231,7 @@ export default function SecurityPage() {
 				</h2>
 				<div className="space-y-4 text-foreground/70 text-sm leading-relaxed">
 					<p>
-						When you connect Gmail or Outlook, Zer0Email receives an
+						When you connect Gmail or Outlook, Popsuites receives an
 						OAuth access token scoped to the permissions you grant.
 						We never see your password. The token is encrypted at
 						rest using AES-256 and stored in our database. It is
@@ -261,7 +272,7 @@ export default function SecurityPage() {
 				</h2>
 				<div className="space-y-4 text-foreground/70 text-sm leading-relaxed">
 					<p>
-						Zer0Email is operated by PopPush AI. If you are located
+						Popsuites is operated by PopPush AI. If you are located
 						in the European Economic Area, the United Kingdom, or
 						Switzerland, you have rights under the General Data
 						Protection Regulation (GDPR) including the right to
@@ -284,10 +295,10 @@ export default function SecurityPage() {
 						To exercise your data rights or submit a deletion
 						request, email{" "}
 						<a
-							href="mailto:founder@zer0email.com"
+							href="mailto:support@popsuites.ai"
 							className="text-foreground underline underline-offset-2"
 						>
-							founder@zer0email.com
+							support@popsuites.ai
 						</a>
 						. We will respond within 30 days.
 					</p>
@@ -324,7 +335,7 @@ export default function SecurityPage() {
 				</h2>
 				<p className="mb-4 text-foreground/65 text-sm leading-relaxed">
 					If you believe you have found a security vulnerability in
-					Zer0Email, we encourage responsible disclosure. Email us a
+					Popsuites, we encourage responsible disclosure. Email us a
 					description of the issue, reproduction steps, and any
 					relevant evidence. We will acknowledge receipt within 48
 					hours and aim to resolve confirmed issues within 14 days. We
@@ -333,10 +344,10 @@ export default function SecurityPage() {
 				</p>
 				<div className="flex flex-wrap gap-3">
 					<a
-						href="mailto:founder@zer0email.com"
+						href="mailto:support@popsuites.ai"
 						className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-4 py-2 font-medium text-primary text-sm transition-colors hover:bg-primary/20"
 					>
-						founder@zer0email.com
+						support@popsuites.ai
 					</a>
 					<a
 						href="/.well-known/security.txt"

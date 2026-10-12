@@ -1,5 +1,8 @@
 import { LocaleLink, localeRedirect } from "@i18n/routing";
 import { PostContent } from "@marketing/blog/components/PostContent";
+import { EnzuzoCookiePolicy } from "@marketing/legal/components/EnzuzoCookiePolicy";
+import { getBaseUrl } from "@repo/utils";
+import { BreadcrumbJsonLd } from "@shared/components/BreadcrumbJsonLd";
 import {
 	getActivePathFromUrlParam,
 	getLocalizedDocumentWithFallback,
@@ -28,8 +31,12 @@ export async function generateMetadata(props: { params: Promise<Params> }) {
 
 	return {
 		title: page?.title,
+		description: page?.description,
+		alternates: { canonical: `${getBaseUrl()}/legal/${activePath}` },
 		openGraph: {
 			title: page?.title,
+			description: page?.description,
+			images: ["/opengraph-image"],
 		},
 	};
 }
@@ -52,9 +59,16 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 	}
 
 	const { title, body } = page;
+	const baseUrl = getBaseUrl();
 
 	return (
 		<div className="container max-w-3xl pt-28 pb-24">
+			<BreadcrumbJsonLd
+				items={[
+					{ name: "Home", url: baseUrl },
+					{ name: title, url: `${baseUrl}/legal/${activePath}` },
+				]}
+			/>
 			<div className="mb-10">
 				<LocaleLink
 					href="/"
@@ -71,7 +85,15 @@ export default async function BlogPostPage(props: { params: Promise<Params> }) {
 				</h1>
 			</div>
 
-			<PostContent content={body} />
+			{/* The cookie policy is maintained in Enzuzo (it lists the cookies
+			    its scanner finds); the markdown copy is the fallback when no
+			    Enzuzo id is configured, e.g. local dev. */}
+			{activePath === "cookie-policy" &&
+			process.env.NEXT_PUBLIC_ENZUZO_COOKIEBAR_ID ? (
+				<EnzuzoCookiePolicy />
+			) : (
+				<PostContent content={body} />
+			)}
 		</div>
 	);
 }

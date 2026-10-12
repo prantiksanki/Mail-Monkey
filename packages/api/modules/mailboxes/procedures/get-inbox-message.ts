@@ -3,6 +3,7 @@ import { z } from "zod";
 import { protectedProcedure } from "../../../orpc/procedures";
 import { parseGmailMessage } from "../lib/email-parser";
 import { getMessage } from "../lib/gmail-client";
+import { imapProvider } from "../lib/imap-provider";
 import { getOutlookMessage } from "../lib/outlook-client";
 import { verifyMailboxOwnership } from "../lib/ownership";
 
@@ -43,6 +44,19 @@ export const getInboxMessage = protectedProcedure
 				labelIds: local.labelIds,
 				isUnread: local.isUnread,
 				headers: {},
+			};
+		}
+
+		// Fallback: fetch live over IMAP (window before the first sync completes)
+		if (mailbox.provider === "IMAP") {
+			const parsed = await imapProvider.getParsedMessage(
+				mailbox.accountId,
+				input.messageId,
+			);
+			return {
+				...parsed,
+				date: parsed.date.toISOString(),
+				isUnread: !parsed.labelIds.includes("SEEN"),
 			};
 		}
 

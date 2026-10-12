@@ -2,25 +2,28 @@
 
 import { cn } from "@repo/ui";
 import { useSession } from "@saas/auth/hooks/use-session";
-import { useWatchStatusQuery } from "@saas/mailboxes/lib/rules-api";
-import { useSelectedMailbox } from "@saas/mailboxes/lib/selected-mailbox-context";
 import { useFormatter, useNow, useTranslations } from "next-intl";
 
 interface DashboardHeaderProps {
 	processedToday: number;
 	errorsToday: number;
+	/**
+	 * Whether the mailbox (or, in "All mailboxes" scope, any connected
+	 * mailbox) currently has live watch enabled. Fetched by the parent so
+	 * this component doesn't need to know about the current scope.
+	 */
+	isWatching: boolean;
 }
 
 export function DashboardHeader({
 	processedToday,
 	errorsToday,
+	isWatching,
 }: DashboardHeaderProps) {
 	const t = useTranslations();
 	const format = useFormatter();
 	const now = useNow();
 	const { user } = useSession();
-	const { selectedMailboxId } = useSelectedMailbox();
-	const { data: watchStatus } = useWatchStatusQuery(selectedMailboxId);
 
 	const hour = now.getHours();
 	const partOfDay =
@@ -33,15 +36,13 @@ export function DashboardHeader({
 		day: "numeric",
 	});
 
-	const isWatching = watchStatus?.watchEnabled ?? false;
-
 	return (
 		<div className="grid gap-4 pb-4 xl:grid-cols-[minmax(0,1.5fr)_320px]">
 			<div className="min-w-0 rounded-[28px] border border-border bg-card px-6 py-6 shadow-[0_18px_45px_rgba(15,23,42,0.04)] sm:px-8 sm:py-7">
-				<p className="font-mono text-[11px] text-foreground/45 uppercase tracking-[0.28em]">
+				<p className="font-mono font-medium text-[11px] text-foreground/45 uppercase tracking-[0.28em]">
 					{t(`dashboard.greeting.${partOfDay}`, { name: firstName })}
 				</p>
-				<h1 className="mt-3 text-balance font-serif font-normal text-4xl leading-[0.98] tracking-[-0.04em] md:text-6xl">
+				<h1 className="mt-3 text-balance font-[family-name:var(--font-bricolage)] font-semibold text-4xl leading-[0.98] tracking-[-0.04em] md:text-6xl">
 					{dateLabel}
 				</h1>
 				<p className="mt-4 max-w-2xl text-[15px] text-foreground/62 leading-7">
@@ -77,7 +78,7 @@ export function DashboardHeader({
 						<p className="font-mono text-[11px] text-foreground/45 uppercase tracking-[0.24em]">
 							Today&apos;s rhythm
 						</p>
-						<p className="mt-2 font-serif text-3xl leading-none tracking-tight">
+						<p className="mt-2 font-[family-name:var(--font-bricolage)] font-semibold text-3xl leading-none tracking-tight">
 							{processedToday}
 						</p>
 						<p className="mt-2 text-sm text-foreground/58">

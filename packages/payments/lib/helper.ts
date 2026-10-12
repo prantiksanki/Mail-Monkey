@@ -1,4 +1,5 @@
 import type { PurchaseSchema } from "@repo/database";
+import { isStagingEnvironment } from "@repo/utils";
 import type { z } from "zod";
 import { config } from "../config";
 
@@ -10,10 +11,41 @@ type PurchaseWithoutTimestamps = Omit<
 
 const planEntries = Object.entries(config.plans);
 
+/** Sentinel customerId marking a synthetic, card-free trial purchase. */
+const TRIAL_CUSTOMER_ID = "trial";
+
+/**
+ * Whether a subscription purchase currently grants its plan. A purchase is only
+ * "active" when its status is not terminal (`expired`/`canceled`). For synthetic
+ * trials we additionally treat the trial as ended the moment `trialEndsAt`
+ * passes, so the user drops back to Free immediately — even if the background
+ * trial-expiry job hasn't yet flipped the row's status to `expired`.
+ */
+function isActiveSubscription(
+	purchase: PurchaseWithoutTimestamps,
+	now: Date,
+): boolean {
+	if (purchase.status === "expired" || purchase.status === "canceled") {
+		return false;
+	}
+
+	if (
+		purchase.customerId === TRIAL_CUSTOMER_ID &&
+		purchase.trialEndsAt &&
+		new Date(purchase.trialEndsAt).getTime() <= now.getTime()
+	) {
+		return false;
+	}
+
+	return true;
+}
+
 function getActivePlanFromPurchases(purchases?: PurchaseWithoutTimestamps[]) {
+	const now = new Date();
 	const subscriptionPurchase = purchases?.find(
 		(purchase) =>
-			purchase.type === "SUBSCRIPTION" && purchase.status !== "expired",
+			purchase.type === "SUBSCRIPTION" &&
+			isActiveSubscription(purchase, now),
 	);
 
 	if (subscriptionPurchase) {
@@ -93,8 +125,28 @@ function getActivePlanFromPurchases(purchases?: PurchaseWithoutTimestamps[]) {
 		: null;
 }
 
+/**
+ * Staging has no billing — every user is granted the top paid plan (the last
+ * entry in `config.plans`, e.g. "pro") instead of resolving real purchases, so
+ * paid features work without a subscription. Real purchase data from staging's
+ * own database is ignored entirely in this mode.
+ */
+function getStagingActivePlan() {
+	const [planId, planDetails] = planEntries[planEntries.length - 1];
+
+	return {
+		id: planId as PlanId,
+		price: "prices" in planDetails ? planDetails.prices?.[0] : undefined,
+		status: "active" as const,
+		purchaseId: undefined,
+	};
+}
+
 export function createPurchasesHelper(purchases: PurchaseWithoutTimestamps[]) {
-	const activePlan = getActivePlanFromPurchases(purchases);
+	const activePlan =
+		isStagingEnvironment() || config.freeAccess
+			? getStagingActivePlan()
+			: getActivePlanFromPurchases(purchases);
 
 	const hasSubscription = (planIds?: PlanId[] | PlanId) => {
 		return (
