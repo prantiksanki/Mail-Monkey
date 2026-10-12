@@ -1,6 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
-import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+	Linking,
+	Pressable,
+	ScrollView,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native";
 
 const FAQ = [
 	{
@@ -19,7 +26,10 @@ const FAQ = [
 
 export default function HelpScreen() {
 	return (
-		<ScrollView style={styles.container} contentContainerStyle={{ padding: 16 }}>
+		<ScrollView
+			style={styles.container}
+			contentContainerStyle={{ padding: 16 }}
+		>
 			<Stack.Screen options={{ title: "Help & Support" }} />
 
 			<Pressable
@@ -61,7 +71,12 @@ const styles = StyleSheet.create({
 		marginTop: 24,
 		marginBottom: 10,
 	},
-	card: { backgroundColor: "#fff", borderRadius: 14, padding: 16, marginBottom: 12 },
+	card: {
+		backgroundColor: "#fff",
+		borderRadius: 14,
+		padding: 16,
+		marginBottom: 12,
+	},
 	q: { fontSize: 15, fontWeight: "600", color: "#111" },
 	a: { fontSize: 14, color: "#6b7280", marginTop: 6, lineHeight: 20 },
 });

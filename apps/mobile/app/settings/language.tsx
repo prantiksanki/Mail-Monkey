@@ -17,13 +17,27 @@ export default function LanguageScreen() {
 				{LANGUAGES.map((l, i) => (
 					<View
 						key={l.code}
-						style={[styles.row, i === LANGUAGES.length - 1 && { borderBottomWidth: 0 }]}
+						style={[
+							styles.row,
+							i === LANGUAGES.length - 1 && {
+								borderBottomWidth: 0,
+							},
+						]}
 					>
-						<Text style={[styles.name, !l.available && { color: "#9aa0a6" }]}>
+						<Text
+							style={[
+								styles.name,
+								!l.available && { color: "#9aa0a6" },
+							]}
+						>
 							{l.name}
 						</Text>
 						{l.available ? (
-							<Ionicons name="checkmark" size={20} color="#141718" />
+							<Ionicons
+								name="checkmark"
+								size={20}
+								color="#141718"
+							/>
 						) : (
 							<Text style={styles.soon}>Soon</Text>
 						)}

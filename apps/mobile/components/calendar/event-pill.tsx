@@ -11,23 +11,39 @@ function iconFor(
 	isAllDay: boolean | undefined,
 ): keyof typeof Ionicons.glyphMap {
 	const s = (summary ?? "").toLowerCase();
-	if (/birthday|bday|anniversar/.test(s)) return "balloon-outline";
-	if (/meet|standup|stand-up|sync|call|1:1|interview/.test(s))
+	if (/birthday|bday|anniversar/.test(s)) {
+		return "balloon-outline";
+	}
+	if (/meet|standup|stand-up|sync|call|1:1|interview/.test(s)) {
 		return "people-outline";
-	if (/play|theat|movie|concert|show|gig/.test(s))
+	}
+	if (/play|theat|movie|concert|show|gig/.test(s)) {
 		return "musical-notes-outline";
-	if (/flight|travel|trip|train/.test(s)) return "airplane-outline";
-	if (/deadline|due|submit/.test(s)) return "flag-outline";
-	if (/lunch|dinner|breakfast|coffee/.test(s)) return "restaurant-outline";
-	if (/class|lesson|study|exam/.test(s)) return "school-outline";
+	}
+	if (/flight|travel|trip|train/.test(s)) {
+		return "airplane-outline";
+	}
+	if (/deadline|due|submit/.test(s)) {
+		return "flag-outline";
+	}
+	if (/lunch|dinner|breakfast|coffee/.test(s)) {
+		return "restaurant-outline";
+	}
+	if (/class|lesson|study|exam/.test(s)) {
+		return "school-outline";
+	}
 	return isAllDay ? "calendar-outline" : "time-outline";
 }
 
 /** Right-hand label: "All day", "19h", or "15h30 - 17h00" as in the design. */
 function timeLabel(ev: CalendarEvent): string {
-	if (ev.isAllDay) return "All day";
+	if (ev.isAllDay) {
+		return "All day";
+	}
 	const start = fmtTime(ev.start);
-	if (!start) return "";
+	if (!start) {
+		return "";
+	}
 	const end = fmtTime(ev.end);
 	return end && end !== start ? `${start} - ${end}` : start;
 }

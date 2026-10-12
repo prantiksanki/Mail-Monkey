@@ -80,7 +80,12 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: "#fff" },
 	inner: { flex: 1, justifyContent: "center", paddingHorizontal: 28 },
-	logo: { fontSize: 34, fontWeight: "700", color: "#111", textAlign: "center" },
+	logo: {
+		fontSize: 34,
+		fontWeight: "700",
+		color: "#111",
+		textAlign: "center",
+	},
 	tagline: {
 		fontSize: 15,
 		color: "#6b7280",
@@ -108,5 +113,10 @@ const styles = StyleSheet.create({
 	},
 	buttonDisabled: { opacity: 0.6 },
 	buttonText: { color: "#fff", fontSize: 16, fontWeight: "600" },
-	error: { color: "#dc2626", fontSize: 14, marginBottom: 8, textAlign: "center" },
+	error: {
+		color: "#dc2626",
+		fontSize: 14,
+		marginBottom: 8,
+		textAlign: "center",
+	},
 });

@@ -59,14 +59,20 @@ export default function SettingsScreen() {
 			getAvatar().then(setAvatarVariant);
 			api.getSession()
 				.then((s) => {
-					if (s?.user?.name) setName(s.user.name);
-					if (s?.user?.email) setEmail(s.user.email);
+					if (s?.user?.name) {
+						setName(s.user.name);
+					}
+					if (s?.user?.email) {
+						setEmail(s.user.email);
+					}
 				})
 				.catch(() => {});
 			api.getMailboxes()
 				.then((mbs) => {
 					setMailboxCount(mbs.length);
-					if (!email && mbs[0]) setEmail(mbs[0].email);
+					if (!email && mbs[0]) {
+						setEmail(mbs[0].email);
+					}
 				})
 				.catch(() => {});
 		}, [email]),

@@ -120,7 +120,9 @@ export default function CalendarScreen() {
 				normalize(await api.calendar(google.id, { timeMin, timeMax })),
 			);
 		} catch (e) {
-			setError(e instanceof Error ? e.message : "Failed to load calendar");
+			setError(
+				e instanceof Error ? e.message : "Failed to load calendar",
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -131,8 +133,12 @@ export default function CalendarScreen() {
 	}, [load]);
 
 	const events = useMemo(() => {
-		if (state.events.length > 0) return state.events;
-		if (SHOW_DUMMY_EVENTS) return dummyEventsForRange(start, end);
+		if (state.events.length > 0) {
+			return state.events;
+		}
+		if (SHOW_DUMMY_EVENTS) {
+			return dummyEventsForRange(start, end);
+		}
 		return [];
 	}, [state.events, start, end]);
 	const usingDummy = state.events.length === 0 && SHOW_DUMMY_EVENTS;
@@ -162,12 +168,17 @@ export default function CalendarScreen() {
 					// drag up (negative translationY) → collapse toward week
 					const delta = -e.translationY / (MONTH_H - WEEK_H);
 					let p = startProgress.value + delta;
-					if (p < 0) p = 0;
-					if (p > 1) p = 1;
+					if (p < 0) {
+						p = 0;
+					}
+					if (p > 1) {
+						p = 1;
+					}
 					progress.value = p;
 				})
 				.onEnd((e) => {
-					const snap = progress.value > 0.5 || e.velocityY < -600 ? 1 : 0;
+					const snap =
+						progress.value > 0.5 || e.velocityY < -600 ? 1 : 0;
 					if (e.velocityY > 600) {
 						progress.value = withTiming(0);
 					} else {
@@ -192,13 +203,10 @@ export default function CalendarScreen() {
 		],
 	}));
 
-	const go = useCallback(
-		(delta: number) => {
-			setAnchor((a) => stepDate("month", a, delta));
-			Haptics.selectionAsync().catch(() => {});
-		},
-		[],
-	);
+	const go = useCallback((delta: number) => {
+		setAnchor((a) => stepDate("month", a, delta));
+		Haptics.selectionAsync().catch(() => {});
+	}, []);
 
 	const goToToday = () => {
 		setAnchor(today);
@@ -207,7 +215,9 @@ export default function CalendarScreen() {
 
 	const rows = useMemo(() => {
 		const out: Date[][] = [];
-		for (let r = 0; r < WEEKS; r++) out.push(days.slice(r * 7, r * 7 + 7));
+		for (let r = 0; r < WEEKS; r++) {
+			out.push(days.slice(r * 7, r * 7 + 7));
+		}
 		return out;
 	}, [days]);
 
@@ -221,10 +231,18 @@ export default function CalendarScreen() {
 				<Pressable onPress={goToToday} hitSlop={8}>
 					<Text style={styles.todayLink}>Today</Text>
 				</Pressable>
-				<Pressable onPress={() => go(-1)} hitSlop={8} style={styles.arrow}>
+				<Pressable
+					onPress={() => go(-1)}
+					hitSlop={8}
+					style={styles.arrow}
+				>
 					<Ionicons name="chevron-back" size={20} color="#111" />
 				</Pressable>
-				<Pressable onPress={() => go(1)} hitSlop={8} style={styles.arrow}>
+				<Pressable
+					onPress={() => go(1)}
+					hitSlop={8}
+					style={styles.arrow}
+				>
 					<Ionicons name="chevron-forward" size={20} color="#111" />
 				</Pressable>
 			</View>
@@ -241,7 +259,12 @@ export default function CalendarScreen() {
 					</View>
 
 					{loading ? (
-						<View style={{ height: MONTH_H, justifyContent: "center" }}>
+						<View
+							style={{
+								height: MONTH_H,
+								justifyContent: "center",
+							}}
+						>
 							<ActivityIndicator color={CAL.accent} />
 						</View>
 					) : (
@@ -250,38 +273,61 @@ export default function CalendarScreen() {
 								{rows.map((week, ri) => (
 									<View key={ri} style={styles.gridRow}>
 										{week.map((d) => {
-											const inMonth = d.getMonth() === month;
+											const inMonth =
+												d.getMonth() === month;
 											const sel = isSameDay(d, selected);
-											const tod = !sel && isSameDay(d, today);
+											const tod =
+												!sel && isSameDay(d, today);
 											const has = events.some(
 												(ev) =>
 													ev.start &&
-													isSameDay(new Date(ev.start), d),
+													isSameDay(
+														new Date(ev.start),
+														d,
+													),
 											);
 											return (
-												<View key={d.toISOString()} style={styles.slot}>
+												<View
+													key={d.toISOString()}
+													style={styles.slot}
+												>
 													<Pressable
 														style={[
 															styles.cell,
-															sel && styles.cellSel,
-															tod && styles.cellTod,
+															sel &&
+																styles.cellSel,
+															tod &&
+																styles.cellTod,
 														]}
-														onPress={() => setSelected(new Date(d))}
+														onPress={() =>
+															setSelected(
+																new Date(d),
+															)
+														}
 													>
 														<Text
 															style={[
 																styles.date,
-																!inMonth && styles.dateOut,
-																sel && styles.dateSel,
-																tod && styles.dateTod,
+																!inMonth &&
+																	styles.dateOut,
+																sel &&
+																	styles.dateSel,
+																tod &&
+																	styles.dateTod,
 															]}
 														>
 															{d.getDate()}
 														</Text>
 													</Pressable>
-													<View style={styles.dotSlot}>
+													<View
+														style={styles.dotSlot}
+													>
 														{has && !sel ? (
-															<View style={styles.dot} />
+															<View
+																style={
+																	styles.dot
+																}
+															/>
 														) : null}
 													</View>
 												</View>
@@ -302,12 +348,17 @@ export default function CalendarScreen() {
 				<View style={styles.notice}>
 					<Ionicons name="flask-outline" size={14} color="#6b7280" />
 					<Text style={styles.noticeText}>
-						Sample events — connect Google Calendar for your schedule.
+						Sample events — connect Google Calendar for your
+						schedule.
 					</Text>
 				</View>
 			) : error ? (
 				<View style={styles.notice}>
-					<Ionicons name="calendar-outline" size={14} color="#6b7280" />
+					<Ionicons
+						name="calendar-outline"
+						size={14}
+						color="#6b7280"
+					/>
 					<Text style={styles.noticeText}>{error}</Text>
 				</View>
 			) : null}
@@ -345,7 +396,12 @@ const styles = StyleSheet.create({
 		color: CAL.text,
 	},
 	todayLink: { fontSize: 15, color: CAL.accent, fontWeight: "500" },
-	arrow: { width: 30, height: 30, alignItems: "center", justifyContent: "center" },
+	arrow: {
+		width: 30,
+		height: 30,
+		alignItems: "center",
+		justifyContent: "center",
+	},
 	panel: {
 		backgroundColor: CAL.panelBg,
 		borderBottomWidth: StyleSheet.hairlineWidth,

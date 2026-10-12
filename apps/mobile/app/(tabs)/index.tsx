@@ -48,7 +48,9 @@ function prettyLabel(id: string): string {
 }
 
 function labelChips(labelIds?: string[]): string[] {
-	if (!labelIds) return [];
+	if (!labelIds) {
+		return [];
+	}
 	return labelIds
 		.filter((l) => !HIDDEN_LABELS.has(l))
 		.map(prettyLabel)
@@ -78,7 +80,9 @@ function groupBySender(
 		const { name, email } = parseSender(m.from);
 		const existing = map.get(email);
 		if (existing) {
-			if (m.isUnread) existing.unreadCount += 1;
+			if (m.isUnread) {
+				existing.unreadCount += 1;
+			}
 		} else {
 			const ai = aiMap.get(m.id);
 			// AI summary/labels only when the user has those toggles on.
@@ -86,7 +90,10 @@ function groupBySender(
 				? []
 				: ai?.labels?.length
 					? ai.labels.map((l) => ({ name: l.name, color: l.color }))
-					: labelChips(m.labelIds).map((n) => ({ name: n, color: "#4f46e5" }));
+					: labelChips(m.labelIds).map((n) => ({
+							name: n,
+							color: "#4f46e5",
+						}));
 			const snippet =
 				opts.summaries && ai?.aiSummary ? ai.aiSummary : m.snippet;
 			map.set(email, {
@@ -107,12 +114,20 @@ function groupBySender(
 function timeAgo(iso: string): string {
 	const diff = Date.now() - new Date(iso).getTime();
 	const mins = Math.floor(diff / 60000);
-	if (mins < 1) return "now";
-	if (mins < 60) return `${mins}m`;
+	if (mins < 1) {
+		return "now";
+	}
+	if (mins < 60) {
+		return `${mins}m`;
+	}
 	const hours = Math.floor(mins / 60);
-	if (hours < 24) return `${hours}h`;
+	if (hours < 24) {
+		return `${hours}h`;
+	}
 	const days = Math.floor(hours / 24);
-	if (days < 7) return `${days}d`;
+	if (days < 7) {
+		return `${days}d`;
+	}
 	return new Date(iso).toLocaleDateString();
 }
 
@@ -126,8 +141,9 @@ function avatarColor(email: string): string {
 		"#0ea5b7",
 	];
 	let h = 0;
-	for (let i = 0; i < email.length; i++)
+	for (let i = 0; i < email.length; i++) {
 		h = email.charCodeAt(i) + ((h << 5) - h);
+	}
 	return colors[Math.abs(h) % colors.length];
 }
 
@@ -149,7 +165,9 @@ export default function ChatsScreen() {
 				if (!mb) {
 					const mailboxes = await api.getMailboxes();
 					if (!mailboxes.length) {
-						setError("No mailbox connected. Connect one in the web app.");
+						setError(
+							"No mailbox connected. Connect one in the web app.",
+						);
 						setLoading(false);
 						return;
 					}
@@ -197,7 +215,9 @@ export default function ChatsScreen() {
 
 	// Pull new mail from Gmail, but never overlap with an in-flight sync.
 	const syncOnce = useCallback(async () => {
-		if (!mailboxId || syncingRef.current) return;
+		if (!mailboxId || syncingRef.current) {
+			return;
+		}
 		syncingRef.current = true;
 		try {
 			await api.syncRecent(mailboxId);
@@ -210,11 +230,15 @@ export default function ChatsScreen() {
 	// Once we know the mailbox: sync now, then every 2 min (skipping if a sync
 	// is still running) so new mail shows without piling up requests.
 	useEffect(() => {
-		if (!mailboxId) return;
+		if (!mailboxId) {
+			return;
+		}
 		let cancelled = false;
 		const tick = async () => {
 			await syncOnce();
-			if (!cancelled) load(folderRef.current, searchRef.current);
+			if (!cancelled) {
+				load(folderRef.current, searchRef.current);
+			}
 		};
 		tick();
 		const id = setInterval(tick, 120000);
@@ -259,7 +283,11 @@ export default function ChatsScreen() {
 							load(folder, "");
 						}}
 					>
-						<Ionicons name="close-circle" size={18} color="#9aa0a6" />
+						<Ionicons
+							name="close-circle"
+							size={18}
+							color="#9aa0a6"
+						/>
 					</Pressable>
 				) : null}
 			</View>
@@ -278,7 +306,10 @@ export default function ChatsScreen() {
 								setLoading(true);
 								setFolder(f);
 							}}
-							style={[styles.chip, folder === f && styles.chipActive]}
+							style={[
+								styles.chip,
+								folder === f && styles.chipActive,
+							]}
 						>
 							<Text
 								style={[
@@ -306,7 +337,10 @@ export default function ChatsScreen() {
 					data={contacts}
 					keyExtractor={(c) => c.email}
 					refreshControl={
-						<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+						<RefreshControl
+							refreshing={refreshing}
+							onRefresh={onRefresh}
+						/>
 					}
 					ListEmptyComponent={
 						<View style={styles.center}>
@@ -330,11 +364,17 @@ export default function ChatsScreen() {
 							<View
 								style={[
 									styles.avatar,
-									{ backgroundColor: avatarColor(item.email) },
+									{
+										backgroundColor: avatarColor(
+											item.email,
+										),
+									},
 								]}
 							>
 								<Text style={styles.avatarText}>
-									{(item.name || item.email).charAt(0).toUpperCase()}
+									{(item.name || item.email)
+										.charAt(0)
+										.toUpperCase()}
 								</Text>
 							</View>
 							<View style={styles.rowBody}>
@@ -344,16 +384,23 @@ export default function ChatsScreen() {
 									</Text>
 									{item.priority === "HANDLE_NOW" ? (
 										<View style={styles.needsYou}>
-											<Text style={styles.needsYouText}>Needs you</Text>
+											<Text style={styles.needsYouText}>
+												Needs you
+											</Text>
 										</View>
 									) : null}
-									<Text style={styles.time}>{timeAgo(item.date)}</Text>
+									<Text style={styles.time}>
+										{timeAgo(item.date)}
+									</Text>
 								</View>
 								<Text style={styles.subject} numberOfLines={1}>
 									{item.latestSubject}
 								</Text>
 								<View style={styles.rowBottom}>
-									<Text style={styles.snippet} numberOfLines={1}>
+									<Text
+										style={styles.snippet}
+										numberOfLines={1}
+									>
 										{item.latestSnippet}
 									</Text>
 								</View>
@@ -362,9 +409,19 @@ export default function ChatsScreen() {
 										{item.labels.map((l) => (
 											<View
 												key={l.name}
-												style={[styles.labelChip, { backgroundColor: `${l.color}1a` }]}
+												style={[
+													styles.labelChip,
+													{
+														backgroundColor: `${l.color}1a`,
+													},
+												]}
 											>
-												<Text style={[styles.labelChipText, { color: l.color }]}>
+												<Text
+													style={[
+														styles.labelChipText,
+														{ color: l.color },
+													]}
+												>
 													{l.name}
 												</Text>
 											</View>
@@ -374,7 +431,9 @@ export default function ChatsScreen() {
 							</View>
 							{item.unreadCount > 0 ? (
 								<View style={styles.badge}>
-									<Text style={styles.badgeText}>{item.unreadCount}</Text>
+									<Text style={styles.badgeText}>
+										{item.unreadCount}
+									</Text>
 								</View>
 							) : null}
 						</Pressable>
@@ -383,7 +442,10 @@ export default function ChatsScreen() {
 			)}
 
 			{/* Compose FAB */}
-			<Pressable style={styles.fab} onPress={() => router.push("/compose")}>
+			<Pressable
+				style={styles.fab}
+				onPress={() => router.push("/compose")}
+			>
 				<Ionicons name="create" size={24} color="#fff" />
 			</Pressable>
 		</View>

@@ -22,7 +22,9 @@ import {
 function normalizeSuggestions(
 	res: { suggestions?: RuleSuggestion[] } | RuleSuggestion[],
 ): RuleSuggestion[] {
-	if (Array.isArray(res)) return res;
+	if (Array.isArray(res)) {
+		return res;
+	}
 	return res?.suggestions ?? [];
 }
 
@@ -74,25 +76,35 @@ export default function RulesScreen() {
 	}, [load]);
 
 	async function compile() {
-		if (!mailboxId || prompt.trim().length < 5) return;
+		if (!mailboxId || prompt.trim().length < 5) {
+			return;
+		}
 		setCompiling(true);
 		setCompiled(null);
 		try {
 			const res = await api.compileRule(mailboxId, prompt.trim());
 			if (!res.rules?.length) {
-				Alert.alert("Hmm", "Couldn't turn that into a rule. Try rephrasing.");
+				Alert.alert(
+					"Hmm",
+					"Couldn't turn that into a rule. Try rephrasing.",
+				);
 			} else {
 				setCompiled(res.rules);
 			}
 		} catch (e) {
-			Alert.alert("Error", e instanceof Error ? e.message : "Compile failed");
+			Alert.alert(
+				"Error",
+				e instanceof Error ? e.message : "Compile failed",
+			);
 		} finally {
 			setCompiling(false);
 		}
 	}
 
 	async function save() {
-		if (!mailboxId || !compiled) return;
+		if (!mailboxId || !compiled) {
+			return;
+		}
 		setSaving(true);
 		try {
 			for (const rule of compiled) {
@@ -102,14 +114,19 @@ export default function RulesScreen() {
 			setPrompt("");
 			await load();
 		} catch (e) {
-			Alert.alert("Error", e instanceof Error ? e.message : "Save failed");
+			Alert.alert(
+				"Error",
+				e instanceof Error ? e.message : "Save failed",
+			);
 		} finally {
 			setSaving(false);
 		}
 	}
 
 	async function toggle(rule: Rule) {
-		if (!mailboxId) return;
+		if (!mailboxId) {
+			return;
+		}
 		const next = !rule.enabled;
 		setRules((prev) =>
 			prev.map((r) => (r.id === rule.id ? { ...r, enabled: next } : r)),
@@ -118,7 +135,9 @@ export default function RulesScreen() {
 			await api.toggleRule(mailboxId, rule.id, next);
 		} catch {
 			setRules((prev) =>
-				prev.map((r) => (r.id === rule.id ? { ...r, enabled: !next } : r)),
+				prev.map((r) =>
+					r.id === rule.id ? { ...r, enabled: !next } : r,
+				),
 			);
 		}
 	}
@@ -133,7 +152,10 @@ export default function RulesScreen() {
 	}
 
 	return (
-		<ScrollView style={styles.container} contentContainerStyle={{ padding: 16 }}>
+		<ScrollView
+			style={styles.container}
+			contentContainerStyle={{ padding: 16 }}
+		>
 			<Stack.Screen options={{ title: "Rules" }} />
 
 			{/* Create with AI */}
@@ -153,7 +175,8 @@ export default function RulesScreen() {
 				<Pressable
 					style={[
 						styles.compileBtn,
-						(compiling || prompt.trim().length < 5) && styles.disabled,
+						(compiling || prompt.trim().length < 5) &&
+							styles.disabled,
 					]}
 					onPress={compile}
 					disabled={compiling || prompt.trim().length < 5}
@@ -170,7 +193,9 @@ export default function RulesScreen() {
 						{compiled.map((r, i) => (
 							<View key={i} style={styles.previewRule}>
 								<Text style={styles.previewName}>{r.name}</Text>
-								<Text style={styles.previewActions}>{actionsSummary(r)}</Text>
+								<Text style={styles.previewActions}>
+									{actionsSummary(r)}
+								</Text>
 							</View>
 						))}
 						<View style={styles.previewButtons}>
@@ -180,11 +205,20 @@ export default function RulesScreen() {
 							>
 								<Text style={styles.discardText}>Discard</Text>
 							</Pressable>
-							<Pressable style={styles.saveBtn} onPress={save} disabled={saving}>
+							<Pressable
+								style={styles.saveBtn}
+								onPress={save}
+								disabled={saving}
+							>
 								{saving ? (
-									<ActivityIndicator color="#fff" size="small" />
+									<ActivityIndicator
+										color="#fff"
+										size="small"
+									/>
 								) : (
-									<Text style={styles.saveText}>Save rule</Text>
+									<Text style={styles.saveText}>
+										Save rule
+									</Text>
 								)}
 							</Pressable>
 						</View>
@@ -197,7 +231,11 @@ export default function RulesScreen() {
 				<>
 					<Text style={styles.section}>Suggested for your inbox</Text>
 					{suggestions.slice(0, 5).map((s, i) => {
-						const text = s.name ?? s.title ?? s.description ?? "Suggested rule";
+						const text =
+							s.name ??
+							s.title ??
+							s.description ??
+							"Suggested rule";
 						return (
 							<Pressable
 								key={s.id ?? String(i)}
@@ -207,9 +245,19 @@ export default function RulesScreen() {
 									setCompiled(null);
 								}}
 							>
-								<Ionicons name="bulb-outline" size={18} color="#d97706" />
-								<Text style={styles.suggestionText}>{text}</Text>
-								<Ionicons name="add-circle-outline" size={20} color="#141718" />
+								<Ionicons
+									name="bulb-outline"
+									size={18}
+									color="#d97706"
+								/>
+								<Text style={styles.suggestionText}>
+									{text}
+								</Text>
+								<Ionicons
+									name="add-circle-outline"
+									size={20}
+									color="#141718"
+								/>
 							</Pressable>
 						);
 					})}
@@ -219,13 +267,20 @@ export default function RulesScreen() {
 			{/* Active rules */}
 			<Text style={styles.section}>Your rules</Text>
 			{rules.length === 0 ? (
-				<Text style={styles.muted}>No rules yet — create one above.</Text>
+				<Text style={styles.muted}>
+					No rules yet — create one above.
+				</Text>
 			) : (
 				<View style={styles.group}>
 					{rules.map((r, i) => (
 						<View
 							key={r.id}
-							style={[styles.ruleRow, i === rules.length - 1 && { borderBottomWidth: 0 }]}
+							style={[
+								styles.ruleRow,
+								i === rules.length - 1 && {
+									borderBottomWidth: 0,
+								},
+							]}
 						>
 							<Text style={styles.ruleName} numberOfLines={2}>
 								{r.name}
@@ -249,7 +304,12 @@ const styles = StyleSheet.create({
 	center: { flex: 1, alignItems: "center", justifyContent: "center" },
 	muted: { color: "#6b7280", fontSize: 15 },
 	aiCard: { backgroundColor: "#fff", borderRadius: 16, padding: 16 },
-	aiHead: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 10 },
+	aiHead: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 6,
+		marginBottom: 10,
+	},
 	aiTitle: { fontSize: 16, fontWeight: "700", color: "#111" },
 	input: {
 		backgroundColor: "#f7f8fa",

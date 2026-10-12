@@ -115,7 +115,9 @@ export function daysFrom(start: Date, count: number): Date[] {
 }
 
 export function fmtTime(iso?: string): string {
-	if (!iso) return "";
+	if (!iso) {
+		return "";
+	}
 	return new Date(iso).toLocaleTimeString([], {
 		hour: "numeric",
 		minute: "2-digit",

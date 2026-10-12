@@ -22,13 +22,17 @@ const PAD_TOP = 10;
 
 // Rounds the axis top up to a readable step so gridline labels stay whole.
 function niceMax(value: number): number {
-	if (value <= 5) return 5;
+	if (value <= 5) {
+		return 5;
+	}
 	const pow = 10 ** Math.floor(Math.log10(value));
 	return Math.ceil(value / (pow / 2)) * (pow / 2);
 }
 
 function buildPaths(values: number[], w: number, maxY: number) {
-	if (values.length === 0) return { line: "", area: "" };
+	if (values.length === 0) {
+		return { line: "", area: "" };
+	}
 	const stepX = values.length > 1 ? w / (values.length - 1) : 0;
 	const y = (v: number) => PAD_TOP + (1 - v / maxY) * (CHART_H - PAD_TOP);
 	const line = values

@@ -27,8 +27,11 @@ export async function getThreads(): Promise<ChatThread[]> {
 export async function saveThread(thread: ChatThread): Promise<void> {
 	const threads = await getThreads();
 	const idx = threads.findIndex((t) => t.id === thread.id);
-	if (idx >= 0) threads[idx] = thread;
-	else threads.push(thread);
+	if (idx >= 0) {
+		threads[idx] = thread;
+	} else {
+		threads.push(thread);
+	}
 	threads.sort((a, b) => b.updatedAt - a.updatedAt);
 	await AsyncStorage.setItem(KEY, JSON.stringify(threads.slice(0, 50)));
 }

@@ -18,29 +18,32 @@ export default function AvatarScreen() {
 	useEffect(() => {
 		getAvatar().then(setSelected);
 		// "Handled" = emails MailMonkey has processed for you (drives unlocks).
-		api
-			.getMailboxes()
+		api.getMailboxes()
 			.then((m) => (m[0] ? api.getMailboxAi(m[0].id) : { items: [] }))
 			.then((ai) => setHandled(ai.items.length))
 			.catch(() => {});
 	}, []);
 
 	async function pick(variant: number) {
-		if (handled < MONKEY_UNLOCKS[variant]) return; // locked
+		if (handled < MONKEY_UNLOCKS[variant]) {
+			return; // locked
+		}
 		setSelected(variant);
 		await setAvatar(variant);
 	}
 
 	// Progress toward the next locked monkey.
 	const nextLockIndex = MONKEY_UNLOCKS.findIndex((u) => handled < u);
-	const nextTarget = nextLockIndex >= 0 ? MONKEY_UNLOCKS[nextLockIndex] : null;
+	const nextTarget =
+		nextLockIndex >= 0 ? MONKEY_UNLOCKS[nextLockIndex] : null;
 
 	return (
 		<View style={styles.container}>
 			<Stack.Screen options={{ title: "My Avatar" }} />
 			<Text style={styles.heading}>Your monkey collection</Text>
 			<Text style={styles.sub}>
-				{handled} emails handled · unlock more as MailMonkey works for you
+				{handled} emails handled · unlock more as MailMonkey works for
+				you
 			</Text>
 
 			{nextTarget !== null ? (
@@ -56,11 +59,14 @@ export default function AvatarScreen() {
 						/>
 					</View>
 					<Text style={styles.progressText}>
-						{nextTarget - handled} more to unlock {MONKEY_NAMES[nextLockIndex]}
+						{nextTarget - handled} more to unlock{" "}
+						{MONKEY_NAMES[nextLockIndex]}
 					</Text>
 				</View>
 			) : (
-				<Text style={styles.progressText}>All monkeys unlocked! 🎉</Text>
+				<Text style={styles.progressText}>
+					All monkeys unlocked! 🎉
+				</Text>
 			)}
 
 			<View style={styles.grid}>
@@ -76,18 +82,32 @@ export default function AvatarScreen() {
 								locked && styles.cellLocked,
 							]}
 						>
-							<View style={locked ? { opacity: 0.35 } : undefined}>
+							<View
+								style={locked ? { opacity: 0.35 } : undefined}
+							>
 								<MonkeyAvatar variant={i} size={78} />
 							</View>
-							<Text style={styles.monkeyName}>{MONKEY_NAMES[i]}</Text>
+							<Text style={styles.monkeyName}>
+								{MONKEY_NAMES[i]}
+							</Text>
 							{locked ? (
 								<View style={styles.lockBadge}>
-									<Ionicons name="lock-closed" size={12} color="#6b7280" />
-									<Text style={styles.lockText}>{MONKEY_UNLOCKS[i]}</Text>
+									<Ionicons
+										name="lock-closed"
+										size={12}
+										color="#6b7280"
+									/>
+									<Text style={styles.lockText}>
+										{MONKEY_UNLOCKS[i]}
+									</Text>
 								</View>
 							) : selected === i ? (
 								<View style={styles.check}>
-									<Ionicons name="checkmark-circle" size={20} color="#141718" />
+									<Ionicons
+										name="checkmark-circle"
+										size={20}
+										color="#141718"
+									/>
 								</View>
 							) : null}
 						</Pressable>
@@ -109,8 +129,17 @@ const styles = StyleSheet.create({
 		borderRadius: 4,
 		overflow: "hidden",
 	},
-	progressFill: { height: "100%", backgroundColor: "#141718", borderRadius: 4 },
-	progressText: { fontSize: 13, color: "#6b7280", marginTop: 8, textAlign: "center" },
+	progressFill: {
+		height: "100%",
+		backgroundColor: "#141718",
+		borderRadius: 4,
+	},
+	progressText: {
+		fontSize: 13,
+		color: "#6b7280",
+		marginTop: 8,
+		textAlign: "center",
+	},
 	grid: {
 		flexDirection: "row",
 		flexWrap: "wrap",
@@ -131,7 +160,12 @@ const styles = StyleSheet.create({
 	},
 	cellActive: { borderColor: "#141718", backgroundColor: "#eef6ff" },
 	cellLocked: { backgroundColor: "#f2f2f4" },
-	monkeyName: { fontSize: 13, fontWeight: "600", color: "#374151", marginTop: 6 },
+	monkeyName: {
+		fontSize: 13,
+		fontWeight: "600",
+		color: "#374151",
+		marginTop: 6,
+	},
 	check: { position: "absolute", top: 6, right: 6 },
 	lockBadge: {
 		flexDirection: "row",

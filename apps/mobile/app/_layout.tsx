@@ -34,7 +34,9 @@ export default function RootLayout() {
 	useEffect(() => {
 		let active = true;
 		getToken().then((token) => {
-			if (!active) return;
+			if (!active) {
+				return;
+			}
 			const AUTH_ROUTES = ["splash", "onboarding", "welcome", "login"];
 			const inAuthFlow = AUTH_ROUTES.includes(segments[0] ?? "");
 			if (FORCE_ONBOARDING_PREVIEW) {
@@ -42,7 +44,9 @@ export default function RootLayout() {
 				// (so Google → app isn't bounced back to splash).
 				if (!previewRedirected) {
 					previewRedirected = true;
-					if (!inAuthFlow) router.replace("/splash");
+					if (!inAuthFlow) {
+						router.replace("/splash");
+					}
 				}
 			} else if (!token && !inAuthFlow) {
 				router.replace("/splash");
@@ -56,7 +60,9 @@ export default function RootLayout() {
 		};
 	}, [segments]);
 
-	if (!ready) return null;
+	if (!ready) {
+		return null;
+	}
 
 	return (
 		// Required for react-native-gesture-handler (calendar swipe navigation).
@@ -65,42 +71,42 @@ export default function RootLayout() {
 				<ThemeProvider
 					value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
 				>
-				<Stack>
-					<Stack.Screen
-						name="(tabs)"
-						options={{ headerShown: false }}
-					/>
-					<Stack.Screen
-						name="splash"
-						options={{ headerShown: false }}
-					/>
-					<Stack.Screen
-						name="onboarding"
-						options={{ headerShown: false }}
-					/>
-					<Stack.Screen
-						name="welcome"
-						options={{ headerShown: false }}
-					/>
-					<Stack.Screen
-						name="login"
-						options={{ headerShown: false }}
-					/>
-					<Stack.Screen
-						name="chat/[email]"
-						options={{ headerShown: true, title: "" }}
-					/>
-					<Stack.Screen
-						name="email/[messageId]"
-						options={{ headerShown: true, title: "" }}
-					/>
-					<Stack.Screen
-						name="modal"
-						options={{ presentation: "modal", title: "Modal" }}
-					/>
-				</Stack>
-				<StatusBar style="auto" />
-			</ThemeProvider>
+					<Stack>
+						<Stack.Screen
+							name="(tabs)"
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="splash"
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="onboarding"
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="welcome"
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="login"
+							options={{ headerShown: false }}
+						/>
+						<Stack.Screen
+							name="chat/[email]"
+							options={{ headerShown: true, title: "" }}
+						/>
+						<Stack.Screen
+							name="email/[messageId]"
+							options={{ headerShown: true, title: "" }}
+						/>
+						<Stack.Screen
+							name="modal"
+							options={{ presentation: "modal", title: "Modal" }}
+						/>
+					</Stack>
+					<StatusBar style="auto" />
+				</ThemeProvider>
 			</SafeAreaProvider>
 		</GestureHandlerRootView>
 	);

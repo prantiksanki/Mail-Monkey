@@ -55,8 +55,8 @@ export default function NotificationsScreen() {
 			</View>
 
 			<Text style={styles.hint}>
-				Push delivery is rolling out — these preferences are saved and applied
-				once notifications go live.
+				Push delivery is rolling out — these preferences are saved and
+				applied once notifications go live.
 			</Text>
 		</View>
 	);
@@ -81,7 +81,11 @@ function ToggleRow({
 				<Text style={styles.label}>{label}</Text>
 				<Text style={styles.desc}>{desc}</Text>
 			</View>
-			<Switch value={value} onValueChange={onChange} trackColor={{ true: "#141718" }} />
+			<Switch
+				value={value}
+				onValueChange={onChange}
+				trackColor={{ true: "#141718" }}
+			/>
 		</View>
 	);
 }
@@ -98,5 +102,10 @@ const styles = StyleSheet.create({
 	},
 	label: { fontSize: 16, color: "#111" },
 	desc: { fontSize: 13, color: "#9aa0a6", marginTop: 2 },
-	hint: { fontSize: 13, color: "#9aa0a6", marginTop: 16, paddingHorizontal: 4 },
+	hint: {
+		fontSize: 13,
+		color: "#9aa0a6",
+		marginTop: 16,
+		paddingHorizontal: 4,
+	},
 });

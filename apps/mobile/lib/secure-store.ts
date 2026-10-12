@@ -6,7 +6,9 @@ import { Platform } from "react-native";
 const isWeb = Platform.OS === "web";
 
 export async function getItemAsync(key: string): Promise<string | null> {
-	if (!isWeb) return ExpoSecureStore.getItemAsync(key);
+	if (!isWeb) {
+		return ExpoSecureStore.getItemAsync(key);
+	}
 	try {
 		return window.localStorage.getItem(key);
 	} catch {
@@ -15,14 +17,18 @@ export async function getItemAsync(key: string): Promise<string | null> {
 }
 
 export async function setItemAsync(key: string, value: string): Promise<void> {
-	if (!isWeb) return ExpoSecureStore.setItemAsync(key, value);
+	if (!isWeb) {
+		return ExpoSecureStore.setItemAsync(key, value);
+	}
 	try {
 		window.localStorage.setItem(key, value);
 	} catch {}
 }
 
 export async function deleteItemAsync(key: string): Promise<void> {
-	if (!isWeb) return ExpoSecureStore.deleteItemAsync(key);
+	if (!isWeb) {
+		return ExpoSecureStore.deleteItemAsync(key);
+	}
 	try {
 		window.localStorage.removeItem(key);
 	} catch {}

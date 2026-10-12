@@ -15,7 +15,9 @@ function deriveBackendUrl(): string {
 		Constants.expoGoConfig?.debuggerHost ??
 		"";
 	const host = hostUri.split(":")[0];
-	if (host) return `http://${host}:3000`;
+	if (host) {
+		return `http://${host}:3000`;
+	}
 	// Fallback if we can't read the dev host.
 	return "http://10.96.1.176:3000";
 }

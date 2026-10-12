@@ -6,12 +6,15 @@ import { getPref, setPref } from "@/lib/prefs";
 
 type Theme = "system" | "light" | "dark";
 
-const OPTIONS: { id: Theme; label: string; icon: keyof typeof Ionicons.glyphMap }[] =
-	[
-		{ id: "system", label: "System default", icon: "phone-portrait-outline" },
-		{ id: "light", label: "Light", icon: "sunny-outline" },
-		{ id: "dark", label: "Dark", icon: "moon-outline" },
-	];
+const OPTIONS: {
+	id: Theme;
+	label: string;
+	icon: keyof typeof Ionicons.glyphMap;
+}[] = [
+	{ id: "system", label: "System default", icon: "phone-portrait-outline" },
+	{ id: "light", label: "Light", icon: "sunny-outline" },
+	{ id: "dark", label: "Dark", icon: "moon-outline" },
+];
 
 export default function AppearanceScreen() {
 	const [theme, setTheme] = useState<Theme>("system");
@@ -32,20 +35,29 @@ export default function AppearanceScreen() {
 				{OPTIONS.map((o, i) => (
 					<Pressable
 						key={o.id}
-						style={[styles.row, i === OPTIONS.length - 1 && { borderBottomWidth: 0 }]}
+						style={[
+							styles.row,
+							i === OPTIONS.length - 1 && {
+								borderBottomWidth: 0,
+							},
+						]}
 						onPress={() => pick(o.id)}
 					>
 						<Ionicons name={o.icon} size={20} color="#141718" />
 						<Text style={styles.label}>{o.label}</Text>
 						{theme === o.id ? (
-							<Ionicons name="checkmark" size={20} color="#141718" />
+							<Ionicons
+								name="checkmark"
+								size={20}
+								color="#141718"
+							/>
 						) : null}
 					</Pressable>
 				))}
 			</View>
 			<Text style={styles.hint}>
-				Dark theme is rolling out screen by screen — your choice is saved and
-				applies as it lands.
+				Dark theme is rolling out screen by screen — your choice is
+				saved and applies as it lands.
 			</Text>
 		</View>
 	);
@@ -63,5 +75,10 @@ const styles = StyleSheet.create({
 		borderBottomColor: "#ececef",
 	},
 	label: { flex: 1, fontSize: 16, color: "#111" },
-	hint: { fontSize: 13, color: "#9aa0a6", marginTop: 16, paddingHorizontal: 4 },
+	hint: {
+		fontSize: 13,
+		color: "#9aa0a6",
+		marginTop: 16,
+		paddingHorizontal: 4,
+	},
 });

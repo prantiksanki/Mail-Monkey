@@ -48,7 +48,10 @@ export default function EmailScreen() {
 			setEmail(msg);
 			api.markRead(mailboxId, messageId).catch(() => {});
 		} catch (e) {
-			Alert.alert("Error", e instanceof Error ? e.message : "Failed to load");
+			Alert.alert(
+				"Error",
+				e instanceof Error ? e.message : "Failed to load",
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -133,7 +136,9 @@ export default function EmailScreen() {
 					style={styles.webview}
 					// Open tapped links in the system browser, not inside the app.
 					onShouldStartLoadWithRequest={(req) => {
-						if (req.url === "about:blank") return true;
+						if (req.url === "about:blank") {
+							return true;
+						}
 						if (/^https?:\/\//.test(req.url)) {
 							Linking.openURL(req.url).catch(() => {});
 							return false;
@@ -145,28 +150,56 @@ export default function EmailScreen() {
 			) : (
 				<ScrollView contentContainerStyle={styles.scroll}>
 					<Text style={styles.body}>
-						{email.bodyText?.trim() || email.snippet || "(No content)"}
+						{email.bodyText?.trim() ||
+							email.snippet ||
+							"(No content)"}
 					</Text>
 				</ScrollView>
 			)}
 
 			{/* Actions */}
 			<View style={styles.actions}>
-				<Pressable style={styles.action} onPress={handleArchive} disabled={busy}>
-					<Ionicons name="archive-outline" size={22} color="#141718" />
+				<Pressable
+					style={styles.action}
+					onPress={handleArchive}
+					disabled={busy}
+				>
+					<Ionicons
+						name="archive-outline"
+						size={22}
+						color="#141718"
+					/>
 					<Text style={styles.actionText}>Archive</Text>
 				</Pressable>
-				<Pressable style={styles.action} onPress={handleSnooze} disabled={busy}>
+				<Pressable
+					style={styles.action}
+					onPress={handleSnooze}
+					disabled={busy}
+				>
 					<Ionicons name="time-outline" size={22} color="#141718" />
 					<Text style={styles.actionText}>Snooze</Text>
 				</Pressable>
-				<Pressable style={styles.action} onPress={handleUnread} disabled={busy}>
-					<Ionicons name="mail-unread-outline" size={22} color="#141718" />
+				<Pressable
+					style={styles.action}
+					onPress={handleUnread}
+					disabled={busy}
+				>
+					<Ionicons
+						name="mail-unread-outline"
+						size={22}
+						color="#141718"
+					/>
 					<Text style={styles.actionText}>Unread</Text>
 				</Pressable>
-				<Pressable style={styles.action} onPress={handleTrash} disabled={busy}>
+				<Pressable
+					style={styles.action}
+					onPress={handleTrash}
+					disabled={busy}
+				>
 					<Ionicons name="trash-outline" size={22} color="#dc2626" />
-					<Text style={[styles.actionText, { color: "#dc2626" }]}>Trash</Text>
+					<Text style={[styles.actionText, { color: "#dc2626" }]}>
+						Trash
+					</Text>
 				</Pressable>
 			</View>
 		</View>

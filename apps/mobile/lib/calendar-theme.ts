@@ -49,7 +49,9 @@ export const ALL_DAY_COLOR: PillColor = PILL_COLORS[0];
 // Google events carry no category, so derive a stable color from the id —
 // the same event always gets the same color instead of flickering on re-render.
 export function pillColorFor(id: string, isAllDay?: boolean): PillColor {
-	if (isAllDay) return ALL_DAY_COLOR;
+	if (isAllDay) {
+		return ALL_DAY_COLOR;
+	}
 	let hash = 0;
 	for (let i = 0; i < id.length; i++) {
 		hash = (hash * 31 + id.charCodeAt(i)) >>> 0;

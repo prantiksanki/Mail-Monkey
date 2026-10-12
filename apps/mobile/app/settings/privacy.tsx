@@ -22,7 +22,10 @@ const POINTS = [
 
 export default function PrivacyScreen() {
 	return (
-		<ScrollView style={styles.container} contentContainerStyle={{ padding: 16 }}>
+		<ScrollView
+			style={styles.container}
+			contentContainerStyle={{ padding: 16 }}
+		>
 			<Stack.Screen options={{ title: "Privacy & Security" }} />
 			{POINTS.map((p) => (
 				<View key={p.title} style={styles.card}>
@@ -34,8 +37,8 @@ export default function PrivacyScreen() {
 				</View>
 			))}
 			<Text style={styles.hint}>
-				A full privacy policy and data-export controls are coming before public
-				launch.
+				A full privacy policy and data-export controls are coming before
+				public launch.
 			</Text>
 		</ScrollView>
 	);
@@ -52,5 +55,10 @@ const styles = StyleSheet.create({
 	},
 	title: { fontSize: 16, fontWeight: "600", color: "#111" },
 	body: { fontSize: 14, color: "#6b7280", marginTop: 4, lineHeight: 20 },
-	hint: { fontSize: 13, color: "#9aa0a6", marginTop: 8, paddingHorizontal: 4 },
+	hint: {
+		fontSize: 13,
+		color: "#9aa0a6",
+		marginTop: 8,
+		paddingHorizontal: 4,
+	},
 });

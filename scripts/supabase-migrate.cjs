@@ -29,7 +29,9 @@ const sql = fs.readFileSync(
 		"select table_name from information_schema.tables where table_schema = 'public' order by table_name",
 	);
 	console.log("Tables now in public schema:");
-	for (const r of tables.rows) console.log("  -", r.table_name);
+	for (const r of tables.rows) {
+		console.log("  -", r.table_name);
+	}
 	await c.end();
 })().catch((e) => {
 	console.error("Migration error:", e.message);

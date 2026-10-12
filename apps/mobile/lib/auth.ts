@@ -1,5 +1,5 @@
-import * as SecureStore from "@/lib/secure-store";
 import { AUTH_BASE, DEV_TOKEN } from "@/constants/config";
+import * as SecureStore from "@/lib/secure-store";
 
 const TOKEN_KEY = "zeromail_token";
 
@@ -17,7 +17,9 @@ export async function signIn(email: string, password: string): Promise<void> {
 		let message = `Login failed (${res.status})`;
 		try {
 			const body = await res.json();
-			if (body?.message) message = body.message;
+			if (body?.message) {
+				message = body.message;
+			}
 		} catch {}
 		throw new Error(message);
 	}
@@ -31,7 +33,9 @@ export async function signIn(email: string, password: string): Promise<void> {
 }
 
 export async function getToken(): Promise<string | null> {
-	if (DEV_TOKEN) return DEV_TOKEN;
+	if (DEV_TOKEN) {
+		return DEV_TOKEN;
+	}
 	return SecureStore.getItemAsync(TOKEN_KEY);
 }
 

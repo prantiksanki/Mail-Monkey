@@ -58,11 +58,12 @@ export const mailChat = protectedProcedure
 		const seen = new Set<string>();
 		const emails: EmailRow[] = [];
 		const push = (rows: EmailRow[]) => {
-			for (const e of rows)
+			for (const e of rows) {
 				if (!seen.has(e.id)) {
 					seen.add(e.id);
 					emails.push(e);
 				}
+			}
 		};
 
 		// Vector similarity (semantic).

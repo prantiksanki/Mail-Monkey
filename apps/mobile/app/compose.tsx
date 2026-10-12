@@ -22,8 +22,7 @@ export default function ComposeScreen() {
 	const [sending, setSending] = useState(false);
 
 	useEffect(() => {
-		api
-			.getMailboxes()
+		api.getMailboxes()
 			.then((m) => m[0] && setMailboxId(m[0].id))
 			.catch(() => {});
 	}, []);
@@ -42,7 +41,10 @@ export default function ComposeScreen() {
 			});
 			router.back();
 		} catch (e) {
-			Alert.alert("Error", e instanceof Error ? e.message : "Failed to send");
+			Alert.alert(
+				"Error",
+				e instanceof Error ? e.message : "Failed to send",
+			);
 			setSending(false);
 		}
 	}

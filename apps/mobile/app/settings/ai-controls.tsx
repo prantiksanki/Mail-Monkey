@@ -2,7 +2,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { StyleSheet, Switch, Text, View } from "react-native";
-import { type AiControls, AI_DEFAULTS, getAiControls, setAiControls } from "@/lib/ai-prefs";
+import {
+	AI_DEFAULTS,
+	type AiControls,
+	getAiControls,
+	setAiControls,
+} from "@/lib/ai-prefs";
 
 const ROWS: {
 	key: keyof AiControls;
@@ -66,17 +71,25 @@ export default function AiControlsScreen() {
 			<Stack.Screen options={{ title: "AI Controls" }} />
 
 			<Text style={styles.intro}>
-				MailMonkey is AI-native — but it's your mailbox. Turn AI on exactly where
-				you want it.
+				MailMonkey is AI-native — but it's your mailbox. Turn AI on
+				exactly where you want it.
 			</Text>
 
 			<View style={styles.group}>
 				{ROWS.map((r, i) => (
 					<View
 						key={r.key}
-						style={[styles.row, i === ROWS.length - 1 && { borderBottomWidth: 0 }]}
+						style={[
+							styles.row,
+							i === ROWS.length - 1 && { borderBottomWidth: 0 },
+						]}
 					>
-						<View style={[styles.icon, { backgroundColor: `${r.tint}1a` }]}>
+						<View
+							style={[
+								styles.icon,
+								{ backgroundColor: `${r.tint}1a` },
+							]}
+						>
 							<Ionicons name={r.icon} size={18} color={r.tint} />
 						</View>
 						<View style={{ flex: 1, marginRight: 10 }}>
@@ -93,8 +106,8 @@ export default function AiControlsScreen() {
 			</View>
 
 			<Text style={styles.hint}>
-				Changes apply as you browse. Turning everything off keeps a plain,
-				private inbox — no AI runs.
+				Changes apply as you browse. Turning everything off keeps a
+				plain, private inbox — no AI runs.
 			</Text>
 		</View>
 	);
@@ -121,5 +134,10 @@ const styles = StyleSheet.create({
 	},
 	label: { fontSize: 16, color: "#111" },
 	desc: { fontSize: 13, color: "#9aa0a6", marginTop: 2 },
-	hint: { fontSize: 13, color: "#9aa0a6", marginTop: 16, paddingHorizontal: 4 },
+	hint: {
+		fontSize: 13,
+		color: "#9aa0a6",
+		marginTop: 16,
+		paddingHorizontal: 4,
+	},
 });

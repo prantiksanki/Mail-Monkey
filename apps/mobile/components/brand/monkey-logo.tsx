@@ -11,7 +11,12 @@ export function MonkeyLogo({
 }) {
 	const height = (size / 119.024) * 142.485;
 	return (
-		<Svg width={size} height={height} viewBox="0 0 119.024 142.485" fill="none">
+		<Svg
+			width={size}
+			height={height}
+			viewBox="0 0 119.024 142.485"
+			fill="none"
+		>
 			<Path
 				d="M64.326 84.8979C66.9485 83.8989 69.1534 82.038 70.579 79.6208L75.3019 71.6123C81.7017 60.7605 98.3325 65.2993 98.3325 77.8976V97.0301C98.3325 103.863 92.793 109.403 85.9596 109.403H67.235C53.4966 109.403 49.9919 90.3585 62.8303 85.4677L64.326 84.8979Z"
 				fill={color}

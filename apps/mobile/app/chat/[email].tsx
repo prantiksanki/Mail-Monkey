@@ -97,7 +97,9 @@ export default function ConversationScreen() {
 	const latestSubject = useMemo(() => incoming[0]?.subject ?? "", [incoming]);
 
 	async function handleSend() {
-		if (!reply.trim()) return;
+		if (!reply.trim()) {
+			return;
+		}
 		const text = reply.trim();
 		const quoted = replyingTo;
 		setSending(true);

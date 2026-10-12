@@ -70,7 +70,9 @@ export default function SmartTasksScreen() {
 	}
 
 	function openEmail(emailId: string) {
-		if (!mailboxId) return;
+		if (!mailboxId) {
+			return;
+		}
 		router.push({
 			pathname: "/email/[messageId]",
 			params: { messageId: emailId, mailboxId },
@@ -107,8 +109,8 @@ export default function SmartTasksScreen() {
 						color="#c4c7cc"
 					/>
 					<Text style={styles.emptyText}>
-						No payments or tasks found yet. They appear here as MailMonkey reads
-						your mail.
+						No payments or tasks found yet. They appear here as
+						MailMonkey reads your mail.
 					</Text>
 				</View>
 			) : null}
@@ -118,20 +120,32 @@ export default function SmartTasksScreen() {
 					<Text style={styles.section}>Payments</Text>
 					{payments.map((p) => (
 						<View key={p.emailId} style={styles.payCard}>
-							<Pressable style={{ flex: 1 }} onPress={() => openEmail(p.emailId)}>
+							<Pressable
+								style={{ flex: 1 }}
+								onPress={() => openEmail(p.emailId)}
+							>
 								<Text style={styles.payMerchant}>
 									{p.payMerchant || p.taskTitle || "Payment"}
 								</Text>
-								{p.taskDue ? <Text style={styles.due}>Due {p.taskDue}</Text> : null}
+								{p.taskDue ? (
+									<Text style={styles.due}>
+										Due {p.taskDue}
+									</Text>
+								) : null}
 								{p.aiSummary ? (
-									<Text style={styles.summary} numberOfLines={2}>
+									<Text
+										style={styles.summary}
+										numberOfLines={2}
+									>
 										{p.aiSummary}
 									</Text>
 								) : null}
 							</Pressable>
 							<View style={styles.payRight}>
 								{p.payAmount ? (
-									<Text style={styles.amount}>{p.payAmount}</Text>
+									<Text style={styles.amount}>
+										{p.payAmount}
+									</Text>
 								) : null}
 								<Pressable style={styles.payBtn} onPress={pay}>
 									<Text style={styles.payBtnText}>Pay</Text>
@@ -151,20 +165,34 @@ export default function SmartTasksScreen() {
 								key={a.emailId}
 								style={[
 									styles.taskRow,
-									i === actions.length - 1 && { borderBottomWidth: 0 },
+									i === actions.length - 1 && {
+										borderBottomWidth: 0,
+									},
 								]}
 								onPress={() => openEmail(a.emailId)}
 							>
-								<Ionicons name="ellipse-outline" size={20} color="#141718" />
+								<Ionicons
+									name="ellipse-outline"
+									size={20}
+									color="#141718"
+								/>
 								<View style={{ flex: 1 }}>
 									<Text style={styles.taskTitle}>
-										{a.taskTitle || a.aiSummary || "Follow up"}
+										{a.taskTitle ||
+											a.aiSummary ||
+											"Follow up"}
 									</Text>
 									{a.taskDue ? (
-										<Text style={styles.due}>Due {a.taskDue}</Text>
+										<Text style={styles.due}>
+											Due {a.taskDue}
+										</Text>
 									) : null}
 								</View>
-								<Ionicons name="chevron-forward" size={18} color="#c4c7cc" />
+								<Ionicons
+									name="chevron-forward"
+									size={18}
+									color="#c4c7cc"
+								/>
 							</Pressable>
 						))}
 					</View>

@@ -25,12 +25,17 @@ const PLANS = [
 
 export default function SubscriptionScreen() {
 	return (
-		<ScrollView style={styles.container} contentContainerStyle={{ padding: 20 }}>
+		<ScrollView
+			style={styles.container}
+			contentContainerStyle={{ padding: 20 }}
+		>
 			<Stack.Screen options={{ title: "Subscription" }} />
 
 			<View style={styles.banner}>
 				<Ionicons name="sparkles" size={18} color="#8b5cf6" />
-				<Text style={styles.bannerText}>Paid plans are coming soon.</Text>
+				<Text style={styles.bannerText}>
+					Paid plans are coming soon.
+				</Text>
 			</View>
 
 			{PLANS.map((plan) => (
@@ -53,7 +58,11 @@ export default function SubscriptionScreen() {
 					<Text style={styles.price}>{plan.price}</Text>
 					{plan.features.map((f) => (
 						<View key={f} style={styles.featureRow}>
-							<Ionicons name="checkmark" size={16} color="#22a06b" />
+							<Ionicons
+								name="checkmark"
+								size={16}
+								color="#22a06b"
+							/>
 							<Text style={styles.feature}>{f}</Text>
 						</View>
 					))}
@@ -103,7 +112,17 @@ const styles = StyleSheet.create({
 		paddingVertical: 3,
 	},
 	soonText: { color: "#9aa0a6", fontSize: 12, fontWeight: "600" },
-	price: { fontSize: 24, fontWeight: "700", color: "#111", marginVertical: 10 },
-	featureRow: { flexDirection: "row", alignItems: "center", gap: 8, marginTop: 6 },
+	price: {
+		fontSize: 24,
+		fontWeight: "700",
+		color: "#111",
+		marginVertical: 10,
+	},
+	featureRow: {
+		flexDirection: "row",
+		alignItems: "center",
+		gap: 8,
+		marginTop: 6,
+	},
 	feature: { fontSize: 14, color: "#374151" },
 });

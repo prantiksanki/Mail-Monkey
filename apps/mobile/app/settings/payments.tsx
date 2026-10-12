@@ -6,8 +6,8 @@ import { GoogleG } from "@/components/brand/google-g";
 import {
 	getPaymentApps,
 	setPaymentApps,
-	type UpiApp,
 	UPI_APPS,
+	type UpiApp,
 } from "@/lib/payments";
 
 function AppLogo({ id, color }: { id: UpiApp; color: string }) {
@@ -16,7 +16,11 @@ function AppLogo({ id, color }: { id: UpiApp; color: string }) {
 			<View
 				style={[
 					styles.logo,
-					{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#eee" },
+					{
+						backgroundColor: "#fff",
+						borderWidth: 1,
+						borderColor: "#eee",
+					},
 				]}
 			>
 				<GoogleG size={26} />
@@ -29,7 +33,11 @@ function AppLogo({ id, color }: { id: UpiApp; color: string }) {
 			<View
 				style={[
 					styles.logo,
-					{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#eee" },
+					{
+						backgroundColor: "#fff",
+						borderWidth: 1,
+						borderColor: "#eee",
+					},
 				]}
 			>
 				<Text style={styles.paytm} numberOfLines={1}>
@@ -64,7 +72,10 @@ export default function PaymentsScreen() {
 	}
 
 	return (
-		<ScrollView style={styles.container} contentContainerStyle={{ padding: 20 }}>
+		<ScrollView
+			style={styles.container}
+			contentContainerStyle={{ padding: 20 }}
+		>
 			<Stack.Screen options={{ title: "Payment options" }} />
 
 			<Text style={styles.section}>Cards</Text>
@@ -79,10 +90,12 @@ export default function PaymentsScreen() {
 				<Ionicons name="chevron-forward" size={18} color="#c4c7cc" />
 			</Pressable>
 
-			<Text style={[styles.section, { marginTop: 26 }]}>Payment apps</Text>
+			<Text style={[styles.section, { marginTop: 26 }]}>
+				Payment apps
+			</Text>
 			<Text style={styles.intro}>
-				Connect your UPI apps. When a bill or payment email arrives, MailMonkey
-				can open your app pre-filled — pay in one tap.
+				Connect your UPI apps. When a bill or payment email arrives,
+				MailMonkey can open your app pre-filled — pay in one tap.
 			</Text>
 
 			{UPI_APPS.map((app) => {
@@ -97,8 +110,14 @@ export default function PaymentsScreen() {
 						<Text style={styles.appName}>{app.name}</Text>
 						{on ? (
 							<View style={styles.connected}>
-								<Ionicons name="checkmark-circle" size={22} color="#22a06b" />
-								<Text style={styles.connectedText}>Connected</Text>
+								<Ionicons
+									name="checkmark-circle"
+									size={22}
+									color="#22a06b"
+								/>
+								<Text style={styles.connectedText}>
+									Connected
+								</Text>
 							</View>
 						) : (
 							<Text style={styles.connect}>Connect</Text>
@@ -108,10 +127,14 @@ export default function PaymentsScreen() {
 			})}
 
 			<View style={styles.note}>
-				<Ionicons name="information-circle-outline" size={18} color="#9aa0a6" />
+				<Ionicons
+					name="information-circle-outline"
+					size={18}
+					color="#9aa0a6"
+				/>
 				<Text style={styles.noteText}>
-					One-tap pay from payment emails is coming soon. For now this saves your
-					preferred apps.
+					One-tap pay from payment emails is coming soon. For now this
+					saves your preferred apps.
 				</Text>
 			</View>
 		</ScrollView>
@@ -162,7 +185,12 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		marginRight: 14,
 	},
-	logoText: { color: "#fff", fontSize: 18, fontWeight: "700", fontStyle: "italic" },
+	logoText: {
+		color: "#fff",
+		fontSize: 18,
+		fontWeight: "700",
+		fontStyle: "italic",
+	},
 	phonepe: { color: "#fff", fontSize: 20, fontWeight: "700" },
 	paytm: { fontSize: 11, fontWeight: "800", letterSpacing: -0.4 },
 	appName: { flex: 1, fontSize: 16, color: "#111", fontWeight: "500" },

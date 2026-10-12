@@ -19,8 +19,12 @@ import {
 
 // Status colors are reserved for state and never reused as series colors.
 function rateStatus(rate: number): { color: string; label: string } {
-	if (rate >= 0.9) return { color: "#22a06b", label: "Healthy" };
-	if (rate >= 0.7) return { color: "#b45309", label: "Fair" };
+	if (rate >= 0.9) {
+		return { color: "#22a06b", label: "Healthy" };
+	}
+	if (rate >= 0.7) {
+		return { color: "#b45309", label: "Fair" };
+	}
 	return { color: "#dc2626", label: "Low" };
 }
 

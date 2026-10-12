@@ -14,8 +14,12 @@ function miniCells(year: number, month: number): (number | null)[] {
 		(first.getTime() - lead.getTime()) / (24 * 60 * 60 * 1000),
 	);
 	const cells: (number | null)[] = Array(offset).fill(null);
-	for (let d = 1; d <= daysInMonth; d++) cells.push(d);
-	while (cells.length % 7 !== 0) cells.push(null);
+	for (let d = 1; d <= daysInMonth; d++) {
+		cells.push(d);
+	}
+	while (cells.length % 7 !== 0) {
+		cells.push(null);
+	}
 	return cells;
 }
 
@@ -33,9 +37,13 @@ export function YearGrid({
 	// Which months have at least one event — drives the dot under the name.
 	const monthsWithEvents = new Set<number>();
 	for (const ev of events) {
-		if (!ev.start) continue;
+		if (!ev.start) {
+			continue;
+		}
 		const d = new Date(ev.start);
-		if (d.getFullYear() === year) monthsWithEvents.add(d.getMonth());
+		if (d.getFullYear() === year) {
+			monthsWithEvents.add(d.getMonth());
+		}
 	}
 
 	return (

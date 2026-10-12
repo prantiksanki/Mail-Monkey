@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { MonkeyAvatar } from "@/components/monkey-avatar";
 import { api } from "@/lib/api";
-import { getAvatar } from "@/lib/avatar";
 import { signOut } from "@/lib/auth";
+import { getAvatar } from "@/lib/avatar";
 
 export default function AccountScreen() {
 	const router = useRouter();
@@ -14,17 +14,21 @@ export default function AccountScreen() {
 
 	useEffect(() => {
 		getAvatar().then(setAvatar);
-		api
-			.getSession()
+		api.getSession()
 			.then((s) => {
-				if (s?.user?.name) setName(s.user.name);
-				if (s?.user?.email) setEmail(s.user.email);
+				if (s?.user?.name) {
+					setName(s.user.name);
+				}
+				if (s?.user?.email) {
+					setEmail(s.user.email);
+				}
 			})
 			.catch(() => {});
-		api
-			.getMailboxes()
+		api.getMailboxes()
 			.then((m) => {
-				if (!email && m[0]) setEmail(m[0].email);
+				if (!email && m[0]) {
+					setEmail(m[0].email);
+				}
 			})
 			.catch(() => {});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -110,7 +114,13 @@ const styles = StyleSheet.create({
 		borderBottomColor: "#ececef",
 	},
 	rowLabel: { fontSize: 15, color: "#6b7280" },
-	rowValue: { fontSize: 15, color: "#111", flex: 1, textAlign: "right", marginLeft: 12 },
+	rowValue: {
+		fontSize: 15,
+		color: "#111",
+		flex: 1,
+		textAlign: "right",
+		marginLeft: 12,
+	},
 	signOut: {
 		backgroundColor: "#fff",
 		borderRadius: 16,

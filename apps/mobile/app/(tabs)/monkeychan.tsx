@@ -86,13 +86,17 @@ export default function MonkeyChanScreen() {
 		(async () => {
 			try {
 				const mbs = await api.getMailboxes();
-				if (!mbs[0]) return;
+				if (!mbs[0]) {
+					return;
+				}
 				setMailboxId(mbs[0].id);
 				const inbox = await api.getInbox(mbs[0].id, "all");
 				const names = new Set<string>();
 				for (const m of inbox.messages ?? []) {
 					const { name } = parseSender(m.from);
-					if (name) names.add(name.split(" ")[0]);
+					if (name) {
+						names.add(name.split(" ")[0]);
+					}
 				}
 				setContacts([...names].slice(0, 60));
 			} catch {}
@@ -152,7 +156,9 @@ export default function MonkeyChanScreen() {
 
 	async function send() {
 		const question = input.trim();
-		if (!question || !mailboxId || sending) return;
+		if (!question || !mailboxId || sending) {
+			return;
+		}
 		setMessages((m) => [...m, { role: "user", content: question }]);
 		setInput("");
 		setSending(true);
@@ -193,7 +199,9 @@ export default function MonkeyChanScreen() {
 	}
 
 	async function loadThread(t: Thread) {
-		if (!mailboxId) return;
+		if (!mailboxId) {
+			return;
+		}
 		setHistoryOpen(false);
 		try {
 			const r = await api.getChatThread(mailboxId, t.id);
@@ -340,10 +348,10 @@ export default function MonkeyChanScreen() {
 					hitSlop={8}
 				>
 					<Ionicons
-							name="send"
-							size={20}
-							color={!input.trim() || sending ? "#c9ccd4" : "#141718"}
-						/>
+						name="send"
+						size={20}
+						color={!input.trim() || sending ? "#c9ccd4" : "#141718"}
+					/>
 				</Pressable>
 			</View>
 

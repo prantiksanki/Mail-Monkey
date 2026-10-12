@@ -22,12 +22,19 @@ export default function SplashScreen() {
 			]);
 			const wait = Math.max(0, MIN_MS - (Date.now() - started));
 			setTimeout(() => {
-				if (!active) return;
+				if (!active) {
+					return;
+				}
 				// DEV preview: always show onboarding, ignoring token/flag.
-				if (FORCE_ONBOARDING_PREVIEW) router.replace("/onboarding");
-				else if (token) router.replace("/(tabs)");
-				else if (!onboarded) router.replace("/onboarding");
-				else router.replace("/welcome");
+				if (FORCE_ONBOARDING_PREVIEW) {
+					router.replace("/onboarding");
+				} else if (token) {
+					router.replace("/(tabs)");
+				} else if (!onboarded) {
+					router.replace("/onboarding");
+				} else {
+					router.replace("/welcome");
+				}
 			}, wait);
 		})();
 		return () => {
@@ -51,6 +58,11 @@ const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: "#f7f8fa" },
 	center: { flex: 1, alignItems: "center", justifyContent: "center" },
 	footer: { alignItems: "center", paddingBottom: 56 },
-	name: { fontSize: 35, fontWeight: "600", color: "#000", letterSpacing: -0.7 },
+	name: {
+		fontSize: 35,
+		fontWeight: "600",
+		color: "#000",
+		letterSpacing: -0.7,
+	},
 	version: { fontSize: 14, color: "#757171" },
 });

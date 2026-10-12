@@ -28,19 +28,26 @@ export default function OnboardingScreen() {
 	};
 
 	const goTo = (i: number) => {
-		if (i < 0 || i >= SLIDES.length) return;
+		if (i < 0 || i >= SLIDES.length) {
+			return;
+		}
 		listRef.current?.scrollToOffset({ offset: i * width, animated: true });
 		setIndex(i);
 	};
 
 	const next = () => {
-		if (index >= SLIDES.length - 1) finish();
-		else goTo(index + 1);
+		if (index >= SLIDES.length - 1) {
+			finish();
+		} else {
+			goTo(index + 1);
+		}
 	};
 
 	const onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
 		const i = Math.round(e.nativeEvent.contentOffset.x / width);
-		if (i !== index) setIndex(i);
+		if (i !== index) {
+			setIndex(i);
+		}
 	};
 
 	return (
@@ -72,7 +79,10 @@ export default function OnboardingScreen() {
 							{SLIDES.map((s, i) => (
 								<View
 									key={s.key}
-									style={[styles.dot, i === index && styles.dotActive]}
+									style={[
+										styles.dot,
+										i === index && styles.dotActive,
+									]}
 								/>
 							))}
 						</View>
@@ -82,7 +92,9 @@ export default function OnboardingScreen() {
 			/>
 
 			{/* Arrow navigator pill */}
-			<View style={[styles.navWrap, { paddingBottom: insets.bottom + 24 }]}>
+			<View
+				style={[styles.navWrap, { paddingBottom: insets.bottom + 24 }]}
+			>
 				<View style={styles.nav}>
 					<Pressable
 						onPress={() => goTo(index - 1)}
@@ -97,8 +109,16 @@ export default function OnboardingScreen() {
 						/>
 					</Pressable>
 					<View style={styles.navDivider} />
-					<Pressable onPress={next} hitSlop={10} style={styles.navBtn}>
-						<Ionicons name="arrow-forward" size={22} color="#23262f" />
+					<Pressable
+						onPress={next}
+						hitSlop={10}
+						style={styles.navBtn}
+					>
+						<Ionicons
+							name="arrow-forward"
+							size={22}
+							color="#23262f"
+						/>
 					</Pressable>
 				</View>
 			</View>
@@ -108,7 +128,11 @@ export default function OnboardingScreen() {
 
 const styles = StyleSheet.create({
 	container: { flex: 1, backgroundColor: "#f7f8fa" },
-	topBar: { alignItems: "flex-end", paddingHorizontal: 24, paddingVertical: 8 },
+	topBar: {
+		alignItems: "flex-end",
+		paddingHorizontal: 24,
+		paddingVertical: 8,
+	},
 	skip: { fontSize: 18, fontWeight: "600", color: "#d7d7d7" },
 	slide: { flex: 1, alignItems: "center", paddingHorizontal: 26 },
 	card: {
@@ -132,7 +156,12 @@ const styles = StyleSheet.create({
 		borderRadius: 4,
 		backgroundColor: "#c9ccd4",
 	},
-	dotActive: { backgroundColor: "#141718", width: 9, height: 9, borderRadius: 5 },
+	dotActive: {
+		backgroundColor: "#141718",
+		width: 9,
+		height: 9,
+		borderRadius: 5,
+	},
 	title: {
 		fontSize: 32,
 		fontWeight: "700",
