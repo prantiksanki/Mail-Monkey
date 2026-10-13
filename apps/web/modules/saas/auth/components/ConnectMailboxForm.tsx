@@ -16,7 +16,6 @@ import { PasswordInput } from "@repo/ui/components/password-input";
 import { Switch } from "@repo/ui/components/switch";
 import { useVerifyImapMailboxMutation } from "@saas/mailboxes/lib/api";
 import { FloatingPaths } from "@saas/shared/components/FloatingPaths";
-import { MailMonkeyInboxDemo } from "@saas/shared/components/MailMonkeyInboxDemo";
 import { CheckCircle2Icon, ChevronLeftIcon, MailIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -145,9 +144,7 @@ export function ConnectMailboxForm() {
 						</span>
 					</Link>
 				</div>
-				<div className="z-10 flex flex-1 items-center justify-center">
-					<MailMonkeyInboxDemo />
-				</div>
+				<div className="z-10 flex-1" />
 				<div className="absolute inset-0">
 					<FloatingPaths position={1} />
 					<FloatingPaths position={-1} />
