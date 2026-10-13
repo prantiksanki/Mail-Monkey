@@ -7,7 +7,6 @@ import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { OrganizationInvitationAlert } from "@saas/organizations/components/OrganizationInvitationAlert";
 import { FloatingPaths } from "@saas/shared/components/FloatingPaths";
-import { MailMonkeyInboxDemo } from "@saas/shared/components/MailMonkeyInboxDemo";
 import { useRouter } from "@shared/hooks/router";
 import { getSafeRedirectPath } from "@shared/lib/safe-redirect";
 import { CheckCircle2Icon, ChevronLeftIcon } from "lucide-react";
@@ -83,9 +82,7 @@ export function LoginForm() {
 						<Logo className="h-12" />
 					</Link>
 				</div>
-				<div className="z-10 flex flex-1 items-center justify-center">
-					<MailMonkeyInboxDemo />
-				</div>
+				<div className="z-10 flex-1" />
 				<div className="absolute inset-0">
 					<FloatingPaths position={1} />
 					<FloatingPaths position={-1} />
