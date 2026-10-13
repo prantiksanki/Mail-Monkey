@@ -34,7 +34,10 @@ function generateNonce(): string {
 	return btoa(crypto.randomUUID());
 }
 
-function buildContentSecurityPolicy(nonce: string): string {
+function buildContentSecurityPolicy(
+	nonce: string,
+	{ allowRemoteImages }: { allowRemoteImages: boolean },
+): string {
 	return [
 		"default-src 'self'",
 		"base-uri 'self'",
@@ -64,6 +67,11 @@ function buildContentSecurityPolicy(nonce: string): string {
 			"https://randomuser.me", // testimonial portraits
 			"https://miro.medium.com", // blog posts cross-published from Medium
 			...(storageOrigin ? [storageOrigin] : []),
+			// Inside the app, email bodies render in a srcDoc iframe, which
+			// inherits this policy; senders' logos and photos are hosted on
+			// arbitrary HTTPS domains, so they need `https:` there. Public
+			// pages keep the strict allow-list above.
+			...(allowRemoteImages ? ["https:"] : []),
 		].join(" "),
 		"font-src 'self' data:",
 		[
@@ -95,7 +103,9 @@ export default async function proxy(req: NextRequest) {
 	const { pathname, origin } = req.nextUrl;
 
 	const nonce = generateNonce();
-	const csp = buildContentSecurityPolicy(nonce);
+	const csp = buildContentSecurityPolicy(nonce, {
+		allowRemoteImages: pathname.startsWith("/app"),
+	});
 
 	const requestHeaders = new Headers(req.headers);
 	requestHeaders.set("x-nonce", nonce);
