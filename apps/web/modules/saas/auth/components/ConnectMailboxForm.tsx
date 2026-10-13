@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authClient } from "@repo/auth/client";
+import { Logo } from "@repo/ui";
 import { Button } from "@repo/ui/components/button";
 import {
 	Form,
@@ -18,14 +19,12 @@ import { useVerifyImapMailboxMutation } from "@saas/mailboxes/lib/api";
 import { FloatingPaths } from "@saas/shared/components/FloatingPaths";
 import { MailMonkeyInboxDemo } from "@saas/shared/components/MailMonkeyInboxDemo";
 import { CheckCircle2Icon, ChevronLeftIcon, MailIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { config } from "@/config";
 import { useAuthErrorMessages } from "../hooks/errors-messages";
 
 const formSchema = z.object({
@@ -132,17 +131,7 @@ export function ConnectMailboxForm() {
 				<div className="from-background absolute inset-0 z-10 bg-gradient-to-t to-transparent" />
 				<div className="z-10 flex items-center gap-2">
 					<Link href="/" className="flex items-center gap-2">
-						<Image
-							src="/images/mailmonkey-icon.png"
-							alt=""
-							width={221}
-							height={160}
-							className="h-7 w-auto"
-							priority
-						/>
-						<span className="font-semibold text-xl">
-							{config.appName}
-						</span>
+						<Logo className="h-12" />
 					</Link>
 				</div>
 				<div className="z-10 flex flex-1 items-center justify-center">
@@ -208,16 +197,7 @@ export function ConnectMailboxForm() {
 				) : (
 					<div className="mx-auto w-full max-w-sm space-y-4">
 						<div className="flex items-center gap-2 lg:hidden">
-							<Image
-								src="/images/mailmonkey-icon.png"
-								alt=""
-								width={221}
-								height={160}
-								className="h-7 w-auto"
-							/>
-							<span className="font-semibold text-xl">
-								{config.appName}
-							</span>
+							<Logo className="h-10" />
 						</div>
 
 						<div className="flex flex-col space-y-1">

@@ -1,6 +1,7 @@
 "use client";
 
 import { LocaleLink, useLocalePathname } from "@i18n/routing";
+import { Logo } from "@repo/ui";
 import { Button } from "@repo/ui/components/button";
 import {
 	Sheet,
@@ -14,7 +15,6 @@ import { ChevronDownIcon, MenuIcon } from "lucide-react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
-import { config } from "@/config";
 
 interface IntegrationLink {
 	label: string;
@@ -93,17 +93,7 @@ export function NavBar() {
 					href="/"
 					className="flex shrink-0 items-center gap-2 leading-none hover:no-underline"
 				>
-					<Image
-						src="/images/mailmonkey-icon.png"
-						alt=""
-						width={221}
-						height={160}
-						className="-translate-y-[4px] h-6 w-auto"
-						priority
-					/>
-					<span className="text-[18px] font-extrabold tracking-[-0.03em] text-foreground">
-						{config.appName}
-					</span>
+					<Logo className="h-9" />
 				</LocaleLink>
 
 				{/* Right-hand cluster: nav links + CTA buttons + mobile trigger, grouped and pushed to the right */}

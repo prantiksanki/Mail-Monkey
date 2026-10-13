@@ -28,24 +28,31 @@ export function Logo({
 		);
 	}
 
+	// Full logo (mascot + wordmark + tagline). The dark variant has the navy
+	// "Mail" and tagline recoloured to white so it stays legible on dark themes.
+	// Size it with a height class, e.g. className="h-12".
 	return (
 		<span
-			className={cn(
-				"flex items-center gap-2 font-semibold text-foreground leading-none",
-				className,
-			)}
+			className={cn("flex h-10 shrink-0 items-center", className)}
+			role="img"
+			aria-label="Mail Monkey"
 		>
 			<img
-				src="/images/logo-mark-32.png"
+				src="/images/mailmonkey-logo.png"
 				alt=""
-				width={32}
-				height={32}
-				className="size-8 shrink-0"
+				width={640}
+				height={248}
+				className="h-full w-auto dark:hidden"
 				aria-hidden="true"
 			/>
-			<span className="text-xl font-semibold tracking-[-0.03em]">
-				Mail Monkey
-			</span>
+			<img
+				src="/images/mailmonkey-logo-dark.png"
+				alt=""
+				width={640}
+				height={248}
+				className="hidden h-full w-auto dark:block"
+				aria-hidden="true"
+			/>
 		</span>
 	);
 }

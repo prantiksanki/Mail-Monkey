@@ -1,13 +1,13 @@
 "use client";
 
 import { config as authConfig } from "@repo/auth/config";
+import { Logo } from "@repo/ui";
 import { Button } from "@repo/ui/components/button";
 import { OrganizationInvitationAlert } from "@saas/organizations/components/OrganizationInvitationAlert";
 import { FloatingPaths } from "@saas/shared/components/FloatingPaths";
 import { MailMonkeyInboxDemo } from "@saas/shared/components/MailMonkeyInboxDemo";
 import { getSafeRedirectPath } from "@shared/lib/safe-redirect";
 import { ChevronLeftIcon, MailIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -46,17 +46,7 @@ export function SignupForm() {
 				<div className="from-background absolute inset-0 z-10 bg-gradient-to-t to-transparent" />
 				<div className="z-10 flex items-center gap-2">
 					<Link href="/" className="flex items-center gap-2">
-						<Image
-							src="/images/mailmonkey-icon.png"
-							alt=""
-							width={221}
-							height={160}
-							className="h-7 w-auto"
-							priority
-						/>
-						<span className="font-semibold text-xl">
-							{config.appName}
-						</span>
+						<Logo className="h-12" />
 					</Link>
 				</div>
 				<div className="z-10 flex flex-1 items-center justify-center">
@@ -89,16 +79,7 @@ export function SignupForm() {
 
 				<div className="mx-auto w-full max-w-sm space-y-4">
 					<div className="flex items-center gap-2 lg:hidden">
-						<Image
-							src="/images/mailmonkey-icon.png"
-							alt=""
-							width={221}
-							height={160}
-							className="h-7 w-auto"
-						/>
-						<span className="font-semibold text-xl">
-							{config.appName}
-						</span>
+						<Logo className="h-10" />
 					</div>
 
 					<div className="flex flex-col space-y-1">
