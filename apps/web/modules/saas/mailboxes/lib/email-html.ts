@@ -8,29 +8,39 @@ const ALLOWED_TAGS = [
 	"b",
 	"blockquote",
 	"br",
+	"address",
+	"article",
 	"caption",
+	"center",
 	"code",
 	"col",
 	"colgroup",
 	"div",
 	"em",
+	"figcaption",
+	"figure",
 	"font",
+	"footer",
 	"h1",
 	"h2",
 	"h3",
 	"h4",
 	"h5",
 	"h6",
+	"header",
 	"hr",
 	"i",
 	"img",
 	"li",
 	"ol",
 	"p",
+	"picture",
 	"pre",
 	"q",
 	"s",
+	"section",
 	"small",
+	"source",
 	"span",
 	"strike",
 	"strong",
@@ -69,6 +79,12 @@ const ALLOWED_ATTR = [
 	"dir",
 	"target",
 	"rel",
+	"class",
+	"srcset",
+	"sizes",
+	"media",
+	"background",
+	"nowrap",
 ];
 
 const SANITIZE_CONFIG = {
@@ -132,6 +148,25 @@ export function sanitizeEmailHtml(html: string): string {
 	);
 }
 
+// Email layouts (e.g. GitHub notifications) are styled by <style> blocks,
+// usually in <head>, that DOMPurify would drop. Keep their CSS for the
+// sandboxed srcDoc iframe only (no scripts run there): remove any markup,
+// @import and legacy script-in-CSS constructs so it stays plain CSS.
+function extractEmailCss(html: string): string {
+	const blocks = html.match(/<style\b[^>]*>[\s\S]*?<\/style>/gi) ?? [];
+	return blocks
+		.map((block) =>
+			block
+				.replace(/^<style\b[^>]*>/i, "")
+				.replace(/<\/style>$/i, "")
+				.replace(/<\/?[a-z][^>]*>/gi, "")
+				.replace(/@import[^;]*;?/gi, "")
+				.replace(/expression\s*\(/gi, "")
+				.replace(/(java|vb)script:/gi, ""),
+		)
+		.join("\n");
+}
+
 // Wraps raw email HTML in a self-contained, sandboxed document. Module-level
 // and pure so the output is referentially stable when memoized by the caller.
 // Shared by InboxPage's message detail view and the Payments card detail view
@@ -140,6 +175,7 @@ export function sanitizeEmailHtml(html: string): string {
 // iframe (no allow-scripts) + CSP script-src 'none' as defense-in-depth.
 export function buildEmailSrcDoc(html: string): string {
 	// Strip cid: images (inline attachments not fetched) to avoid broken img icons
+	const emailCss = extractEmailCss(html);
 	const sanitized = sanitizeEmailHtml(html).replace(
 		/src="cid:[^"]*"/gi,
 		'src=""',
@@ -160,14 +196,14 @@ export function buildEmailSrcDoc(html: string): string {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     font-size: 14px;
     line-height: 1.6;
-    word-break: break-word;
+    overflow-wrap: break-word;
   }
   img { max-width: 100%; height: auto; display: inline-block; }
   a { color: #1a73e8; }
   table { max-width: 100% !important; }
-  td, th { word-break: break-word; }
   pre { white-space: pre-wrap; font-family: inherit; }
 </style>
+<style>${emailCss}</style>
 </head>
 <body>${sanitized}</body>
 </html>`;
