@@ -141,6 +141,16 @@ export function SignupForm() {
 						</Button>
 					</div>
 
+					<p className="text-muted-foreground text-sm text-center">
+						{t("auth.signup.alreadyHaveAccount")}{" "}
+						<Link
+							href="/auth/login"
+							className="font-medium underline underline-offset-4 hover:text-foreground/70"
+						>
+							{t("auth.signup.signIn")}
+						</Link>
+					</p>
+
 					<p className="text-muted-foreground text-xs">
 						By clicking continue, you agree to our{" "}
 						<a
