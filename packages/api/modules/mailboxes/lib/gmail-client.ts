@@ -19,13 +19,61 @@ function getErrorStatus(error: unknown): number | undefined {
 	);
 }
 
-function translateGmailError(error: unknown, accountId: string): Error {
+const RATE_LIMIT_REASONS = new Set([
+	"rateLimitExceeded",
+	"userRateLimitExceeded",
+	"quotaExceeded",
+]);
+
+/**
+ * Gmail signals quota exhaustion with 429, or with a 403 whose reason is
+ * rateLimitExceeded/userRateLimitExceeded/quotaExceeded. Those are temporary
+ * and must not be mistaken for a revoked grant.
+ */
+function isRateLimitError(
+	error: unknown,
+	status: number | undefined,
+	message: string,
+): boolean {
+	if (status === 429) {
+		return true;
+	}
+	if (status !== 403) {
+		return false;
+	}
+	const details = error as {
+		errors?: { reason?: string }[];
+		response?: { data?: { error?: { errors?: { reason?: string }[] } } };
+	};
+	const reasons = [
+		...(details.errors ?? []),
+		...(details.response?.data?.error?.errors ?? []),
+	].map((e) => e.reason);
+	return (
+		reasons.some((reason) => reason && RATE_LIMIT_REASONS.has(reason)) ||
+		/quota exceeded|rate limit/i.test(message)
+	);
+}
+
+export function translateGmailError(error: unknown, accountId: string): Error {
 	if (error instanceof ORPCError) {
 		return error;
 	}
 
 	const message = error instanceof Error ? error.message : String(error);
 	const status = getErrorStatus(error);
+
+	if (isRateLimitError(error, status, message)) {
+		logger.warn("[gmail-client] Gmail rate limit hit", {
+			accountId,
+			status,
+			message,
+		});
+		return new ORPCError("TOO_MANY_REQUESTS", {
+			message:
+				"Gmail is temporarily limiting requests for this mailbox — please try again in a minute.",
+		});
+	}
 
 	if (
 		message.includes("invalid_grant") ||
