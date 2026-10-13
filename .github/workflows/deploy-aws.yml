@@ -83,6 +83,22 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      # Bring the database schema up to date before the new code goes live.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Apply database migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        run: |
+          pnpm install --frozen-lockfile --filter "@repo/database..."
+          pnpm --filter @repo/database exec prisma migrate deploy
+
       - name: Deploy on EC2 via SSM
         env:
           IMAGE: ${{ vars.ECR_REPOSITORY_URI }}:${{ github.sha }}

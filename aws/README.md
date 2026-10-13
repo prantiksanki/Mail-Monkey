@@ -4,7 +4,9 @@ Every push to `main` runs `.github/workflows/deploy-aws.yml`:
 
 1. gitleaks scans the repo for leaked secrets.
 2. GitHub Actions builds the Docker image (`Dockerfile`) and pushes it to ECR.
-3. It sends `aws/server-deploy.sh` to the EC2 server through SSM, which pulls
+3. It applies pending database migrations (`prisma migrate deploy`) using the
+   `DATABASE_URL` / `DIRECT_URL` secrets.
+4. It sends `aws/server-deploy.sh` to the EC2 server through SSM, which pulls
    the image, loads the app's settings from Parameter Store and restarts the
    app behind Caddy (automatic HTTPS).
 
