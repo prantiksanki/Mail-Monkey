@@ -30,4 +30,15 @@ export const config = {
 		// whether the marketing features should be enabled (otherwise all routes will be redirect to the saas part)
 		enabled: true,
 	},
+
+	// app sections that can be hidden from the UI (e.g. for a demo). Only the
+	// menu entries / page sections are hidden; routes and logic keep working.
+	ui: {
+		// Settings → Integrations menu entry
+		showIntegrations: false,
+		// Settings → General: Creator & Freelancer mode, Media Kit, Profile Analytics
+		showCreatorMode: false,
+		// Sidebar → Bills entry and the dashboard payment alert
+		showBills: false,
+	},
 } as const;

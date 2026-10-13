@@ -479,11 +479,15 @@ export function NavBar() {
 			href: "/app/settings/general",
 			icon: Settings2Icon,
 		},
-		{
-			label: "Integrations",
-			href: "/app/settings/integrations",
-			icon: PlugIcon,
-		},
+		...(webConfig.ui.showIntegrations
+			? [
+					{
+						label: "Integrations",
+						href: "/app/settings/integrations",
+						icon: PlugIcon,
+					},
+				]
+			: []),
 		...(activeOrganization && isOrganizationAdmin
 			? [
 					{
@@ -783,16 +787,18 @@ export function NavBar() {
 				/>
 
 				{/* 3.5 Payments */}
-				<TopNavItem
-					icon={CreditCardIcon}
-					label={t("app.menu.payments")}
-					isActive={isPaymentTracking}
-					collapsed={effectiveCollapsed}
-					onClick={() => {
-						router.push("/app/payment-tracking");
-						close();
-					}}
-				/>
+				{webConfig.ui.showBills && (
+					<TopNavItem
+						icon={CreditCardIcon}
+						label={t("app.menu.payments")}
+						isActive={isPaymentTracking}
+						collapsed={effectiveCollapsed}
+						onClick={() => {
+							router.push("/app/payment-tracking");
+							close();
+						}}
+					/>
+				)}
 
 				{/* 4. Rules */}
 				<TopNavItem

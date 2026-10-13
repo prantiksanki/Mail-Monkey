@@ -10,6 +10,7 @@ import { UserLanguageForm } from "@saas/settings/components/UserLanguageForm";
 import { SettingsList } from "@saas/shared/components/SettingsList";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { config as webConfig } from "@/config";
 
 export async function generateMetadata() {
 	const t = await getTranslations();
@@ -32,9 +33,13 @@ export default async function AccountSettingsPage() {
 			{Object.keys(config.locales).length > 1 && <UserLanguageForm />}
 			<ChangeNameForm />
 			<ChangeEmailForm />
-			<CreatorModeForm />
-			<MediaKitForm />
-			<ProfileAnalytics />
+			{webConfig.ui.showCreatorMode && (
+				<>
+					<CreatorModeForm />
+					<MediaKitForm />
+					<ProfileAnalytics />
+				</>
+			)}
 		</SettingsList>
 	);
 }

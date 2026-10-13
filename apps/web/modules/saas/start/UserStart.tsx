@@ -43,6 +43,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
+import { config as webConfig } from "@/config";
 
 const SECONDS_SAVED_PER_FIRE = 20;
 
@@ -267,7 +268,7 @@ export default function UserStart() {
 				isWatching={isWatching}
 			/>
 
-			<DashboardPaymentAlert />
+			{webConfig.ui.showBills && <DashboardPaymentAlert />}
 
 			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
 				<MailboxLinksTile
