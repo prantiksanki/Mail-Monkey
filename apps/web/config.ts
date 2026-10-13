@@ -40,5 +40,7 @@ export const config = {
 		showCreatorMode: false,
 		// Sidebar → Bills entry and the dashboard payment alert
 		showBills: false,
+		// Home page stats band (hours saved, $ saved, emails processed)
+		showStats: false,
 	},
 } as const;

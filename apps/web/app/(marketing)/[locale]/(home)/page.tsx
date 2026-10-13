@@ -8,6 +8,7 @@ import { StatsStrip } from "@marketing/home/components/StatsStrip";
 import { getBaseUrl } from "@repo/utils";
 import type { Metadata } from "next";
 import { setRequestLocale } from "next-intl/server";
+import { config as webConfig } from "@/config";
 
 export const revalidate = 3600;
 
@@ -52,7 +53,7 @@ export default async function Home({
 		<>
 			<JsonLd />
 			<Hero />
-			<StatsStrip />
+			{webConfig.ui.showStats && <StatsStrip />}
 			<SpeakYourMind />
 			<FeatureCarousel />
 			<FaqSection />
