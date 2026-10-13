@@ -1,11 +1,8 @@
 import { Brain } from "lucide-react";
 import { LocaleLink } from "@/modules/i18n/routing";
-import { AiProviderButtons } from "./AiProviderButtons";
 import { FollowUsDock } from "./FollowUsDock";
-import { FooterEmailCopy } from "./FooterEmailCopy";
 
 const footerLinks = [
-	{ label: "Zoom Integration", href: "/integrations/zoom" },
 	{ label: "About", href: "/about" },
 	{ label: "Blog", href: "/blog" },
 	{ label: "Contact Us", href: "/contact" },
@@ -20,47 +17,6 @@ const legalLinks = [
 export function Footer() {
 	return (
 		<footer className="rounded-t-[40px] bg-[#0663DA] text-white">
-			<div className="mx-auto grid w-full max-w-7xl gap-6 px-6 py-8 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-10">
-				<div className="rounded-[28px] border border-white/10 bg-[#00388F] px-8 py-8">
-					<div className="flex items-start justify-between gap-4">
-						<div className="space-y-6">
-							<p className="font-semibold text-sm uppercase tracking-[0.2em] text-lime-300">
-								Explore AI Summary
-							</p>
-							<h3 className="max-w-sm font-semibold text-3xl leading-tight tracking-tight text-white">
-								Ask AI about Mail Monkey
-							</h3>
-							<AiProviderButtons />
-						</div>
-					</div>
-				</div>
-
-				<div className="rounded-[28px] border border-white/10 bg-[#00388F] px-8 py-8">
-					<div className="max-w-sm space-y-6">
-						<p className="font-medium text-sm uppercase tracking-[0.2em] text-white/70">
-							Stay Updated
-						</p>
-						<p className="text-[30px] leading-tight tracking-tight text-white">
-							Get early access updates and insights on the future
-							of intelligent email.
-						</p>
-						<form className="space-y-4">
-							<input
-								type="email"
-								placeholder="Email address"
-								className="h-12 w-full border-0 border-white/30 border-b bg-transparent px-0 text-lg text-white outline-none placeholder:text-white/50 focus:border-white"
-							/>
-							<button
-								type="submit"
-								className="inline-flex items-center justify-center border-0 bg-transparent px-0 font-semibold text-sm text-white/70 uppercase tracking-[0.24em] transition hover:text-white"
-							>
-								Subscribe
-							</button>
-						</form>
-					</div>
-				</div>
-			</div>
-
 			<div className="mx-auto grid w-full max-w-7xl gap-12 px-6 py-12 sm:px-8 lg:grid-cols-[1.2fr_0.9fr_0.8fr] lg:px-10">
 				<div className="space-y-5">
 					<h3 className="font-semibold text-3xl text-white tracking-tight">
@@ -128,7 +84,6 @@ export function Footer() {
 						>
 							Cookie Preferences
 						</a>
-						<FooterEmailCopy email="support@mailmonkey.app" />
 					</div>
 				</div>
 			</div>
