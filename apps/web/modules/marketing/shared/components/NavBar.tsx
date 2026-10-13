@@ -32,18 +32,7 @@ interface MenuItem {
 // Add a new integration by appending an entry to `children` below.
 const menuItems: MenuItem[] = [
 	{ label: "Features", href: "/#features" },
-	{
-		label: "Integrations",
-		href: "/integrations/zoom",
-		children: [
-			{
-				label: "Zoom",
-				href: "/integrations/zoom",
-				description: "Instant meeting links on every booking",
-				icon: "/images/zoom-logo.svg",
-			},
-		],
-	},
+	{ label: "Integrations", href: "/integrations/zoom" },
 	{ label: "Blog", href: "/blog" },
 	{ label: "About", href: "/about" },
 ];
