@@ -68,7 +68,13 @@ You are an assistant that drafts email replies. Given the email a user received,
 - Output plain text only — no markdown, no subject line, no "Draft:" prefixes.
 - "intent" must be one concise sentence describing what the sender wants.
 - Set "confidence" per draft based on how well the email's requests are addressable from the given content.
-</rules>`;
+</rules>
+
+<output_format>
+Respond with a single JSON object of exactly this shape — no extra text outside the JSON:
+{"intent": string, "drafts": [{"tone": "professional"|"friendly"|"formal", "confidence": "high"|"medium"|"low", "body": string}, ...]}
+"drafts" must have exactly 3 entries, one per tone, in the order professional, friendly, formal.
+</output_format>`;
 
 /**
  * Builds the user prompt sent to the model. Pure so it can be unit-tested

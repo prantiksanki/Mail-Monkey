@@ -9,12 +9,12 @@ export async function generateMetadata() {
 	return {
 		title: t("contact.title"),
 		description:
-			"Get in touch with the Popsuites team. We typically respond within one business day.",
+			"Get in touch with the Mail Monkey team. We typically respond within one business day.",
 		alternates: { canonical: url },
 		openGraph: {
 			title: t("contact.title"),
 			url,
-			siteName: "Popsuites",
+			siteName: "Mail Monkey",
 			type: "website",
 			images: ["/opengraph-image"],
 		},

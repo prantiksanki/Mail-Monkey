@@ -67,18 +67,6 @@ const nextConfig: NextConfig = {
 	async redirects() {
 		return [
 			{
-				source: "/:path*",
-				has: [{ type: "host", value: "zer0email.com" }],
-				destination: "https://popsuites.ai/:path*",
-				permanent: true,
-			},
-			{
-				source: "/:path*",
-				has: [{ type: "host", value: "www.zer0email.com" }],
-				destination: "https://popsuites.ai/:path*",
-				permanent: true,
-			},
-			{
 				source: "/privacy",
 				destination: "/legal/privacy-policy",
 				permanent: true,

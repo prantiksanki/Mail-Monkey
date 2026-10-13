@@ -16,8 +16,7 @@
  * output. When uncertain, the evaluator defaults to false (no match).
  */
 
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateObject, TEXT_MODEL_ID } from "@repo/ai";
+import { generateWithSarvam } from "@repo/ai";
 import { logger } from "@repo/logs";
 import { z } from "zod";
 import type { RuleCondition } from "../types";
@@ -172,21 +171,30 @@ Labels: ${email.labelIds.join(", ")}
 </email>`;
 }
 
+/**
+ * Parses the HTTP status code Sarvam embeds in its error message
+ * (`generateWithSarvam` throws plain `Error`s, not typed API errors).
+ */
+function parseSarvamStatusCode(error: unknown): number | undefined {
+	if (!(error instanceof Error)) {
+		return undefined;
+	}
+	const match = error.message.match(/^Sarvam chat completion failed: (\d+)/);
+	return match ? Number(match[1]) : undefined;
+}
+
 async function evaluateAiCondition(
 	email: ParsedEmail,
 	aiInstructions: string,
 ): Promise<boolean> {
-	const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-	if (!apiKey) {
+	if (!process.env.SARVAM_API_KEY) {
 		logger.warn(
-			"[rule-evaluator] GOOGLE_GENERATIVE_AI_API_KEY not set, skipping AI condition",
+			"[rule-evaluator] SARVAM_API_KEY not set, skipping AI condition",
 		);
 		return false;
 	}
 
-	const google = createGoogleGenerativeAI({ apiKey });
-
-	logger.info("[rule-evaluator] Starting Gemini evaluation", {
+	logger.info("[rule-evaluator] Starting Sarvam evaluation", {
 		messageId: email.id,
 		subject: email.subject,
 		from: email.from,
@@ -196,39 +204,31 @@ async function evaluateAiCondition(
 	const maxRetries = 3;
 	for (let attempt = 0; attempt <= maxRetries; attempt++) {
 		try {
-			logger.info("[rule-evaluator] Calling Google Gemini", {
+			logger.info("[rule-evaluator] Calling Sarvam", {
 				messageId: email.id,
 				attempt: attempt + 1,
-				model: TEXT_MODEL_ID,
 			});
 
-			const { object } = await generateObject({
-				model: google(TEXT_MODEL_ID),
+			const { match } = await generateWithSarvam({
 				schema: MATCH_ZOD_SCHEMA,
 				temperature: 0,
 				system: buildEvaluatorSystem(),
 				prompt: buildEvaluatorPrompt(email, aiInstructions),
 			});
 
-			logger.info("[rule-evaluator] Gemini responded", {
+			logger.info("[rule-evaluator] Sarvam responded", {
 				messageId: email.id,
-				match: object.match,
+				match,
 				aiInstructions,
 			});
 
-			return object.match === true;
+			return match === true;
 		} catch (error: unknown) {
-			const statusCode =
-				error instanceof Error
-					? ((error as { statusCode?: number; status?: number })
-							.statusCode ??
-						(error as { statusCode?: number; status?: number })
-							.status)
-					: undefined;
+			const statusCode = parseSarvamStatusCode(error);
 
 			if (statusCode === 429 && attempt < maxRetries) {
 				const delay = 2 ** (attempt + 1) * 5000;
-				logger.warn("[rule-evaluator] Gemini rate limited, retrying", {
+				logger.warn("[rule-evaluator] Sarvam rate limited, retrying", {
 					messageId: email.id,
 					attempt: attempt + 1,
 					delayMs: delay,
@@ -237,7 +237,7 @@ async function evaluateAiCondition(
 				continue;
 			}
 
-			logger.error("[rule-evaluator] Gemini call failed", {
+			logger.error("[rule-evaluator] Sarvam call failed", {
 				messageId: email.id,
 				aiInstructions,
 				statusCode,

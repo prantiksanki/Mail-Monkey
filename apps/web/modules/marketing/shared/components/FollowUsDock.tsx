@@ -25,11 +25,7 @@ const SPRING = { mass: 0.1, stiffness: 150, damping: 12 };
 const socialLinks = [
 	{ href: "https://x.com", label: "Twitter (X)", icon: TwitterXAltIcon },
 	{ href: "https://instagram.com", label: "Instagram", icon: InstagramIcon },
-	{
-		href: "https://www.youtube.com/@popsuitesai",
-		label: "YouTube",
-		icon: YoutubeIcon,
-	},
+	{ href: "https://www.youtube.com", label: "YouTube", icon: YoutubeIcon },
 ] as const;
 
 type SocialIcon = ComponentType<SVGProps<SVGSVGElement> & { size?: number }>;

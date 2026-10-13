@@ -1,6 +1,5 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { ORPCError } from "@orpc/server";
-import { generateObject, TEXT_MODEL_ID } from "@repo/ai";
+import { generateWithSarvam } from "@repo/ai";
 import { logger } from "@repo/logs";
 import { canUseRuleEngine } from "@repo/payments/lib/plan-limits";
 import { z } from "zod";
@@ -252,17 +251,14 @@ export const compileRules = protectedProcedure
 			});
 		}
 
-		const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-		if (!apiKey) {
-			logger.error("GOOGLE_GENERATIVE_AI_API_KEY is not configured");
+		if (!process.env.SARVAM_API_KEY) {
+			logger.error("SARVAM_API_KEY is not configured");
 			throw new ORPCError("INTERNAL_SERVER_ERROR", {
 				message: "AI rule compilation is not available",
 			});
 		}
 
 		try {
-			const google = createGoogleGenerativeAI({ apiKey });
-
 			const makeUserPrompt = (userInput: string, retry = false) => {
 				const retryHint = retry
 					? `\n\nIMPORTANT: The user's request describes email content types or categories, not just senders. You MUST write aiInstructions for rules that filter by content. An empty aiInstructions means the rule matches ALL emails from that sender with no content filtering — only do this if that's what the user wants.\n`
@@ -280,17 +276,16 @@ For each rule, decide: does the user want to match ALL emails from a sender, or 
 
 			const runCompiler = async (userPrompt: string) => {
 				const generate = () =>
-					generateObject({
-						model: google(TEXT_MODEL_ID),
+					generateWithSarvam({
 						schema: RULE_ZOD_SCHEMA,
 						temperature: 0.1,
 						system: SYSTEM_PROMPT,
 						prompt: userPrompt,
 					});
 
-				let object: Awaited<ReturnType<typeof generate>>["object"];
+				let object: Awaited<ReturnType<typeof generate>>;
 				try {
-					({ object } = await generate());
+					object = await generate();
 				} catch (error) {
 					// Retry once on transient schema-mismatch — a single bad
 					// generation shouldn't surface as a hard error to the user.
@@ -301,7 +296,7 @@ For each rule, decide: does the user want to match ALL emails from a sender, or 
 								error instanceof Error ? error.message : error,
 						},
 					);
-					({ object } = await generate());
+					object = await generate();
 				}
 				return transformResponse(object);
 			};

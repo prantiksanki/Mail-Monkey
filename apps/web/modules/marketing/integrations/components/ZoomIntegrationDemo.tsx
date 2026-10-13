@@ -13,7 +13,7 @@ export function ZoomIntegrationDemo() {
 			</div>
 			<p className="mx-auto mb-10 max-w-2xl text-[18px] leading-[1.5] text-foreground">
 				Once Zoom is connected, every upcoming meeting shows its join
-				link right inside Popsuites — no digging through email.
+				link right inside Mail Monkey — no digging through email.
 			</p>
 
 			<div className="mx-auto mb-10 max-w-[560px] overflow-hidden rounded-[2rem] border border-border bg-card text-left shadow-[0_18px_50px_-32px_rgba(0,0,0,0.2)]">
@@ -36,7 +36,7 @@ export function ZoomIntegrationDemo() {
 						<PlayIcon className="ml-1 size-6 fill-[#0b1220] text-[#0b1220]" />
 					</span>
 					<span className="absolute bottom-4 left-5 font-mono text-[11px] uppercase tracking-[0.2em] text-white/70">
-						Popsuites + Zoom · 1:24
+						Mail Monkey + Zoom · 1:24
 					</span>
 				</button>
 			</div>

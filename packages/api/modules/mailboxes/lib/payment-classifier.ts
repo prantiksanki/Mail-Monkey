@@ -1,15 +1,16 @@
 /**
  * Payment/bill email detection and extraction for the Payments Kanban board.
  *
- * Reuses the *pattern* from email-categorizer.ts (single-email generateObject
- * call, 429 retry with backoff, Gemini Flash) rather than sharing code with
- * it — this classifier answers a different question (is this a payment email,
- * and if so what are its fields) with a different, larger schema and a safe
- * failure mode of "not a payment email" rather than "default category".
+ * Reuses the *pattern* from email-categorizer.ts (single-email call, 429
+ * retry with backoff) rather than sharing code with it — this classifier
+ * answers a different question (is this a payment email, and if so what are
+ * its fields) with a different, larger schema and a safe failure mode of
+ * "not a payment email" rather than "default category".
+ *
+ * Runs on Sarvam rather than Gemini — see email-categorizer.ts for why.
  */
 
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateObject, TEXT_MODEL_ID } from "@repo/ai";
+import { generateWithSarvam } from "@repo/ai";
 import { logger } from "@repo/logs";
 import { z } from "zod";
 
@@ -34,12 +35,15 @@ export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 
 const PAYMENT_SCHEMA = z.object({
 	isPaymentEmail: z.boolean(),
-	paymentType: z.enum(PAYMENT_TYPES).optional(),
+	// The model sometimes returns off-enum values (e.g. "pending", "n/a").
+	// One bad optional field must not discard an otherwise valid
+	// classification, so unrecognised values fall back instead of throwing.
+	paymentType: z.enum(PAYMENT_TYPES).optional().catch("other"),
 	merchant: z.string().optional(),
 	amount: z.number().optional(),
 	currency: z.string().optional(),
 	dueDate: z.string().optional(), // ISO date, e.g. "2026-08-28"
-	paymentStatus: z.enum(PAYMENT_STATUSES).optional(),
+	paymentStatus: z.enum(PAYMENT_STATUSES).optional().catch("unknown"),
 	confidence: z.number().min(0).max(1),
 });
 
@@ -60,21 +64,44 @@ export const NOT_A_PAYMENT_EMAIL: PaymentClassification = {
 	confidence: 0,
 };
 
-// Gemini billing/quota exhaustion (e.g. "prepayment credits are depleted",
-// or the API's own RESOURCE_EXHAUSTED reason) is not a transient blip a
-// retry will fix — every call fails identically until someone tops up
-// billing. Once we see it, stop calling Gemini at all for a cooldown
-// window instead of burning 3 retries per email, per poller tick, on a
-// wall we already know is there. Module-level state is fine: this runs in
-// one long-lived server process, same as the poller's globalThis timer.
+// Billing/quota exhaustion is not a transient blip a retry will fix — every
+// call fails identically until someone tops up billing. Once we see it, stop
+// calling the model at all for a cooldown window instead of burning 3
+// retries per email, per poller tick, on a wall we already know is there.
+// Module-level state is fine: this runs in one long-lived server process,
+// same as the poller's globalThis timer.
+//
+// Sarvam's own billing-exhaustion wording isn't confirmed (never observed
+// here, unlike Gemini's well-known "prepayment credits are depleted"), so
+// this also treats 402/403 status codes as quota exhaustion generically.
 const QUOTA_COOLDOWN_MS = 30 * 60 * 1000;
 let quotaCooldownUntil = 0;
 
-function isQuotaExhaustedError(message: string): boolean {
+function isQuotaExhaustedError(
+	message: string,
+	statusCode: number | undefined,
+): boolean {
 	return (
+		statusCode === 402 ||
+		statusCode === 403 ||
 		message.includes("prepayment credits are depleted") ||
-		message.includes("RESOURCE_EXHAUSTED")
+		message.includes("RESOURCE_EXHAUSTED") ||
+		/\b(quota|credits?)\b.*\b(depleted|exhausted|insufficient)\b/i.test(
+			message,
+		)
 	);
+}
+
+/**
+ * Parses the HTTP status code Sarvam embeds in its error message
+ * (`generateWithSarvam` throws plain `Error`s, not typed API errors).
+ */
+function parseSarvamStatusCode(error: unknown): number | undefined {
+	if (!(error instanceof Error)) {
+		return undefined;
+	}
+	const match = error.message.match(/^Sarvam chat completion failed: (\d+)/);
+	return match ? Number(match[1]) : undefined;
 }
 
 function buildSystemPrompt(): string {
@@ -94,7 +121,7 @@ You are a precise financial-email detector. You determine whether an email is re
 <instructions>
 1. Examine the email's From, Subject, Snippet, and Body.
 2. Decide whether this is genuinely a payment/bill-related email — not just any email that happens to mention money in passing.
-3. If it is, extract: paymentType, merchant/company name, amount, currency (ISO 4217 code, e.g. "USD", "INR"), dueDate (ISO date, only if a clear due date is stated), and paymentStatus (whether the email indicates the amount is still owed, already paid, or overdue).
+3. If it is, extract: paymentType, merchant/company name, amount, currency (ISO 4217 code, e.g. "USD", "INR"), dueDate (ISO date, only if a clear due date is stated), and paymentStatus (whether the email indicates the amount is still owed, already paid, or overdue). paymentStatus MUST be exactly one of: "unpaid", "paid", "overdue", "unknown". paymentType MUST be exactly one of: "invoice", "bill", "subscription", "receipt", "reminder", "other".
 4. Only include a field if it is clearly present in the email. Never guess or fabricate a value — omit fields you cannot determine from the text.
 5. confidence must honestly reflect how certain you are that this is a payment-related email (0 = not at all, 1 = certain). Ordinary correspondence, marketing, or social notifications should score isPaymentEmail=false with low confidence in it being a payment email.
 6. Do not rely only on keywords like "invoice" or "due" appearing in isolation — judge the email as a whole (sender, structure, intent).
@@ -117,16 +144,16 @@ ReceivedAt: ${email.internalDate.toISOString()}
 
 /**
  * Classifies a single email as payment-related or not, extracting structured
- * fields via Gemini. Defaults to "not a payment email" (confidence 0) on any
+ * fields via Sarvam. Defaults to "not a payment email" (confidence 0) on any
  * ordinary error or missing API key — unlike email-categorizer's always-
  * bucket-somewhere default, the safe failure mode here is to create no card
  * at all rather than a low-quality one.
  *
- * Returns `null` instead when Gemini's billing/quota is exhausted — that's
- * not a real classification, and persisting it as "not-payment" would
- * permanently hide a genuine bill for as long as the outage lasts. Callers
- * should leave the email unscanned (paymentScanCategory unset) on `null` so
- * a later, healthy poller tick retries it.
+ * Returns `null` instead when billing/quota is exhausted — that's not a real
+ * classification, and persisting it as "not-payment" would permanently hide
+ * a genuine bill for as long as the outage lasts. Callers should leave the
+ * email unscanned (paymentScanCategory unset) on `null` so a later, healthy
+ * poller tick retries it.
  */
 export async function classifyPaymentEmail(
 	email: ClassifiablePaymentEmail,
@@ -135,53 +162,39 @@ export async function classifyPaymentEmail(
 		return null;
 	}
 
-	const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-	if (!apiKey) {
+	if (!process.env.SARVAM_API_KEY) {
 		logger.warn(
-			"[payment-classifier] GOOGLE_GENERATIVE_AI_API_KEY not set, skipping payment detection",
+			"[payment-classifier] SARVAM_API_KEY not set, skipping payment detection",
 		);
 		return NOT_A_PAYMENT_EMAIL;
 	}
 
-	const google = createGoogleGenerativeAI({ apiKey });
-
 	const maxRetries = 3;
 	for (let attempt = 0; attempt <= maxRetries; attempt++) {
 		try {
-			const { object } = await generateObject({
-				model: google(TEXT_MODEL_ID),
+			return await generateWithSarvam({
 				schema: PAYMENT_SCHEMA,
-				temperature: 0,
 				system: buildSystemPrompt(),
 				prompt: buildUserPrompt(email),
 			});
-
-			return object;
 		} catch (error: unknown) {
 			const message =
 				error instanceof Error ? error.message : String(error);
+			const statusCode = parseSarvamStatusCode(error);
 
-			if (isQuotaExhaustedError(message)) {
+			if (isQuotaExhaustedError(message, statusCode)) {
 				quotaCooldownUntil = Date.now() + QUOTA_COOLDOWN_MS;
 				logger.error(
-					"[payment-classifier] Gemini quota/billing exhausted, pausing payment scanning",
+					"[payment-classifier] Sarvam quota/billing exhausted, pausing payment scanning",
 					{ cooldownMs: QUOTA_COOLDOWN_MS, error: message },
 				);
 				return null;
 			}
 
-			const statusCode =
-				error instanceof Error
-					? ((error as { statusCode?: number; status?: number })
-							.statusCode ??
-						(error as { statusCode?: number; status?: number })
-							.status)
-					: undefined;
-
 			if (statusCode === 429 && attempt < maxRetries) {
 				const delay = 2 ** (attempt + 1) * 5000;
 				logger.warn(
-					"[payment-classifier] Gemini rate limited, retrying",
+					"[payment-classifier] Sarvam rate limited, retrying",
 					{
 						attempt: attempt + 1,
 						delayMs: delay,
@@ -191,20 +204,26 @@ export async function classifyPaymentEmail(
 				continue;
 			}
 
+			// Network errors, malformed output (no status code) and 429/5xx
+			// are transient. Returning "not a payment email" here would be
+			// persisted as paymentScanCategory="not-payment" and permanently
+			// hide a real bill, so leave the email unscanned for a retry.
+			const isTransient =
+				statusCode === undefined ||
+				statusCode === 429 ||
+				statusCode >= 500;
 			logger.error(
-				"[payment-classifier] Gemini call failed, treating as not-a-payment-email",
-				{
-					statusCode,
-					error:
-						error instanceof Error ? error.message : String(error),
-				},
+				isTransient
+					? "[payment-classifier] Sarvam call failed, leaving email unscanned for retry"
+					: "[payment-classifier] Sarvam call rejected, treating as not-a-payment-email",
+				{ statusCode, error: message },
 			);
-			return NOT_A_PAYMENT_EMAIL;
+			return isTransient ? null : NOT_A_PAYMENT_EMAIL;
 		}
 	}
 
 	logger.error(
-		"[payment-classifier] Exhausted all retries, treating as not-a-payment-email",
+		"[payment-classifier] Exhausted all retries, leaving email unscanned for retry",
 	);
-	return NOT_A_PAYMENT_EMAIL;
+	return null;
 }

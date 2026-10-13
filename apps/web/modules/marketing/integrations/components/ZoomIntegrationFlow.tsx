@@ -9,7 +9,7 @@ const steps: FlowStep[] = [
 	{
 		title: "Authorise Zoom",
 		description:
-			"One OAuth screen from your Popsuites settings. Takes about fifteen seconds.",
+			"One OAuth screen from your Mail Monkey settings. Takes about fifteen seconds.",
 	},
 	{
 		title: "Pick the event types",

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { ConnectImapMailboxSchema } from "./types";
 
 const valid = {
-	email: "support@popsuites.ai",
+	email: "support@mailmonkey.app",
 	password: "an-app-specific-password",
 	imapHost: "imap.example.com",
 	smtpHost: "smtp.example.com",

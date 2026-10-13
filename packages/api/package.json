@@ -1,6 +1,5 @@
 {
 	"dependencies": {
-		"@ai-sdk/google": "^2.0.99",
 		"@orpc/client": "1.15.4",
 		"@orpc/json-schema": "1.15.4",
 		"@orpc/openapi": "1.15.4",

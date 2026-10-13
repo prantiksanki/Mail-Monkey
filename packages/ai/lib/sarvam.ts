@@ -23,6 +23,8 @@ export interface GenerateWithSarvamParams<T> {
 	system: string;
 	prompt: string;
 	schema: z.ZodType<T>;
+	/** Passed through to Sarvam as-is; omit to use the API's default. */
+	temperature?: number;
 }
 
 /**
@@ -35,6 +37,7 @@ export async function generateWithSarvam<T>({
 	system,
 	prompt,
 	schema,
+	temperature,
 }: GenerateWithSarvamParams<T>): Promise<T> {
 	logger.info(
 		`[sarvam] request model=${SARVAM_CHAT_MODEL_ID} op=chat-completion`,
@@ -53,6 +56,7 @@ export async function generateWithSarvam<T>({
 				{ role: "user", content: prompt },
 			],
 			response_format: { type: "json_object" },
+			...(temperature === undefined ? {} : { temperature }),
 			// Disable thinking mode — reasoning tokens count against max_tokens
 			// and can consume the whole budget before any content is written,
 			// leaving `message.content` empty.
@@ -97,6 +101,24 @@ export async function generateWithSarvam<T>({
 			`[sarvam] response model=${SARVAM_CHAT_MODEL_ID} op=chat-completion status=${response.status} invalid-json`,
 		);
 		throw new Error("Sarvam returned invalid JSON");
+	}
+
+	// Sarvam emits explicit `null` for fields it considers inapplicable
+	// rather than omitting the key (unlike Gemini's generateObject) — strip
+	// those so z.optional() schemas (which accept `undefined`, not `null`)
+	// validate the way every caller already expects.
+	if (
+		parsed !== null &&
+		typeof parsed === "object" &&
+		!Array.isArray(parsed)
+	) {
+		for (const [key, value] of Object.entries(
+			parsed as Record<string, unknown>,
+		)) {
+			if (value === null) {
+				delete (parsed as Record<string, unknown>)[key];
+			}
+		}
 	}
 
 	const result = schema.safeParse(parsed);

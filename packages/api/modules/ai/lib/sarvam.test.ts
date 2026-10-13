@@ -43,6 +43,45 @@ describe("generateWithSarvam", () => {
 		expect(result).toEqual({ greeting: "hello" });
 	});
 
+	it("strips explicit nulls so optional fields validate as absent, not invalid", async () => {
+		// Sarvam emits `null` for fields it considers inapplicable rather than
+		// omitting the key (unlike Gemini's generateObject) — observed in prod
+		// on payment-classifier's optional fields (merchant, amount, ...),
+		// which z.optional() rejects since it only accepts `undefined`.
+		const optionalSchema = z.object({
+			greeting: z.string(),
+			nickname: z.string().optional(),
+		});
+
+		vi.stubGlobal(
+			"fetch",
+			vi.fn().mockResolvedValue(
+				new Response(
+					JSON.stringify({
+						choices: [
+							{
+								message: {
+									content: JSON.stringify({
+										greeting: "hello",
+										nickname: null,
+									}),
+								},
+							},
+						],
+					}),
+					{ status: 200 },
+				),
+			),
+		);
+
+		const result = await generateWithSarvam({
+			system: "sys",
+			prompt: "prompt",
+			schema: optionalSchema,
+		});
+		expect(result).toEqual({ greeting: "hello" });
+	});
+
 	it("throws when the model output is not valid JSON", async () => {
 		vi.stubGlobal(
 			"fetch",

@@ -11,7 +11,7 @@ import { ConnectImapMailboxSchema } from "../types";
 
 /**
  * Public (unauthenticated) live-verify for the pre-signup "connect your
- * custom email" flow — lets a visitor with no Popsuites account yet confirm
+ * custom email" flow — lets a visitor with no Mail Monkey account yet confirm
  * their IMAP/SMTP details work *before* we send them a magic-link signup
  * email.
  *

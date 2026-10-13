@@ -187,7 +187,7 @@ maybeDescribe("rule-evaluator — VIP/Urgent regression (live Gemini)", () => {
 						"Action needed: Retry your payment with 3DS authentication",
 					snippet: "We couldn't process your payment since we...",
 					bodyText:
-						"Hi PopPushAI Private Limited, We couldn't process your payment since we require 3DS authentication. Action needed: retry your payment.",
+						"Hi Acme Private Limited, We couldn't process your payment since we require 3DS authentication. Action needed: retry your payment.",
 				},
 			],
 			[

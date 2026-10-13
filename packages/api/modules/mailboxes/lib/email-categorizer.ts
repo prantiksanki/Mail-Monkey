@@ -6,12 +6,16 @@
  * (arbitrary aiInstructions strings). This is a fixed 4-way enum classifier
  * with nothing to negotiate with a compiler, so it gets its own small,
  * self-contained prompt. It reuses the *pattern* from rule-evaluator.ts
- * (single-email generateObject call, 429 retry with backoff, Gemini Flash)
- * rather than the contract module itself.
+ * (single-email call, 429 retry with backoff) rather than the contract
+ * module itself.
+ *
+ * Runs on Sarvam rather than Gemini — this classifier fires on every synced
+ * email, and the hosted Sarvam API has no per-call billing/prepay balance to
+ * run out of (see the Oct 2026 Gemini 402 "prepayment credits depleted"
+ * outage, which this swap avoids).
  */
 
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateObject, TEXT_MODEL_ID } from "@repo/ai";
+import { generateWithSarvam } from "@repo/ai";
 import { logger } from "@repo/logs";
 import { z } from "zod";
 
@@ -92,7 +96,20 @@ Labels: ${email.labelIds.join(", ")}
 }
 
 /**
- * Classifies a single email via Gemini. Defaults to PRIMARY on any error
+ * Parses the HTTP status code Sarvam embeds in its error message
+ * (`generateWithSarvam` throws plain `Error`s, not typed API errors), so the
+ * 429 retry path below can still recognize a rate limit.
+ */
+function parseSarvamStatusCode(error: unknown): number | undefined {
+	if (!(error instanceof Error)) {
+		return undefined;
+	}
+	const match = error.message.match(/^Sarvam chat completion failed: (\d+)/);
+	return match ? Number(match[1]) : undefined;
+}
+
+/**
+ * Classifies a single email via Sarvam. Defaults to PRIMARY on any error
  * after exhausting retries — unlike rule-evaluator's default-to-false, every
  * email must land in exactly one bucket, and "treat as ordinary mail" is the
  * safe failure mode (never silently mis-bucket real mail as clutter).
@@ -105,41 +122,30 @@ export async function classifyEmailCategory(
 		return fastPath;
 	}
 
-	const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-	if (!apiKey) {
+	if (!process.env.SARVAM_API_KEY) {
 		logger.warn(
-			"[email-categorizer] GOOGLE_GENERATIVE_AI_API_KEY not set, defaulting to PRIMARY",
+			"[email-categorizer] SARVAM_API_KEY not set, defaulting to PRIMARY",
 		);
 		return "PRIMARY";
 	}
 
-	const google = createGoogleGenerativeAI({ apiKey });
-
 	const maxRetries = 3;
 	for (let attempt = 0; attempt <= maxRetries; attempt++) {
 		try {
-			const { object } = await generateObject({
-				model: google(TEXT_MODEL_ID),
+			const { category } = await generateWithSarvam({
 				schema: CATEGORY_SCHEMA,
-				temperature: 0,
 				system: buildSystemPrompt(),
 				prompt: buildUserPrompt(email),
 			});
 
-			return object.category;
+			return category;
 		} catch (error: unknown) {
-			const statusCode =
-				error instanceof Error
-					? ((error as { statusCode?: number; status?: number })
-							.statusCode ??
-						(error as { statusCode?: number; status?: number })
-							.status)
-					: undefined;
+			const statusCode = parseSarvamStatusCode(error);
 
 			if (statusCode === 429 && attempt < maxRetries) {
 				const delay = 2 ** (attempt + 1) * 5000;
 				logger.warn(
-					"[email-categorizer] Gemini rate limited, retrying",
+					"[email-categorizer] Sarvam rate limited, retrying",
 					{
 						attempt: attempt + 1,
 						delayMs: delay,
@@ -150,7 +156,7 @@ export async function classifyEmailCategory(
 			}
 
 			logger.error(
-				"[email-categorizer] Gemini call failed, defaulting to PRIMARY",
+				"[email-categorizer] Sarvam call failed, defaulting to PRIMARY",
 				{
 					statusCode,
 					error:

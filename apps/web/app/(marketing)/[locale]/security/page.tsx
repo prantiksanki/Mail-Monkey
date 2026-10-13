@@ -2,8 +2,6 @@ import { Badge } from "@repo/ui/components/badge";
 import { getBaseUrl } from "@repo/utils";
 import { BreadcrumbJsonLd } from "@shared/components/BreadcrumbJsonLd";
 import {
-	CheckCircle2Icon,
-	ExternalLinkIcon,
 	KeyRoundIcon,
 	LockKeyholeIcon,
 	ServerIcon,
@@ -12,67 +10,23 @@ import {
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 
-const SSL_LABS_URL =
-	"https://www.ssllabs.com/ssltest/analyze.html?d=popsuites.ai";
-const MOZILLA_OBSERVATORY_URL =
-	"https://observatory.mozilla.org/analyze/popsuites.ai";
-
 const securityUrl = `${getBaseUrl()}/security`;
 
 export const metadata: Metadata = {
 	title: "Security",
 	description:
-		"How Popsuites protects your inbox: TLS 1.3 encryption, security headers, OAuth-only Gmail access, and third-party audits. Verify everything yourself.",
+		"How Mail Monkey protects your inbox: TLS 1.3 encryption, security headers, and OAuth-only Gmail access.",
 	alternates: { canonical: securityUrl },
 	openGraph: {
-		title: "Security | Popsuites",
+		title: "Security | Mail Monkey",
 		description:
-			"How Popsuites protects your inbox: TLS 1.3 encryption, security headers, OAuth-only Gmail access, and third-party audits.",
+			"How Mail Monkey protects your inbox: TLS 1.3 encryption, security headers, and OAuth-only Gmail access.",
 		url: securityUrl,
-		siteName: "Popsuites",
+		siteName: "Mail Monkey",
 		type: "website",
 		images: ["/opengraph-image"],
 	},
 };
-
-interface TrustSignal {
-	label: string;
-	grade: string;
-	source: string;
-	href: string;
-	status: "verified" | "pending" | "in-progress";
-	description: string;
-}
-
-const trustSignals: TrustSignal[] = [
-	{
-		label: "SSL / TLS",
-		grade: "A+",
-		source: "SSL Labs",
-		href: SSL_LABS_URL,
-		status: "verified",
-		description:
-			"TLS 1.3 with forward secrecy and post-quantum key exchange (X25519MLKEM768).",
-	},
-	{
-		label: "Security Headers",
-		grade: "A+",
-		source: "Mozilla Observatory",
-		href: MOZILLA_OBSERVATORY_URL,
-		status: "verified",
-		description:
-			"HSTS preload, CSP, and frame protection headers enforced at the edge.",
-	},
-	{
-		label: "CASA Tier 2",
-		grade: "In progress",
-		source: "Cloud Application Security Assessment",
-		href: "https://appdefensealliance.dev/casa/tier-2",
-		status: "in-progress",
-		description:
-			"Independent security audit required for Google API restricted scopes.",
-	},
-];
 
 interface SecurityPractice {
 	icon: ReactNode;
@@ -107,61 +61,6 @@ const practices: SecurityPractice[] = [
 	},
 ];
 
-function StatusPill({ status }: { status: TrustSignal["status"] }) {
-	const styles = {
-		verified: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400",
-		pending: "border-amber-500/30 bg-amber-500/10 text-amber-400",
-		"in-progress": "border-sky-500/30 bg-sky-500/10 text-sky-400",
-	} as const;
-
-	const labels = {
-		verified: "Verified",
-		pending: "Pending scan",
-		"in-progress": "In progress",
-	} as const;
-
-	return (
-		<span
-			className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 font-medium text-[11px] uppercase tracking-wide ${styles[status]}`}
-		>
-			{status === "verified" && (
-				<CheckCircle2Icon className="size-3" aria-hidden="true" />
-			)}
-			{labels[status]}
-		</span>
-	);
-}
-
-function TrustBadge({ signal }: { signal: TrustSignal }) {
-	return (
-		<a
-			href={signal.href}
-			rel="noopener noreferrer"
-			target="_blank"
-			className="group flex flex-col gap-3 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 transition-colors hover:border-primary/40 hover:bg-white/[0.04]"
-		>
-			<div className="flex items-start justify-between gap-3">
-				<div>
-					<div className="text-foreground/55 text-xs uppercase tracking-[0.14em]">
-						{signal.label}
-					</div>
-					<div className="mt-1 font-bold text-3xl text-foreground">
-						{signal.grade}
-					</div>
-				</div>
-				<StatusPill status={signal.status} />
-			</div>
-			<p className="text-foreground/65 text-sm leading-relaxed">
-				{signal.description}
-			</p>
-			<div className="mt-auto flex items-center gap-1.5 text-foreground/45 text-xs transition-colors group-hover:text-primary">
-				Verified by {signal.source}
-				<ExternalLinkIcon className="size-3" aria-hidden="true" />
-			</div>
-		</a>
-	);
-}
-
 export default function SecurityPage() {
 	return (
 		<div className="container max-w-5xl pt-24 pb-20">
@@ -183,20 +82,11 @@ export default function SecurityPage() {
 					Built on a quiet, encrypted foundation.
 				</h1>
 				<p className="mx-auto max-w-2xl text-balance text-foreground/55 text-lg">
-					Popsuites handles your inbox — that means we take
-					encryption, transport security, and third-party audits
-					seriously. Verify everything below for yourself.
+					Mail Monkey handles your inbox — that means we take
+					encryption, transport security, and access control
+					seriously.
 				</p>
 			</div>
-
-			<section className="mb-16">
-				<h2 className="mb-6 font-semibold text-2xl">Trust signals</h2>
-				<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-					{trustSignals.map((signal) => (
-						<TrustBadge key={signal.label} signal={signal} />
-					))}
-				</div>
-			</section>
 
 			<section className="mb-16">
 				<h2 className="mb-6 font-semibold text-2xl">
@@ -231,12 +121,12 @@ export default function SecurityPage() {
 				</h2>
 				<div className="space-y-4 text-foreground/70 text-sm leading-relaxed">
 					<p>
-						When you connect Gmail or Outlook, Popsuites receives an
-						OAuth access token scoped to the permissions you grant.
-						We never see your password. The token is encrypted at
-						rest using AES-256 and stored in our database. It is
-						used exclusively to call the Gmail API or Microsoft
-						Graph API on your behalf.
+						When you connect Gmail or Outlook, Mail Monkey receives
+						an OAuth access token scoped to the permissions you
+						grant. We never see your password. The token is
+						encrypted at rest using AES-256 and stored in our
+						database. It is used exclusively to call the Gmail API
+						or Microsoft Graph API on your behalf.
 					</p>
 					<p>
 						When a new email arrives, your mail provider pushes a
@@ -272,11 +162,12 @@ export default function SecurityPage() {
 				</h2>
 				<div className="space-y-4 text-foreground/70 text-sm leading-relaxed">
 					<p>
-						Popsuites is operated by PopPush AI. If you are located
-						in the European Economic Area, the United Kingdom, or
-						Switzerland, you have rights under the General Data
-						Protection Regulation (GDPR) including the right to
-						access, correct, export, or delete your personal data.
+						Mail Monkey is operated by the Mail Monkey team. If you
+						are located in the European Economic Area, the United
+						Kingdom, or Switzerland, you have rights under the
+						General Data Protection Regulation (GDPR) including the
+						right to access, correct, export, or delete your
+						personal data.
 					</p>
 					<p>
 						Our lawful basis for processing your email account data
@@ -295,10 +186,10 @@ export default function SecurityPage() {
 						To exercise your data rights or submit a deletion
 						request, email{" "}
 						<a
-							href="mailto:support@popsuites.ai"
+							href="mailto:support@mailmonkey.app"
 							className="text-foreground underline underline-offset-2"
 						>
-							support@popsuites.ai
+							support@mailmonkey.app
 						</a>
 						. We will respond within 30 days.
 					</p>
@@ -335,7 +226,7 @@ export default function SecurityPage() {
 				</h2>
 				<p className="mb-4 text-foreground/65 text-sm leading-relaxed">
 					If you believe you have found a security vulnerability in
-					Popsuites, we encourage responsible disclosure. Email us a
+					Mail Monkey, we encourage responsible disclosure. Email us a
 					description of the issue, reproduction steps, and any
 					relevant evidence. We will acknowledge receipt within 48
 					hours and aim to resolve confirmed issues within 14 days. We
@@ -344,10 +235,10 @@ export default function SecurityPage() {
 				</p>
 				<div className="flex flex-wrap gap-3">
 					<a
-						href="mailto:support@popsuites.ai"
+						href="mailto:support@mailmonkey.app"
 						className="inline-flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/10 px-4 py-2 font-medium text-primary text-sm transition-colors hover:bg-primary/20"
 					>
-						support@popsuites.ai
+						support@mailmonkey.app
 					</a>
 					<a
 						href="/.well-known/security.txt"

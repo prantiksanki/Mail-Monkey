@@ -1,9 +1,8 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { ORPCError, streamToEventIterator } from "@orpc/client";
 import {
 	convertToModelMessages,
 	streamText,
-	TEXT_MODEL_ID,
+	textModel,
 	tool,
 	type UIMessage,
 } from "@repo/ai";
@@ -127,12 +126,8 @@ export const rulesAssistant = protectedProcedure
 
 		await verifyMailboxOwnership(mailboxId, context.user.id);
 
-		const google = createGoogleGenerativeAI({
-			apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY ?? "",
-		});
-
 		const response = streamText({
-			model: google(TEXT_MODEL_ID),
+			model: textModel,
 			system: SYSTEM_PROMPT,
 			messages: await convertToModelMessages(
 				messages as unknown as UIMessage[],

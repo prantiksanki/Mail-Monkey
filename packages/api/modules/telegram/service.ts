@@ -1,6 +1,5 @@
 import { randomInt } from "node:crypto";
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { generateObject, TEXT_MODEL_ID } from "@repo/ai";
+import { generateWithSarvam } from "@repo/ai";
 import {
 	claimTelegramAction,
 	consumeTelegramLinkToken,
@@ -226,12 +225,10 @@ async function classifyIntent(
 	text: string,
 	ctx: ConvCtx,
 ): Promise<ParsedIntent> {
-	const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-	if (!apiKey) {
+	if (!process.env.SARVAM_API_KEY) {
 		return { intent: "UNKNOWN", params: {} };
 	}
 	try {
-		const google = createGoogleGenerativeAI({ apiKey });
 		const ctxHint = [
 			ctx.lastEmailList?.length
 				? `Last email list: ${ctx.lastEmailList.map((e, i) => `${i + 1}. "${e.subject}" from ${e.from}`).join(", ")}`
@@ -247,8 +244,7 @@ async function classifyIntent(
 			.filter(Boolean)
 			.join("\n");
 
-		const { object } = await generateObject({
-			model: google(TEXT_MODEL_ID),
+		const object = await generateWithSarvam({
 			schema: INTENT_SCHEMA,
 			temperature: 0,
 			system: `You are a Telegram bot assistant for Zeromail, an email automation app.
@@ -313,7 +309,9 @@ Examples:
 "what happened today?" → DAY
 "what's next?" → WHATNEXT
 "yes" → CONFIRM_YES
-"cancel" → CONFIRM_NO`,
+"cancel" → CONFIRM_NO
+
+OUTPUT FORMAT: respond with a single JSON object {"intent": "<ONE_OF_THE_INTENTS_ABOVE>", "params": {...only the relevant params for that intent...}}. Omit params keys that don't apply — never include a key with an empty/placeholder value.`,
 			prompt: text,
 		});
 		return object;
@@ -530,29 +528,19 @@ async function nlRouter(chatId: string, text: string, from: TelegramUser) {
 
 	// Pending confirmation flow
 	if (ctx.pendingAction) {
-		const { object: quick } = await (async () => {
+		const quick: ParsedIntent = await (async () => {
+			if (!process.env.SARVAM_API_KEY) {
+				return { intent: "UNKNOWN", params: {} } as ParsedIntent;
+			}
 			try {
-				const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-				if (!apiKey) {
-					return {
-						object: {
-							intent: "UNKNOWN",
-							params: {},
-						} as ParsedIntent,
-					};
-				}
-				const google = createGoogleGenerativeAI({ apiKey });
-				return generateObject({
-					model: google(TEXT_MODEL_ID),
+				return await generateWithSarvam({
 					schema: INTENT_SCHEMA,
 					temperature: 0,
-					system: "Classify only: is this a confirmation (yes/ok/send/sure/do it) → CONFIRM_YES, or cancellation (no/cancel/stop) → CONFIRM_NO, or something else → UNKNOWN.",
+					system: 'Classify only: is this a confirmation (yes/ok/send/sure/do it) → CONFIRM_YES, or cancellation (no/cancel/stop) → CONFIRM_NO, or something else → UNKNOWN. Respond with a single JSON object {"intent": "CONFIRM_YES"|"CONFIRM_NO"|"UNKNOWN", "params": {}}.',
 					prompt: text,
 				});
 			} catch {
-				return {
-					object: { intent: "UNKNOWN", params: {} } as ParsedIntent,
-				};
+				return { intent: "UNKNOWN", params: {} } as ParsedIntent;
 			}
 		})();
 		if (quick.intent === "CONFIRM_YES") {
@@ -1223,14 +1211,12 @@ async function nlRuleCreate(chatId: string, rulePrompt: string, ctx: ConvCtx) {
 
 	await sendTelegramMessage(chatId, "Compiling rule...");
 
-	const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-	if (!apiKey) {
+	if (!process.env.SARVAM_API_KEY) {
 		await sendTelegramMessage(chatId, "AI rule creation is not available.");
 		return;
 	}
 
 	try {
-		const google = createGoogleGenerativeAI({ apiKey });
 		const RULE_SCHEMA = z.object({
 			name: z.string(),
 			condition: z.object({
@@ -1256,11 +1242,14 @@ async function nlRuleCreate(chatId: string, rulePrompt: string, ctx: ConvCtx) {
 				}),
 			),
 		});
-		const { object } = await generateObject({
-			model: google(TEXT_MODEL_ID),
+		const object = await generateWithSarvam({
 			schema: RULE_SCHEMA,
 			temperature: 0.1,
-			system: "Convert this email rule request into a structured rule. Return a single rule.",
+			system: `Convert this email rule request into a structured rule. Return a single rule.
+
+OUTPUT FORMAT: respond with a single JSON object of exactly this shape — no extra text:
+{"name": string, "condition": {"conditionalOperator": "AND"|"OR"|"NONE"|null, "aiInstructions": string|null, "staticFrom": string|null, "staticTo": string|null, "staticSubject": string|null}, "actions": [{"type": "LABEL"|"ARCHIVE"|"MARK_READ"|"DRAFT_EMAIL"|"REPLY"|"FORWARD"|"MARK_SPAM", "label"?: string, "to"?: string}, ...]}
+Use null for any condition field that doesn't apply.`,
 			prompt: rulePrompt,
 		});
 
@@ -1792,7 +1781,7 @@ async function connectTelegramAccount(message: TelegramMessage, token: string) {
 	await sendTelegramMessage(
 		chatId,
 		[
-			"Welcome to Popsuites Bot.",
+			"Welcome to Mail Monkey Bot.",
 			"",
 			"Commands:",
 			"/help - navigate what you can do",
@@ -2385,8 +2374,7 @@ function formatRelativeTime(dateStr: string, now: Date): string {
 async function classifyEmails(
 	emails: DigestEmail[],
 ): Promise<ClassifiedEmail[]> {
-	const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-	if (!apiKey) {
+	if (!process.env.SARVAM_API_KEY) {
 		return emails.map((email) => ({
 			...email,
 			...heuristicClassify(email),
@@ -2394,9 +2382,7 @@ async function classifyEmails(
 	}
 
 	try {
-		const google = createGoogleGenerativeAI({ apiKey });
-		const { object } = await generateObject({
-			model: google(TEXT_MODEL_ID),
+		const object = await generateWithSarvam({
 			schema: CLASSIFICATION_SCHEMA,
 			temperature: 0,
 			system: [
@@ -2405,6 +2391,7 @@ async function classifyEmails(
 				"CHECK_TODAY means important but not immediately urgent.",
 				"FYI means newsletters, promos, receipts, automated status updates, or informational mail.",
 				"Return every email id exactly once. Keep reasons concise and observable.",
+				'OUTPUT FORMAT: respond with a single JSON object {"items": [{"id": string, "category": "HANDLE_NOW"|"CHECK_TODAY"|"FYI", "reason": string}, ...]} — no extra text.',
 			].join("\n"),
 			prompt: JSON.stringify({
 				emails: emails.map((email) => ({
@@ -2805,7 +2792,7 @@ function getLocalParts(date: Date, timezone: string) {
 
 function buildStartLink(startParam: string) {
 	const username = (
-		process.env.TELEGRAM_BOT_USERNAME || "popsuite_bot"
+		process.env.TELEGRAM_BOT_USERNAME || "mailmonkey_bot"
 	).replace(/^@/, "");
 	return `https://t.me/${username}?start=${encodeURIComponent(startParam)}`;
 }

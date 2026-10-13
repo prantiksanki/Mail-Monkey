@@ -13,7 +13,7 @@ import {
 
 // Same conservative sizing as email-classification-backfill's ongoing poller
 // — this runs quietly every tick with no visible progress UI, and every email
-// not caught by the fast path below costs a real Gemini call.
+// not caught by the fast path below costs a real Sarvam call.
 const POLLER_MAILBOX_LIMIT = 5;
 const POLLER_BATCH_SIZE_PER_MAILBOX = 10;
 
@@ -21,7 +21,7 @@ const POLLER_BATCH_SIZE_PER_MAILBOX = 10;
  * Bills, invoices, and receipts never arrive as marketing, social, or
  * newsletter mail — so an email already known to be one of those (via its
  * own category, or Gmail's labels when the category poller hasn't run yet)
- * can skip the paid Gemini call entirely. Same idea as
+ * can skip the Sarvam call entirely. Same idea as
  * email-categorizer.ts's fastPathCategoryFromGmailLabels, applied one layer
  * up since we already have both signals on the Email row.
  */
@@ -86,12 +86,22 @@ export async function processDuePaymentScans(): Promise<{
 							internalDate: email.internalDate,
 						});
 
-				// null = Gemini's quota/billing is exhausted right now — leave
+				// null = Sarvam's quota/billing is exhausted right now — leave
 				// this email unscanned rather than mislabeling a possible real
 				// bill as "not-payment"; a later, healthy tick will retry it.
 				if (classification === null) {
 					return "skipped" as const;
 				}
+
+				logger.info("[payment-scan] classified email", {
+					emailId: email.id,
+					subject: email.subject.slice(0, 80),
+					fastPath: isFastPathNotPayment(email),
+					isPaymentEmail: classification.isPaymentEmail,
+					confidence: classification.confidence,
+					paymentType: classification.paymentType,
+					paymentStatus: classification.paymentStatus,
+				});
 
 				await upsertPaymentCardFromClassification(
 					mailbox.userId,

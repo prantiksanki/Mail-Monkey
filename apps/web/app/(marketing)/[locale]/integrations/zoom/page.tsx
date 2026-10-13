@@ -12,9 +12,9 @@ import { setRequestLocale } from "next-intl/server";
 export function generateMetadata(): Metadata {
 	const url = `${getBaseUrl()}/integrations/zoom`;
 	const title = "Zoom Integration";
-	const socialTitle = "Zoom Integration — Popsuites";
+	const socialTitle = "Zoom Integration — Mail Monkey";
 	const description =
-		"Connect Zoom to Popsuites and get a meeting link created automatically for every booking — no copy-pasting, no manual setup, no missed invites.";
+		"Connect Zoom to Mail Monkey and get a meeting link created automatically for every booking — no copy-pasting, no manual setup, no missed invites.";
 
 	return {
 		title,
@@ -24,7 +24,7 @@ export function generateMetadata(): Metadata {
 			title: socialTitle,
 			description,
 			url,
-			siteName: "Popsuites",
+			siteName: "Mail Monkey",
 			type: "website",
 			images: ["/opengraph-image"],
 		},

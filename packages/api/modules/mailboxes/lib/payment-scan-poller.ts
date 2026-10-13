@@ -22,7 +22,11 @@ export function startPaymentScanPoller() {
 	const tick = async () => {
 		try {
 			const result = await processDuePaymentScans();
-			if (result.cardsCreated > 0 || result.errors > 0) {
+			if (
+				result.scanned > 0 ||
+				result.cardsCreated > 0 ||
+				result.errors > 0
+			) {
 				logger.info(
 					`Payment scan: scanned ${result.scanned}, cards created ${result.cardsCreated}, errors ${result.errors}`,
 				);

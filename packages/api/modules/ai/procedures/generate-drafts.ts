@@ -1,6 +1,5 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { ORPCError } from "@orpc/server";
-import { generateObject, TEXT_MODEL_ID } from "@repo/ai";
+import { generateWithSarvam } from "@repo/ai";
 import { logger } from "@repo/logs";
 import { userExpensiveLimiter } from "../../../orpc/middleware/rate-limit-user";
 import { protectedProcedure } from "../../../orpc/procedures";
@@ -27,19 +26,15 @@ export const generateDrafts = protectedProcedure
 	.handler(async ({ input, context }) => {
 		await verifyMailboxOwnership(input.mailboxId, context.user.id);
 
-		const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
-		if (!apiKey) {
-			logger.error("GOOGLE_GENERATIVE_AI_API_KEY is not configured");
+		if (!process.env.SARVAM_API_KEY) {
+			logger.error("SARVAM_API_KEY is not configured");
 			throw new ORPCError("INTERNAL_SERVER_ERROR", {
 				message: "AI draft generation is not available",
 			});
 		}
 
 		try {
-			const google = createGoogleGenerativeAI({ apiKey });
-
-			const { object } = await generateObject({
-				model: google(TEXT_MODEL_ID),
+			const object = await generateWithSarvam({
 				schema: GenerateDraftsResultSchema,
 				// Some variation so "Regenerate" produces fresh drafts.
 				temperature: 0.7,

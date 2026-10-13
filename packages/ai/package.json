@@ -1,6 +1,6 @@
 {
 	"dependencies": {
-		"@ai-sdk/google": "^2.0.99",
+		"@ai-sdk/openai-compatible": "1.0.20",
 		"@ai-sdk/react": "^3.0.294",
 		"@repo/logs": "workspace:*",
 		"ai": "^6.0.291",

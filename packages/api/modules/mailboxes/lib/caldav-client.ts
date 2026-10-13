@@ -621,9 +621,25 @@ export async function getCalDavEventsResult(
 				"Your mail provider rejected the login for calendar access. Calendar sync needs an app-specific password if you use two-factor authentication — create one in your mail provider's security settings and reconnect the mailbox with it.",
 		};
 	}
+
+	// The login succeeded (no 401/403 above) but every discovery strategy came
+	// back without a calendar-home-set — on Zoho this means the account
+	// authenticates fine but has no Calendar module enabled, not a bug in the
+	// discovery logic. Give an actionable message instead of the raw per-
+	// strategy CalDAV debug text (still logged above for us to diagnose a
+	// genuinely new failure mode).
+	if (creds.imapHost.toLowerCase().match(/zoho\.[a-z.]+$/)) {
+		return {
+			status: "error",
+			message:
+				"Your Zoho account doesn't have Calendar enabled. Enable Zoho Calendar for this account in your Zoho account settings, then reload this page.",
+		};
+	}
+
 	return {
 		status: "error",
-		message: `Couldn't reach your mail provider's calendar. ${failures.join(" | ")}`,
+		message:
+			"Couldn't reach your mail provider's calendar. Try again in a moment — if this keeps happening, your provider's calendar setup may need attention.",
 	};
 }
 
@@ -685,14 +701,14 @@ export async function createCalDavEvent(
 	end: string | null;
 }> {
 	const creds = await getImapCredentials(accountId);
-	const uid = `${crypto.randomUUID()}@popsuites`;
+	const uid = `${crypto.randomUUID()}@mailmonkey`;
 	const allDay = !!input.allDayStart;
 	const compact = (d: string) => d.replace(/-/g, "");
 
 	const lines = [
 		"BEGIN:VCALENDAR",
 		"VERSION:2.0",
-		"PRODID:-//Popsuites//Calendar//EN",
+		"PRODID:-//Mail Monkey//Calendar//EN",
 		"BEGIN:VEVENT",
 		`UID:${uid}`,
 		`DTSTAMP:${icsUtc(new Date().toISOString())}`,

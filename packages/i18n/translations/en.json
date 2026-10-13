@@ -180,7 +180,7 @@
 				"signupFailed": "We are sorry, but we were unable to create your account. Please try again later.",
 				"verifyEmail": "We have sent you a link to verify your email. Please check your inbox."
 			},
-			"message": "Connect a mailbox, describe a rule, and let Popsuites handle the rest.",
+			"message": "Connect a mailbox, describe a rule, and let Mail Monkey handle the rest.",
 			"name": "Name",
 			"password": "Password",
 			"signIn": "Sign in",
@@ -209,7 +209,7 @@
 	},
 	"blog": {
 		"description": "Practical inbox strategies, product updates, and AI automation tips.",
-		"title": "Popsuites Blog",
+		"title": "Mail Monkey Blog",
 		"back": "Back to blog"
 	},
 	"changelog": {
@@ -282,7 +282,7 @@
 				"answer": "Any incoming email that matches an active rule and triggers an action. Emails that don't match a rule don't count against your monthly quota."
 			},
 			"providers": {
-				"question": "Which email providers does Popsuites support?",
+				"question": "Which email providers does Mail Monkey support?",
 				"answer": "Gmail and Outlook (personal and Microsoft 365). You can connect multiple accounts across both providers and manage them from one dashboard."
 			},
 			"rules": {
@@ -299,7 +299,7 @@
 		"hero": {
 			"eyebrow": "AI email rules · now in public beta",
 			"title": "inbox, but <accent>quieter</accent>.",
-			"subtitle": "Popsuites reads your mail the way you do, and files it the way you would. Describe a rule in one sentence and it runs forever.",
+			"subtitle": "Mail Monkey reads your mail the way you do, and files it the way you would. Describe a rule in one sentence and it runs forever.",
 			"connectGmail": "Connect Gmail",
 			"seeHow": "See how it works",
 			"freeTier": "free for 100 emails / mo"
@@ -326,7 +326,7 @@
 				"ai": {
 					"number": "01 / ai",
 					"title": "Describe the rule",
-					"description": "\"Archive anything from Substack.\" Done. Popsuites turns plain English into a running rule, with a confirmation card you approve before anything executes."
+					"description": "\"Archive anything from Substack.\" Done. Mail Monkey turns plain English into a running rule, with a confirmation card you approve before anything executes."
 				},
 				"templates": {
 					"number": "02 / templates",
@@ -358,7 +358,7 @@
 			"useLink": "or use the following link:"
 		},
 		"deleteAccountVerification": {
-			"body": "Hey,\nwe received a request to permanently delete your Popsuites account.\n\nClick the button below to confirm. If you didn't request this, ignore this email and your account will stay active.",
+			"body": "Hey,\nwe received a request to permanently delete your Mail Monkey account.\n\nClick the button below to confirm. If you didn't request this, ignore this email and your account will stay active.",
 			"confirmDeletion": "Confirm account deletion",
 			"subject": "Confirm your account deletion"
 		},
@@ -373,17 +373,17 @@
 			"subject": "Reset your password"
 		},
 		"magicLink": {
-			"body": "Hey,\nyou requested a login email from Popsuites.\n\nClick the link below to login.",
+			"body": "Hey,\nyou requested a login email from Mail Monkey.\n\nClick the link below to login.",
 			"login": "Login",
-			"subject": "Login to Popsuites"
+			"subject": "Login to Mail Monkey"
 		},
 		"newUser": {
-			"body": "Hey,\nthanks for signing up for Popsuites.\n\nTo start using our app, please confirm your email address by clicking the link below.",
+			"body": "Hey,\nthanks for signing up for Mail Monkey.\n\nTo start using our app, please confirm your email address by clicking the link below.",
 			"confirmEmail": "Confirm email",
 			"subject": "Confirm your email"
 		},
 		"newsletterSignup": {
-			"body": "Thank you for signing up for the Popsuites newsletter. We will keep you updated with the latest news and updates.",
+			"body": "Thank you for signing up for the Mail Monkey newsletter. We will keep you updated with the latest news and updates.",
 			"subject": "Welcome to our newsletter"
 		},
 		"organizationInvitation": {
@@ -393,10 +393,10 @@
 			"subject": "You have been invited to join an organization"
 		},
 		"welcome": {
-			"subject": "Welcome to Popsuites"
+			"subject": "Welcome to Mail Monkey"
 		},
 		"telegramOtp": {
-			"subject": "Your Popsuites Telegram login code"
+			"subject": "Your Mail Monkey Telegram login code"
 		}
 	},
 	"newsletter": {
@@ -467,7 +467,7 @@
 		"mailboxes": {
 			"eyebrow": "Connected inbox",
 			"heading": "your inbox is <accent>connected</accent>.",
-			"description": "Popsuites runs on top of Gmail. Your rules evaluate email server-side — we never store contents.",
+			"description": "Mail Monkey runs on top of Gmail. Your rules evaluate email server-side — we never store contents.",
 			"connected": "Connected",
 			"provider": {
 				"google": "Gmail",
@@ -490,7 +490,7 @@
 		"rules": {
 			"eyebrow": "Starter rules",
 			"heading": "pick a few to <accent>start</accent>.",
-			"description": "We picked the ones Popsuites is best at. Deselect anything you don't want — you can always change these later.",
+			"description": "We picked the ones Mail Monkey is best at. Deselect anything you don't want — you can always change these later.",
 			"suggestionsHeading": "we found <accent>{count} cleanup opportunities</accent>.",
 			"suggestionsDescription": "We analyzed your inbox and picked the automations most likely to save time right away. Leave the ones you want enabled and we’ll create them for you.",
 			"suggestionImpact": "{count, plural, =1 {Would likely clean up 1 older inbox email} other {Would likely clean up # older inbox emails}}",
@@ -522,7 +522,7 @@
 		"apply": {
 			"eyebrow": "Watch it work",
 			"heading": "watching your <accent>last 10</accent>.",
-			"description": "Popsuites is applying your rules now. Open Gmail in another tab and watch it happen.",
+			"description": "Mail Monkey is applying your rules now. Open Gmail in another tab and watch it happen.",
 			"processing": "Processing last 10 emails…",
 			"progress": "{done} / {total}",
 			"done": "Dry run complete",
@@ -1312,7 +1312,7 @@
 		},
 		"disconnectDialog": {
 			"title": "Disconnect {email}?",
-			"description": "All rules and execution history for this mailbox will be permanently deleted. Popsuites's access to your Gmail inbox will be revoked. You can reconnect at any time.",
+			"description": "All rules and execution history for this mailbox will be permanently deleted. Mail Monkey's access to your Gmail inbox will be revoked. You can reconnect at any time.",
 			"confirm": "Disconnect",
 			"disconnecting": "Disconnecting...",
 			"cancel": "Cancel",
@@ -1564,7 +1564,7 @@
 			"title": "Describe what you want,\nin plain English.",
 			"panelTitle": "New rule · draft",
 			"you": "You",
-			"assistantName": "Popsuites",
+			"assistantName": "Mail Monkey",
 			"greeting": "Hi {name} — tell me what you'd like to automate. I'll translate it into a rule you can turn on.",
 			"seedHeading": "Try one of these",
 			"seeds": {
@@ -1621,7 +1621,7 @@
 			"upsell": {
 				"eyebrow": "Pro feature",
 				"title": "Unlock the AI rule assistant",
-				"description": "Describe rules in plain English and let Popsuites wire them up. Available on Pro.",
+				"description": "Describe rules in plain English and let Mail Monkey wire them up. Available on Pro.",
 				"cta": "See plans"
 			}
 		},

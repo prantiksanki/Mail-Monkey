@@ -69,8 +69,8 @@ export function Intelligence() {
 				Built in.
 			</div>
 			<p className="mb-10 text-[18px] leading-[1.5] text-foreground">
-				Popsuites reads your mail the way you do — and acts the way you
-				would.
+				Mail Monkey reads your mail the way you do — and acts the way
+				you would.
 			</p>
 
 			<div className="mx-auto grid max-w-[980px] grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

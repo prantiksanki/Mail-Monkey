@@ -18,7 +18,7 @@ const mockups: Mockup[] = [
 		src: "/images/integration-mockups/mockup-1.png",
 		width: 1530,
 		height: 1028,
-		alt: "Popsuites unified inbox showing new email, Slack, Zoom, and WhatsApp notifications in one stream",
+		alt: "Mail Monkey unified inbox showing new email, Slack, Zoom, and WhatsApp notifications in one stream",
 	},
 	{
 		key: "connected-tools",
@@ -39,20 +39,20 @@ const mockups: Mockup[] = [
 		src: "/images/integration-mockups/mockup-4.png",
 		width: 1832,
 		height: 858,
-		alt: "Gmail, Outlook, Yahoo Mail, and other providers all connecting into Popsuites",
+		alt: "Gmail, Outlook, Yahoo Mail, and other providers all connecting into Mail Monkey",
 	},
 	{
 		key: "smart-signals",
 		src: "/images/integration-mockups/mockup-5.png",
 		width: 1536,
 		height: 1024,
-		alt: "Popsuites surfacing a smart reply suggestion alongside connected accounts",
+		alt: "Mail Monkey surfacing a smart reply suggestion alongside connected accounts",
 	},
 ];
 
 const AUTO_ADVANCE_MS = 4500;
 
-export function PopsuitesIntegrationsBeam() {
+export function MailMonkeyIntegrationsBeam() {
 	const [activeIndex, setActiveIndex] = useState(0);
 
 	useEffect(() => {

@@ -14,7 +14,7 @@ export function Logo({
 					"flex items-center font-semibold text-foreground leading-none",
 				)}
 				role="img"
-				aria-label="Popsuites"
+				aria-label="Mail Monkey"
 			>
 				<img
 					src="/images/logo-mark-32.png"
@@ -44,7 +44,7 @@ export function Logo({
 				aria-hidden="true"
 			/>
 			<span className="text-xl font-semibold tracking-[-0.03em]">
-				Popsuites
+				Mail Monkey
 			</span>
 		</span>
 	);

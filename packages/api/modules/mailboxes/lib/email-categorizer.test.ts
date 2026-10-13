@@ -1,14 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockGenerateObject = vi.fn();
+const mockGenerateWithSarvam = vi.fn();
 
 vi.mock("@repo/ai", () => ({
-	generateObject: (...args: unknown[]) => mockGenerateObject(...args),
-	TEXT_MODEL_ID: "gemini-flash-latest",
-}));
-
-vi.mock("@ai-sdk/google", () => ({
-	createGoogleGenerativeAI: () => (modelName: string) => modelName,
+	generateWithSarvam: (...args: unknown[]) => mockGenerateWithSarvam(...args),
 }));
 
 vi.mock("@repo/logs", () => ({
@@ -59,51 +54,49 @@ describe("fastPathCategoryFromGmailLabels", () => {
 });
 
 describe("classifyEmailCategory", () => {
-	const originalApiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+	const originalApiKey = process.env.SARVAM_API_KEY;
 
 	beforeEach(() => {
-		process.env.GOOGLE_GENERATIVE_AI_API_KEY = "test-key";
-		mockGenerateObject.mockReset();
+		process.env.SARVAM_API_KEY = "test-key";
+		mockGenerateWithSarvam.mockReset();
 	});
 
 	afterEach(() => {
-		process.env.GOOGLE_GENERATIVE_AI_API_KEY = originalApiKey;
+		process.env.SARVAM_API_KEY = originalApiKey;
 	});
 
-	it("uses the Gmail fast-path without calling Gemini", async () => {
+	it("uses the Gmail fast-path without calling Sarvam", async () => {
 		const result = await classifyEmailCategory(
 			baseEmail({ labelIds: ["INBOX", "CATEGORY_SOCIAL"] }),
 		);
 
 		expect(result).toBe("SOCIAL");
-		expect(mockGenerateObject).not.toHaveBeenCalled();
+		expect(mockGenerateWithSarvam).not.toHaveBeenCalled();
 	});
 
 	it("returns the classifier's category on success", async () => {
-		mockGenerateObject.mockResolvedValue({
-			object: { category: "NEWSLETTER" },
-		});
+		mockGenerateWithSarvam.mockResolvedValue({ category: "NEWSLETTER" });
 
 		const result = await classifyEmailCategory(baseEmail());
 
 		expect(result).toBe("NEWSLETTER");
-		expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+		expect(mockGenerateWithSarvam).toHaveBeenCalledTimes(1);
 	});
 
 	it("defaults to PRIMARY when no API key is configured", async () => {
-		process.env.GOOGLE_GENERATIVE_AI_API_KEY = "";
+		process.env.SARVAM_API_KEY = "";
 
 		const result = await classifyEmailCategory(baseEmail());
 
 		expect(result).toBe("PRIMARY");
-		expect(mockGenerateObject).not.toHaveBeenCalled();
+		expect(mockGenerateWithSarvam).not.toHaveBeenCalled();
 	});
 
 	it("defaults to PRIMARY after exhausting retries on repeated 429s", async () => {
 		vi.useFakeTimers();
 		try {
-			mockGenerateObject.mockRejectedValue(
-				Object.assign(new Error("rate limited"), { statusCode: 429 }),
+			mockGenerateWithSarvam.mockRejectedValue(
+				new Error("Sarvam chat completion failed: 429 rate limited"),
 			);
 
 			const resultPromise = classifyEmailCategory(baseEmail());
@@ -116,18 +109,18 @@ describe("classifyEmailCategory", () => {
 
 			expect(result).toBe("PRIMARY");
 			// initial attempt + 3 retries = 4 calls
-			expect(mockGenerateObject).toHaveBeenCalledTimes(4);
+			expect(mockGenerateWithSarvam).toHaveBeenCalledTimes(4);
 		} finally {
 			vi.useRealTimers();
 		}
 	});
 
 	it("defaults to PRIMARY on a non-retryable error", async () => {
-		mockGenerateObject.mockRejectedValue(new Error("boom"));
+		mockGenerateWithSarvam.mockRejectedValue(new Error("boom"));
 
 		const result = await classifyEmailCategory(baseEmail());
 
 		expect(result).toBe("PRIMARY");
-		expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+		expect(mockGenerateWithSarvam).toHaveBeenCalledTimes(1);
 	});
 });

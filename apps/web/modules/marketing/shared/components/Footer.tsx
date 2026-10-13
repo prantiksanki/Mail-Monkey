@@ -28,7 +28,7 @@ export function Footer() {
 								Explore AI Summary
 							</p>
 							<h3 className="max-w-sm font-semibold text-3xl leading-tight tracking-tight text-white">
-								Ask AI about Popsuites
+								Ask AI about Mail Monkey
 							</h3>
 							<AiProviderButtons />
 						</div>
@@ -64,7 +64,7 @@ export function Footer() {
 			<div className="mx-auto grid w-full max-w-7xl gap-12 px-6 py-12 sm:px-8 lg:grid-cols-[1.2fr_0.9fr_0.8fr] lg:px-10">
 				<div className="space-y-5">
 					<h3 className="font-semibold text-3xl text-white tracking-tight">
-						Popsuites
+						Mail Monkey
 					</h3>
 					<p className="max-w-sm text-base text-white/70 leading-8">
 						Empowering businesses with intelligent email solutions,
@@ -95,23 +95,6 @@ export function Footer() {
 						Follow Us
 					</h4>
 					<FollowUsDock />
-
-					<div className="pt-2">
-						<a
-							href="https://www.producthunt.com/products/zer0-email/reviews/new?utm_source=badge-product_review&utm_medium=badge&utm_source=badge-zer0&#0045;email"
-							target="_blank"
-							rel="noreferrer"
-						>
-							{/* biome-ignore lint/performance/noImgElement: external Product Hunt badge SVG */}
-							<img
-								src="https://api.producthunt.com/widgets/embed-image/v1/product_review.svg?product_id=1217697&theme=light"
-								alt="Zer0 Email - AI inbox automation for Gmail and Outlook | Product Hunt"
-								width={250}
-								height={54}
-								style={{ width: "250px", height: "54px" }}
-							/>
-						</a>
-					</div>
 				</div>
 			</div>
 
@@ -121,7 +104,9 @@ export function Footer() {
 						<div className="flex size-10 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white">
 							<Brain className="size-4" />
 						</div>
-						<p>Copyright © 2026 Popsuites. All rights reserved.</p>
+						<p>
+							Copyright © 2026 Mail Monkey. All rights reserved.
+						</p>
 					</div>
 
 					<div className="flex flex-wrap items-center gap-5">
@@ -143,7 +128,7 @@ export function Footer() {
 						>
 							Cookie Preferences
 						</a>
-						<FooterEmailCopy email="support@popsuites.ai" />
+						<FooterEmailCopy email="support@mailmonkey.app" />
 					</div>
 				</div>
 			</div>

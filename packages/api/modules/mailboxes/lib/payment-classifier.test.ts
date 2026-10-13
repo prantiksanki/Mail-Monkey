@@ -1,14 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const mockGenerateObject = vi.fn();
+const mockGenerateWithSarvam = vi.fn();
 
 vi.mock("@repo/ai", () => ({
-	generateObject: (...args: unknown[]) => mockGenerateObject(...args),
-	TEXT_MODEL_ID: "gemini-flash-latest",
-}));
-
-vi.mock("@ai-sdk/google", () => ({
-	createGoogleGenerativeAI: () => (modelName: string) => modelName,
+	generateWithSarvam: (...args: unknown[]) => mockGenerateWithSarvam(...args),
 }));
 
 vi.mock("@repo/logs", () => ({
@@ -32,29 +27,27 @@ function baseEmail(
 }
 
 describe("classifyPaymentEmail", () => {
-	const originalApiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+	const originalApiKey = process.env.SARVAM_API_KEY;
 
 	beforeEach(() => {
-		process.env.GOOGLE_GENERATIVE_AI_API_KEY = "test-key";
-		mockGenerateObject.mockReset();
+		process.env.SARVAM_API_KEY = "test-key";
+		mockGenerateWithSarvam.mockReset();
 	});
 
 	afterEach(() => {
-		process.env.GOOGLE_GENERATIVE_AI_API_KEY = originalApiKey;
+		process.env.SARVAM_API_KEY = originalApiKey;
 	});
 
 	it("classifies an invoice email", async () => {
-		mockGenerateObject.mockResolvedValue({
-			object: {
-				isPaymentEmail: true,
-				paymentType: "invoice",
-				merchant: "Acme Corp",
-				amount: 250,
-				currency: "USD",
-				dueDate: "2026-09-01",
-				paymentStatus: "unpaid",
-				confidence: 0.95,
-			},
+		mockGenerateWithSarvam.mockResolvedValue({
+			isPaymentEmail: true,
+			paymentType: "invoice",
+			merchant: "Acme Corp",
+			amount: 250,
+			currency: "USD",
+			dueDate: "2026-09-01",
+			paymentStatus: "unpaid",
+			confidence: 0.95,
 		});
 
 		const result = await classifyPaymentEmail(
@@ -68,17 +61,15 @@ describe("classifyPaymentEmail", () => {
 	});
 
 	it("classifies a utility bill email", async () => {
-		mockGenerateObject.mockResolvedValue({
-			object: {
-				isPaymentEmail: true,
-				paymentType: "bill",
-				merchant: "ABC Electricity",
-				amount: 2450,
-				currency: "INR",
-				dueDate: "2026-08-28",
-				paymentStatus: "unpaid",
-				confidence: 0.96,
-			},
+		mockGenerateWithSarvam.mockResolvedValue({
+			isPaymentEmail: true,
+			paymentType: "bill",
+			merchant: "ABC Electricity",
+			amount: 2450,
+			currency: "INR",
+			dueDate: "2026-08-28",
+			paymentStatus: "unpaid",
+			confidence: 0.96,
 		});
 
 		const result = await classifyPaymentEmail(
@@ -91,14 +82,12 @@ describe("classifyPaymentEmail", () => {
 	});
 
 	it("classifies a payment confirmation/receipt as paid", async () => {
-		mockGenerateObject.mockResolvedValue({
-			object: {
-				isPaymentEmail: true,
-				paymentType: "receipt",
-				merchant: "Acme Corp",
-				paymentStatus: "paid",
-				confidence: 0.9,
-			},
+		mockGenerateWithSarvam.mockResolvedValue({
+			isPaymentEmail: true,
+			paymentType: "receipt",
+			merchant: "Acme Corp",
+			paymentStatus: "paid",
+			confidence: 0.9,
 		});
 
 		const result = await classifyPaymentEmail(
@@ -111,16 +100,14 @@ describe("classifyPaymentEmail", () => {
 	});
 
 	it("classifies a subscription renewal notice", async () => {
-		mockGenerateObject.mockResolvedValue({
-			object: {
-				isPaymentEmail: true,
-				paymentType: "subscription",
-				merchant: "Streamflix",
-				amount: 15.99,
-				currency: "USD",
-				paymentStatus: "unpaid",
-				confidence: 0.88,
-			},
+		mockGenerateWithSarvam.mockResolvedValue({
+			isPaymentEmail: true,
+			paymentType: "subscription",
+			merchant: "Streamflix",
+			amount: 15.99,
+			currency: "USD",
+			paymentStatus: "unpaid",
+			confidence: 0.88,
 		});
 
 		const result = await classifyPaymentEmail(
@@ -133,14 +120,12 @@ describe("classifyPaymentEmail", () => {
 	});
 
 	it("classifies a payment reminder", async () => {
-		mockGenerateObject.mockResolvedValue({
-			object: {
-				isPaymentEmail: true,
-				paymentType: "reminder",
-				merchant: "Acme Corp",
-				paymentStatus: "unpaid",
-				confidence: 0.85,
-			},
+		mockGenerateWithSarvam.mockResolvedValue({
+			isPaymentEmail: true,
+			paymentType: "reminder",
+			merchant: "Acme Corp",
+			paymentStatus: "unpaid",
+			confidence: 0.85,
 		});
 
 		const result = await classifyPaymentEmail(
@@ -153,8 +138,9 @@ describe("classifyPaymentEmail", () => {
 	});
 
 	it("classifies an ordinary email as not a payment email", async () => {
-		mockGenerateObject.mockResolvedValue({
-			object: { isPaymentEmail: false, confidence: 0.02 },
+		mockGenerateWithSarvam.mockResolvedValue({
+			isPaymentEmail: false,
+			confidence: 0.02,
 		});
 
 		const result = await classifyPaymentEmail(baseEmail());
@@ -163,19 +149,19 @@ describe("classifyPaymentEmail", () => {
 	});
 
 	it("defaults to not-a-payment-email when no API key is configured", async () => {
-		process.env.GOOGLE_GENERATIVE_AI_API_KEY = "";
+		process.env.SARVAM_API_KEY = "";
 
 		const result = await classifyPaymentEmail(baseEmail());
 
 		expect(result).toEqual({ isPaymentEmail: false, confidence: 0 });
-		expect(mockGenerateObject).not.toHaveBeenCalled();
+		expect(mockGenerateWithSarvam).not.toHaveBeenCalled();
 	});
 
-	it("defaults to not-a-payment-email after exhausting retries on repeated 429s", async () => {
+	it("returns null (retry later) after exhausting retries on repeated 429s", async () => {
 		vi.useFakeTimers();
 		try {
-			mockGenerateObject.mockRejectedValue(
-				Object.assign(new Error("rate limited"), { statusCode: 429 }),
+			mockGenerateWithSarvam.mockRejectedValue(
+				new Error("Sarvam chat completion failed: 429 rate limited"),
 			);
 
 			const resultPromise = classifyPaymentEmail(baseEmail());
@@ -184,32 +170,42 @@ describe("classifyPaymentEmail", () => {
 			await vi.advanceTimersByTimeAsync(40_000);
 			const result = await resultPromise;
 
-			expect(result).toEqual({ isPaymentEmail: false, confidence: 0 });
-			expect(mockGenerateObject).toHaveBeenCalledTimes(4);
+			expect(result).toBeNull();
+			expect(mockGenerateWithSarvam).toHaveBeenCalledTimes(4);
 		} finally {
 			vi.useRealTimers();
 		}
 	});
 
-	it("defaults to not-a-payment-email on a non-retryable error", async () => {
-		mockGenerateObject.mockRejectedValue(new Error("boom"));
+	it("returns null (retry later) on an unclassified/transient error", async () => {
+		mockGenerateWithSarvam.mockRejectedValue(new Error("boom"));
+
+		const result = await classifyPaymentEmail(baseEmail());
+
+		expect(result).toBeNull();
+		expect(mockGenerateWithSarvam).toHaveBeenCalledTimes(1);
+	});
+
+	it("defaults to not-a-payment-email on a non-transient 4xx rejection", async () => {
+		mockGenerateWithSarvam.mockRejectedValue(
+			new Error("Sarvam chat completion failed: 400 bad request"),
+		);
 
 		const result = await classifyPaymentEmail(baseEmail());
 
 		expect(result).toEqual({ isPaymentEmail: false, confidence: 0 });
-		expect(mockGenerateObject).toHaveBeenCalledTimes(1);
 	});
 
-	it("returns null and pauses further Gemini calls when billing credits are depleted", async () => {
+	it("returns null and pauses further calls when billing credits are depleted", async () => {
 		// Isolated module instance so this test's cooldown state can't leak
 		// into the shared, statically-imported instance the other tests use.
 		vi.resetModules();
 		const { classifyPaymentEmail: classifyWithFreshCooldownState } =
 			await import("./payment-classifier");
 
-		mockGenerateObject.mockRejectedValue(
+		mockGenerateWithSarvam.mockRejectedValue(
 			new Error(
-				"Failed after 3 attempts. Last error: Your prepayment credits are depleted. Please go to AI Studio at https://ai.studio/projects to manage your project and billing.",
+				"Sarvam chat completion failed: 402 Your prepayment credits are depleted.",
 			),
 		);
 
@@ -217,12 +213,12 @@ describe("classifyPaymentEmail", () => {
 
 		expect(result).toBeNull();
 		// No retries burned on a wall we already know is there.
-		expect(mockGenerateObject).toHaveBeenCalledTimes(1);
+		expect(mockGenerateWithSarvam).toHaveBeenCalledTimes(1);
 
-		mockGenerateObject.mockClear();
+		mockGenerateWithSarvam.mockClear();
 		const secondResult = await classifyWithFreshCooldownState(baseEmail());
 
 		expect(secondResult).toBeNull();
-		expect(mockGenerateObject).not.toHaveBeenCalled();
+		expect(mockGenerateWithSarvam).not.toHaveBeenCalled();
 	});
 });
