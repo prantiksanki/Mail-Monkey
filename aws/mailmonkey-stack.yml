@@ -76,7 +76,11 @@ Resources:
             Condition:
               StringEquals:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
-                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubRepo}:ref:refs/heads/${GitHubBranch}
+                # Jobs that use a GitHub environment (deploy-aws.yml uses
+                # "production") present the environment, not the branch.
+                token.actions.githubusercontent.com:sub:
+                  - !Sub repo:${GitHubRepo}:ref:refs/heads/${GitHubBranch}
+                  - !Sub repo:${GitHubRepo}:environment:production
       Policies:
         - PolicyName: push-and-deploy
           PolicyDocument:
