@@ -61,7 +61,6 @@ export default async function AboutPage({
 						we couldn't find.
 					</h1>
 				</div>
-
 			</div>
 		</div>
 	);
