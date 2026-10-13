@@ -10,6 +10,12 @@ Parameters:
     Type: String
     Default: prantiksanki/Mail-Monkey
     Description: GitHub repository (owner/name) allowed to deploy.
+  GitHubRepoWithIds:
+    Type: String
+    Default: prantiksanki@144121988/Mail-Monkey@1404325986
+    Description: >
+      Same repository in GitHub's immutable-ID form (owner@ownerId/repo@repoId),
+      which GitHub now uses in the OIDC subject claim.
   GitHubBranch:
     Type: String
     Default: main
@@ -78,9 +84,12 @@ Resources:
                 token.actions.githubusercontent.com:aud: sts.amazonaws.com
                 # Jobs that use a GitHub environment (deploy-aws.yml uses
                 # "production") present the environment, not the branch.
+                # GitHub may send the repo by name or with immutable IDs.
                 token.actions.githubusercontent.com:sub:
                   - !Sub repo:${GitHubRepo}:ref:refs/heads/${GitHubBranch}
                   - !Sub repo:${GitHubRepo}:environment:production
+                  - !Sub repo:${GitHubRepoWithIds}:ref:refs/heads/${GitHubBranch}
+                  - !Sub repo:${GitHubRepoWithIds}:environment:production
       Policies:
         - PolicyName: push-and-deploy
           PolicyDocument:
