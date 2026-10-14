@@ -1,4 +1,5 @@
 import {
+	db,
 	type EmailUpsertData,
 	getMailboxSyncState,
 	updateMailboxSyncState,
@@ -27,6 +28,13 @@ export async function syncAllEmails(mailbox: {
 
 	try {
 		await runSync(mailbox);
+	} catch (error) {
+		// Callers fire-and-forget this, so surface the failure here instead of
+		// leaving it as a silent unhandled rejection.
+		logger.error("[email-sync] Full sync failed", {
+			mailboxId: mailbox.id,
+			error: error instanceof Error ? error.message : String(error),
+		});
 	} finally {
 		syncingMailboxes.delete(mailbox.id);
 	}
@@ -139,10 +147,23 @@ async function runSync(mailbox: {
 			pageToken,
 		});
 
-		const ids = listResult.messages ?? [];
-		if (ids.length === 0) {
+		const listed = listResult.messages ?? [];
+		if (listed.length === 0) {
 			break;
 		}
+
+		// Skip messages already stored. The sync restarts from the newest page
+		// after a server restart or failure, so without this every retry would
+		// re-download (and re-bill quota for) everything it already imported.
+		const existing = await db.email.findMany({
+			where: {
+				mailboxId: mailbox.id,
+				id: { in: listed.flatMap((m) => (m.id ? [m.id] : [])) },
+			},
+			select: { id: true },
+		});
+		const existingIds = new Set(existing.map((e) => e.id));
+		const ids = listed.filter((m) => !m.id || !existingIds.has(m.id));
 
 		// Fetch full message details in parallel (batches of 10 to stay under quota)
 		const BATCH = 10;
