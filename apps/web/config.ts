@@ -39,7 +39,7 @@ export const config = {
 		// Settings → General: Creator & Freelancer mode, Media Kit, Profile Analytics
 		showCreatorMode: false,
 		// Sidebar → Bills entry and the dashboard payment alert
-		showBills: false,
+		showBills: true,
 		// Home page stats band (hours saved, $ saved, emails processed)
 		showStats: false,
 	},

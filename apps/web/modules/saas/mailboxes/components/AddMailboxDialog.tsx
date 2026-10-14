@@ -111,98 +111,96 @@ export function AddMailboxDialog({
 	};
 
 	return (
-		<>
-			<Dialog open={open} onOpenChange={onOpenChange}>
-				<DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-md">
-					<DialogHeader className="space-y-2 border-border border-b p-6 text-left">
+		<Dialog open={open} onOpenChange={onOpenChange}>
+			<DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-md">
+				<DialogHeader className="space-y-2 border-border border-b p-6 text-left">
+					<p className="font-mono text-foreground text-xs uppercase tracking-wider">
+						{t("mailboxes.addMailboxDialog.eyebrow")}
+					</p>
+					<DialogTitle className="font-serif font-normal text-3xl leading-tight tracking-tight">
+						{t("mailboxes.addMailboxDialog.heading")}
+					</DialogTitle>
+					<DialogDescription className="sr-only">
+						{t("mailboxes.addMailboxDialog.description")}
+					</DialogDescription>
+				</DialogHeader>
+
+				<div className="max-h-[60vh] space-y-2.5 overflow-y-auto p-6">
+					{!canAdd && (
+						<p className="rounded-lg border border-border bg-muted/40 p-3 text-foreground text-xs">
+							{t("limits.upgrade.addMailbox")}
+						</p>
+					)}
+
+					{providers.map((provider) => (
+						<ProviderButton
+							key={provider.id}
+							providerId={provider.id}
+							icon={provider.icon}
+							enabled={provider.enabled && canAdd}
+							loading={isConnecting === provider.id}
+							onClick={() => handleConnect(provider.id)}
+						/>
+					))}
+
+					<div className="pt-4">
 						<p className="font-mono text-foreground text-xs uppercase tracking-wider">
-							{t("mailboxes.addMailboxDialog.eyebrow")}
+							{t("mailboxes.addMailboxDialog.scopes.title")}
 						</p>
-						<DialogTitle className="font-serif font-normal text-3xl leading-tight tracking-tight">
-							{t("mailboxes.addMailboxDialog.heading")}
-						</DialogTitle>
-						<DialogDescription className="sr-only">
-							{t("mailboxes.addMailboxDialog.description")}
-						</DialogDescription>
-					</DialogHeader>
-
-					<div className="max-h-[60vh] space-y-2.5 overflow-y-auto p-6">
-						{!canAdd && (
-							<p className="rounded-lg border border-border bg-muted/40 p-3 text-foreground text-xs">
-								{t("limits.upgrade.addMailbox")}
-							</p>
-						)}
-
-						{providers.map((provider) => (
-							<ProviderButton
-								key={provider.id}
-								providerId={provider.id}
-								icon={provider.icon}
-								enabled={provider.enabled && canAdd}
-								loading={isConnecting === provider.id}
-								onClick={() => handleConnect(provider.id)}
-							/>
-						))}
-
-						<div className="pt-4">
-							<p className="font-mono text-foreground text-xs uppercase tracking-wider">
-								{t("mailboxes.addMailboxDialog.scopes.title")}
-							</p>
-							<ul className="mt-2.5 space-y-1.5 text-foreground text-xs leading-relaxed">
-								<li className="flex gap-2">
-									<span className="text-primary">✓</span>
-									<span>
-										{t(
-											"mailboxes.addMailboxDialog.scopes.read",
-										)}
-									</span>
-								</li>
-								<li className="flex gap-2">
-									<span className="text-primary">✓</span>
-									<span>
-										{t(
-											"mailboxes.addMailboxDialog.scopes.labels",
-										)}
-									</span>
-								</li>
-								<li className="flex gap-2">
-									<span className="text-foreground">—</span>
-									<span>
-										{t(
-											"mailboxes.addMailboxDialog.scopes.never",
-										)}
-									</span>
-								</li>
-							</ul>
-						</div>
+						<ul className="mt-2.5 space-y-1.5 text-foreground text-xs leading-relaxed">
+							<li className="flex gap-2">
+								<span className="text-primary">✓</span>
+								<span>
+									{t(
+										"mailboxes.addMailboxDialog.scopes.read",
+									)}
+								</span>
+							</li>
+							<li className="flex gap-2">
+								<span className="text-primary">✓</span>
+								<span>
+									{t(
+										"mailboxes.addMailboxDialog.scopes.labels",
+									)}
+								</span>
+							</li>
+							<li className="flex gap-2">
+								<span className="text-foreground">—</span>
+								<span>
+									{t(
+										"mailboxes.addMailboxDialog.scopes.never",
+									)}
+								</span>
+							</li>
+						</ul>
 					</div>
+				</div>
 
-					<div className="flex items-center justify-between border-border border-t p-4">
-						<p className="text-foreground/50 text-xs leading-snug">
-							By connecting, you agree to our{" "}
-							<Link
-								href="/legal/privacy-policy"
-								className="underline underline-offset-2 hover:text-foreground"
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-								Privacy Policy
-							</Link>
-							. Your email data is used only to power Zer0Email
-							features and is never sold or used for ads.
-						</p>
-						<Button
-							variant="ghost"
-							size="sm"
-							className="ml-4 shrink-0"
-							onClick={() => onOpenChange(false)}
+				<div className="flex items-center justify-between border-border border-t p-4">
+					<p className="text-foreground/50 text-xs leading-snug">
+						By connecting, you agree to our{" "}
+						<Link
+							href="/legal/privacy-policy"
+							className="underline underline-offset-2 hover:text-foreground"
+							target="_blank"
+							rel="noopener noreferrer"
 						>
-							{t("mailboxes.addMailboxDialog.cancel")}
-						</Button>
-					</div>
-				</DialogContent>
-			</Dialog>
-		</>
+							Privacy Policy
+						</Link>
+						. Your email data is used only to power Zer0Email
+						features and is never sold or used for ads.
+					</p>
+					<Button
+						variant="ghost"
+						size="sm"
+						className="ml-4 shrink-0"
+						onClick={() => onOpenChange(false)}
+					>
+						{t("mailboxes.addMailboxDialog.cancel")}
+					</Button>
+				</div>
+			</DialogContent>
+		</Dialog>
 	);
 }
 
