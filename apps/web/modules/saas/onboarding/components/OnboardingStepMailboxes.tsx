@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@repo/ui/components/button";
-import { ConnectImapMailboxDialog } from "@saas/mailboxes/components/ConnectImapMailboxDialog";
 import { useMailboxesQuery } from "@saas/mailboxes/lib/api";
 import {
 	ArrowLeftIcon,
@@ -11,7 +10,6 @@ import {
 	PlusIcon,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 
 interface OnboardingStepMailboxesProps {
 	onBack: () => void;
@@ -30,7 +28,6 @@ export function OnboardingStepMailboxes({
 }: OnboardingStepMailboxesProps) {
 	const t = useTranslations();
 	const { data: mailboxes = [], isLoading } = useMailboxesQuery();
-	const [isImapDialogOpen, setIsImapDialogOpen] = useState(false);
 	const hasNoMailboxes = !isLoading && mailboxes.length === 0;
 
 	return (
@@ -100,23 +97,8 @@ export function OnboardingStepMailboxes({
 							? t("onboarding.mailboxes.empty.cardDescription")
 							: t("onboarding.mailboxes.addMore.description")}
 					</p>
-					{hasNoMailboxes && (
-						<Button
-							className="mt-3"
-							size="sm"
-							onClick={() => setIsImapDialogOpen(true)}
-						>
-							{t("onboarding.mailboxes.empty.connect")}
-						</Button>
-					)}
 				</div>
 			</div>
-
-			<ConnectImapMailboxDialog
-				open={isImapDialogOpen}
-				onOpenChange={setIsImapDialogOpen}
-				onConnected={() => setIsImapDialogOpen(false)}
-			/>
 
 			<div className="mt-8 flex items-center justify-between">
 				<Button variant="ghost" onClick={onBack}>

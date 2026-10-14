@@ -6,7 +6,7 @@ import { Button } from "@repo/ui/components/button";
 import { OrganizationInvitationAlert } from "@saas/organizations/components/OrganizationInvitationAlert";
 import { FloatingPaths } from "@saas/shared/components/FloatingPaths";
 import { getSafeRedirectPath } from "@shared/lib/safe-redirect";
-import { ChevronLeftIcon, MailIcon } from "lucide-react";
+import { ChevronLeftIcon } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
@@ -106,17 +106,6 @@ export function SignupForm() {
 									intent="signup"
 								/>
 							))}
-
-						<Button
-							variant="reverse"
-							className="h-12 w-full bg-white font-medium text-black hover:bg-white/90"
-							asChild
-						>
-							<Link href="/auth/connect-mailbox">
-								<MailIcon className="mr-2 size-4" />
-								Connect with custom email
-							</Link>
-						</Button>
 					</div>
 
 					<p className="text-muted-foreground text-sm text-center">

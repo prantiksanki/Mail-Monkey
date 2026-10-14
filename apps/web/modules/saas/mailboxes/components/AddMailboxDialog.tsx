@@ -13,11 +13,10 @@ import {
 } from "@repo/ui/components/dialog";
 import { oAuthProviders } from "@saas/auth/constants/oauth-providers";
 import { usePurchases } from "@saas/payments/hooks/purchases";
-import { ChevronRightIcon, MailIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { ConnectImapMailboxDialog } from "./ConnectImapMailboxDialog";
 
 interface AddMailboxDialogProps {
 	open: boolean;
@@ -29,7 +28,7 @@ interface AddMailboxDialogProps {
 	}>;
 }
 
-type ProviderId = "google" | "outlook" | "imap";
+type ProviderId = "google" | "outlook";
 
 interface ProviderRow {
 	id: ProviderId;
@@ -72,7 +71,6 @@ export function AddMailboxDialog({
 		? canConnectMailbox(activePlan.id, existingMailboxes.length)
 		: false;
 	const [isConnecting, setIsConnecting] = useState<string | null>(null);
-	const [isImapDialogOpen, setIsImapDialogOpen] = useState(false);
 
 	const GoogleProviderIcon = oAuthProviders.google.icon;
 
@@ -90,26 +88,9 @@ export function AddMailboxDialog({
 			icon: <OutlookIcon className="size-7" />,
 			enabled: supported.includes("microsoft"),
 		},
-		{
-			id: "imap",
-			icon: (
-				<div className="flex size-7 items-center justify-center rounded-md bg-muted">
-					<MailIcon className="size-4 text-foreground" />
-				</div>
-			),
-			enabled: supported.includes("imap"),
-		},
 	];
 
 	const handleConnect = (providerId: string) => {
-		// IMAP is credential-based, not OAuth — open the connect form instead
-		// of Better Auth's social linkSocial flow.
-		if (providerId === "imap") {
-			setIsImapDialogOpen(true);
-			onOpenChange(false);
-			return;
-		}
-
 		setIsConnecting(providerId);
 		// The confirmed `gmail_connect` / `outlook_connect` conversion is fired
 		// server-side after the OAuth callback links the account
@@ -221,11 +202,6 @@ export function AddMailboxDialog({
 					</div>
 				</DialogContent>
 			</Dialog>
-			<ConnectImapMailboxDialog
-				open={isImapDialogOpen}
-				onOpenChange={setIsImapDialogOpen}
-				onConnected={() => {}}
-			/>
 		</>
 	);
 }
