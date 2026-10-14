@@ -9,7 +9,7 @@ export const config = {
 	enableSocialLogin: true,
 
 	// Whether passkeys are enabled
-	enablePasskeys: true,
+	enablePasskeys: false,
 
 	// Whether password login is enabled
 	// Disabled in favor of magic-link authentication
