@@ -22,6 +22,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { createAuthMiddleware } from "better-auth/api";
 import {
 	admin,
+	bearer,
 	genericOAuth,
 	magicLink,
 	openAPI,
@@ -895,6 +896,11 @@ export const auth = betterAuth({
 		// inferred Session type. The plugin itself no-ops safely on an empty
 		// config array (it just `for`/`map`s over it).
 		genericOAuth({ config: genericOAuthConfigs }),
+		// Native mobile app: accepts the signed session token as
+		// `Authorization: Bearer …` (issued via packages/api/lib/mobile-auth.ts).
+		// requireSignature rejects bare, unsigned tokens. Browser cookie
+		// sessions are unaffected.
+		bearer({ requireSignature: true }),
 		admin(),
 		passkey(),
 		magicLink({
