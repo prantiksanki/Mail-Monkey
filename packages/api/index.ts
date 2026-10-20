@@ -7,6 +7,7 @@ import { getBaseUrl } from "@repo/utils";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger as honoLogger } from "hono/logger";
+import { mobileAuthRouter } from "./lib/mobile-auth";
 import {
 	authLimiter,
 	globalLimiter,
@@ -176,6 +177,9 @@ export const app = new Hono()
 	.use("/api/rpc/mailboxes/verifyImap", publicImapVerifyLimiter)
 	// Auth handler
 	.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw))
+	// Native mobile app sign-in hand-off (PKCE), see lib/mobile-auth.ts
+	.use("/mobile-auth/*", authLimiter)
+	.route("/mobile-auth", mobileAuthRouter)
 	// Payments webhook handler
 	.post("/webhooks/payments", (c) => paymentsWebhookHandler(c.req.raw))
 	// Gmail webhook handler
