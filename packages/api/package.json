@@ -18,7 +18,7 @@
 		"@repo/utils": "workspace:*",
 		"@scalar/hono-api-reference": "^0.9.24",
 		"@sindresorhus/slugify": "^3.0.0",
-		"cookie": "^1.0.2",
+		"cookie": "^2.0.1",
 		"googleapis": "^171.4.0",
 		"hono": "^4.12.34",
 		"hono-rate-limiter": "^0.5.3",
