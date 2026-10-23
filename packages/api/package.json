@@ -19,7 +19,7 @@
 		"@scalar/hono-api-reference": "^0.9.24",
 		"@sindresorhus/slugify": "^3.0.0",
 		"cookie": "^1.0.2",
-		"googleapis": "^171.4.0",
+		"googleapis": "^186.0.0",
 		"hono": "^4.12.34",
 		"hono-rate-limiter": "^0.5.3",
 		"ical.js": "^2.2.1",
